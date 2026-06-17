@@ -8,8 +8,8 @@ const SERVICES = [
   { label: "Facebook Ads", sub: "Tiếp cận đúng khách hàng mục tiêu trên Meta", href: "/dich-vu/facebook-ads", icon: "📣" },
   { label: "TikTok Ads", sub: "Viral content & quảng cáo video TikTok", href: "/dich-vu/tiktok-ads", icon: "🎵" },
   { label: "Thiết kế Website", sub: "WordPress chuẩn SEO, tốc độ cao", href: "/dich-vu/thiet-ke-website", icon: "💻" },
-  { label: "SEO Local (Google Map)", sub: "Hiển thị khi khách tìm kiếm gần bạn", href: "/#services", icon: "📍" },
-  { label: "Audit & Tư vấn", sub: "Phân tích toàn diện & lộ trình chiến lược", href: "/#contact", icon: "🎯" },
+  { label: "SEO Local (Google Map)", sub: "Hiển thị khi khách tìm kiếm gần bạn", href: "/dich-vu/seo-local", icon: "📍" },
+  { label: "Audit & Tư vấn", sub: "Phân tích toàn diện & lộ trình chiến lược", href: "/dich-vu/audit-tu-van", icon: "🎯" },
 ];
 
 const SEO_AI = [
@@ -268,6 +268,8 @@ export default function Navbar() {
             { href: "/dich-vu/thiet-ke-website", label: "💻 Thiết kế Website" },
             { href: "/dich-vu/facebook-ads", label: "📣 Facebook Ads" },
             { href: "/dich-vu/tiktok-ads", label: "🎵 TikTok Ads" },
+            { href: "/dich-vu/seo-local", label: "📍 SEO Local" },
+            { href: "/dich-vu/audit-tu-van", label: "🎯 Audit & Tư vấn" },
             { href: "/#portfolio", label: "Portfolio" },
             { href: "/#pricing", label: "Bảng giá" },
             { href: "/blog", label: "Kiến thức" },

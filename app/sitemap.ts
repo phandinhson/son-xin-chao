@@ -81,6 +81,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.9,
     },
+    {
+      url: `${BASE_URL}/dich-vu/seo-local`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${BASE_URL}/dich-vu/audit-tu-van`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
   ];
 
   // Các bài viết blog từ Supabase
