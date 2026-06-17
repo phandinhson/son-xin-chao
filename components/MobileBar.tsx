@@ -25,7 +25,13 @@ export default function MobileBar() {
     ? facebook.replace("facebook.com", "m.me").replace("/profile.php?id=", "")
     : `https://m.me/${facebook.replace(/.*fb\.com\//, "").replace(/.*facebook\.com\//, "")}`;
 
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+  const openMenu = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    // Dispatch custom event để Navbar lắng nghe và mở menu
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent("toggle-mobile-menu"));
+    }, 300);
+  };
 
   return (
     <>
@@ -46,7 +52,7 @@ export default function MobileBar() {
 
             {/* Menu */}
             <button
-              onClick={scrollToTop}
+              onClick={openMenu}
               className="flex flex-col items-center gap-1 py-2 px-3 text-slate-500 active:text-blue-600 transition-colors"
             >
               <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center shadow-md">

@@ -40,6 +40,12 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
+    const onToggle = () => setMenuOpen(v => !v);
+    window.addEventListener("toggle-mobile-menu", onToggle);
+    return () => window.removeEventListener("toggle-mobile-menu", onToggle);
+  }, []);
+
+  useEffect(() => {
     fetch("/api/settings")
       .then((r) => r.json())
       .then((d) => {
