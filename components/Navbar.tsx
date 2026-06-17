@@ -3,12 +3,20 @@ import { useState, useEffect, useRef } from "react";
 
 /* ── Nav data ── */
 const SERVICES = [
-  { label: "SEO Organic", sub: "Lên top Google bền vững, tăng traffic tự nhiên", href: "/#services", icon: "🔍" },
-  { label: "Google Ads", sub: "Quảng cáo tìm kiếm & display hiệu quả", href: "/#services", icon: "📈" },
-  { label: "Facebook & TikTok Ads", sub: "Tiếp cận đúng khách hàng mục tiêu", href: "/#services", icon: "📣" },
-  { label: "Thiết kế Website", sub: "WordPress chuẩn SEO, tốc độ cao", href: "/#services", icon: "💻" },
+  { label: "SEO Organic", sub: "Lên top Google bền vững, tăng traffic tự nhiên", href: "/dich-vu/seo", icon: "🔍" },
+  { label: "Google Ads", sub: "Quảng cáo tìm kiếm & display hiệu quả", href: "/dich-vu/google-ads", icon: "📈" },
+  { label: "Facebook Ads", sub: "Tiếp cận đúng khách hàng mục tiêu trên Meta", href: "/dich-vu/facebook-ads", icon: "📣" },
+  { label: "TikTok Ads", sub: "Viral content & quảng cáo video TikTok", href: "/dich-vu/tiktok-ads", icon: "🎵" },
+  { label: "Thiết kế Website", sub: "WordPress chuẩn SEO, tốc độ cao", href: "/dich-vu/thiet-ke-website", icon: "💻" },
   { label: "SEO Local (Google Map)", sub: "Hiển thị khi khách tìm kiếm gần bạn", href: "/#services", icon: "📍" },
   { label: "Audit & Tư vấn", sub: "Phân tích toàn diện & lộ trình chiến lược", href: "/#contact", icon: "🎯" },
+];
+
+const SEO_AI = [
+  { label: "SEO Từ khóa", sub: "Nghiên cứu & chọn từ khóa tiềm năng bằng AI", href: "/#contact", icon: "🔑" },
+  { label: "SEO Tổng thể", sub: "Chiến lược SEO toàn diện cho website", href: "/dich-vu/seo", icon: "🚀" },
+  { label: "Dịch vụ SEO hiệu quả cao", sub: "Cam kết top Google trong 3–6 tháng", href: "/dich-vu/seo", icon: "📈" },
+  { label: "SEO Onpage", sub: "Tối ưu nội dung, cấu trúc, tốc độ trang", href: "/dich-vu/seo", icon: "📝" },
 ];
 
 const KNOWLEDGE = [
@@ -97,6 +105,42 @@ export default function Navbar() {
           <a href="/#about" className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all">
             Về Sơn
           </a>
+
+          {/* SEO AI dropdown */}
+          <div className="relative" onMouseEnter={() => handleMouseEnter("seoai")} onMouseLeave={handleMouseLeave}>
+            <button className={`flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-lg transition-all ${openDropdown === "seoai" ? "text-violet-600 bg-violet-50" : "text-slate-600 hover:text-violet-600 hover:bg-violet-50"}`}>
+              <span className="text-xs bg-gradient-to-r from-violet-500 to-blue-500 text-white px-1.5 py-0.5 rounded-md font-bold tracking-wide">AI</span>
+              Seo AI
+              <svg className={`w-3.5 h-3.5 transition-transform duration-200 ${openDropdown === "seoai" ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {openDropdown === "seoai" && (
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="px-5 py-3 border-b border-slate-100 bg-gradient-to-r from-violet-50 to-blue-50">
+                  <div className="font-bold text-slate-800 text-sm flex items-center gap-2">
+                    <span className="text-xs bg-gradient-to-r from-violet-500 to-blue-500 text-white px-1.5 py-0.5 rounded-md font-bold">AI</span>
+                    Công cụ SEO thông minh
+                  </div>
+                  <p className="text-slate-500 text-xs mt-0.5">Ứng dụng AI vào chiến lược SEO</p>
+                </div>
+                <div className="p-3">
+                  {SEO_AI.map((s) => (
+                    <a key={s.label} href={s.href}
+                      className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors group/item"
+                      onClick={() => setOpenDropdown(null)}>
+                      <span className="text-lg mt-0.5">{s.icon}</span>
+                      <div>
+                        <div className="text-sm font-semibold text-slate-800 group-hover/item:text-violet-600 transition-colors">{s.label}</div>
+                        <div className="text-xs text-slate-400 mt-0.5">{s.sub}</div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Dịch vụ dropdown */}
           <div className="relative" onMouseEnter={() => handleMouseEnter("services")} onMouseLeave={handleMouseLeave}>
@@ -218,7 +262,12 @@ export default function Navbar() {
         <div className="bg-white border-t border-slate-100 px-4 py-3 flex flex-col gap-1">
           {[
             { href: "/#about", label: "Về Sơn" },
-            { href: "/#services", label: "Dịch vụ" },
+            { href: "/dich-vu/seo", label: "🤖 SEO AI" },
+            { href: "/dich-vu/seo", label: "🔍 SEO Organic" },
+            { href: "/dich-vu/google-ads", label: "📊 Google Ads" },
+            { href: "/dich-vu/thiet-ke-website", label: "💻 Thiết kế Website" },
+            { href: "/dich-vu/facebook-ads", label: "📣 Facebook Ads" },
+            { href: "/dich-vu/tiktok-ads", label: "🎵 TikTok Ads" },
             { href: "/#portfolio", label: "Portfolio" },
             { href: "/#pricing", label: "Bảng giá" },
             { href: "/blog", label: "Kiến thức" },
