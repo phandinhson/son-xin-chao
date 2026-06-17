@@ -1,15 +1,12 @@
 {
   "/api/settings/route": "app/api/settings/route.js",
-  "/api/pricing/route": "app/api/pricing/route.js",
-  "/api/admin/settings/route": "app/api/admin/settings/route.js",
-  "/api/admin/posts/route": "app/api/admin/posts/route.js",
-  "/api/posts/route": "app/api/posts/route.js",
   "/api/portfolio/route": "app/api/portfolio/route.js",
-  "/page": "app/page.js",
   "/api/addons/route": "app/api/addons/route.js",
   "/api/track/route": "app/api/track/route.js",
   "/icon/[[...__metadata_id__]]/route": "app/icon/[[...__metadata_id__]]/route.js",
-  "/admin/dashboard/page": "app/admin/dashboard/page.js",
-  "/admin/posts/page": "app/admin/posts/page.js",
-  "/admin/settings/page": "app/admin/settings/page.js"
+  "/api/pricing/route": "app/api/pricing/route.js",
+  "/page": "app/page.js",
+  "/api/posts/route": "app/api/posts/route.js",
+  "/api/categories/route": "app/api/categories/route.js",
+  "/blog/page": "app/blog/page.js"
 }
