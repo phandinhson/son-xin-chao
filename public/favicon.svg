@@ -1,10 +1,41 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <defs>
-    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#3b82f6"/>
-      <stop offset="100%" stop-color="#8b5cf6"/>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#050d1f"/>
+      <stop offset="100%" style="stop-color:#0a1a3e"/>
+    </linearGradient>
+    <linearGradient id="sGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#38beff"/>
+      <stop offset="60%" style="stop-color:#1565c0"/>
+      <stop offset="100%" style="stop-color:#0d47a1"/>
+    </linearGradient>
+    <linearGradient id="arrowGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ff8c00"/>
+      <stop offset="100%" style="stop-color:#ffd600"/>
     </linearGradient>
   </defs>
-  <rect width="32" height="32" rx="8" fill="url(#g)"/>
-  <text x="16" y="23" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="white" text-anchor="middle">S</text>
+
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="50" fill="url(#bgGrad)"/>
+
+  <!-- Letter S (bold, blue gradient) -->
+  <text x="49" y="65"
+    font-family="Arial Black, Impact, sans-serif"
+    font-size="62"
+    font-weight="900"
+    text-anchor="middle"
+    fill="url(#sGrad)">S</text>
+
+  <!-- Arrow (top-right, orange/gold) -->
+  <g transform="translate(68, 10)">
+    <!-- Arrow shaft -->
+    <line x1="0" y1="20" x2="13" y2="5" stroke="url(#arrowGrad)" stroke-width="4.5" stroke-linecap="round"/>
+    <!-- Arrow head -->
+    <polygon points="13,5 5,3 15,3 13,12" fill="url(#arrowGrad)"/>
+  </g>
+
+  <!-- Small bar chart dots (bottom-left, subtle) -->
+  <rect x="10" y="72" width="4" height="8" rx="1" fill="#1e88e5" opacity="0.7"/>
+  <rect x="16" y="67" width="4" height="13" rx="1" fill="#1e88e5" opacity="0.7"/>
+  <rect x="22" y="62" width="4" height="18" rx="1" fill="#42a5f5" opacity="0.7"/>
 </svg>
