@@ -10,10 +10,11 @@ CREATE TABLE IF NOT EXISTS posts (
   slug        TEXT UNIQUE NOT NULL,
   content     TEXT,
   excerpt     TEXT,
-  cover_image TEXT,
-  status      TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'published')),
-  created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+  cover_image     TEXT,
+  status          TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'published')),
+  focus_keyword   TEXT,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 -- 2. PORTFOLIO (Dự án)

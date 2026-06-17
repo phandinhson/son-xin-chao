@@ -1,8 +1,21 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import RichEditor from "@/components/RichEditor";
+
+type DbCategory = { id: string; label: string; value: string; icon: string; color_key: string };
+
+const CAT_LIGHT: Record<string, { bg: string; border: string; text: string }> = {
+  blue:    { bg: "bg-blue-50",    border: "border-blue-300",    text: "text-blue-700"    },
+  violet:  { bg: "bg-violet-50",  border: "border-violet-300",  text: "text-violet-700"  },
+  emerald: { bg: "bg-emerald-50", border: "border-emerald-300", text: "text-emerald-700" },
+  orange:  { bg: "bg-orange-50",  border: "border-orange-300",  text: "text-orange-700"  },
+  red:     { bg: "bg-red-50",     border: "border-red-300",     text: "text-red-700"     },
+  indigo:  { bg: "bg-indigo-50",  border: "border-indigo-300",  text: "text-indigo-700"  },
+  pink:    { bg: "bg-pink-50",    border: "border-pink-300",    text: "text-pink-700"    },
+  green:   { bg: "bg-green-50",   border: "border-green-300",   text: "text-green-700"   },
+};
 
 function toSlug(str: string) {
   return str
@@ -16,24 +29,21 @@ function toSlug(str: string) {
     .trim();
 }
 
-const CATEGORIES = [
-  { value: "seo", label: "SEO", icon: "🔍", bg: "bg-green-500/15", border: "border-green-500/40", text: "text-green-400" },
-  { value: "google-ads", label: "Google Ads", icon: "📈", bg: "bg-blue-500/15", border: "border-blue-500/40", text: "text-blue-400" },
-  { value: "facebook-tiktok-ads", label: "Facebook & TikTok Ads", icon: "📣", bg: "bg-indigo-500/15", border: "border-indigo-500/40", text: "text-indigo-400" },
-  { value: "website-wordpress", label: "Website / WordPress", icon: "💻", bg: "bg-violet-500/15", border: "border-violet-500/40", text: "text-violet-400" },
-  { value: "website-reactjs", label: "Website / React.js", icon: "⚛️", bg: "bg-cyan-500/15", border: "border-cyan-500/40", text: "text-cyan-400" },
-  { value: "tips", label: "Tips & Kiến thức", icon: "💡", bg: "bg-orange-500/15", border: "border-orange-500/40", text: "text-orange-400" },
-];
-
 export default function NewPost() {
   const router = useRouter();
   const [form, setForm] = useState({
-    title: "", slug: "", excerpt: "", content: "", cover_image: "", status: "draft" as "draft" | "published", category: "seo",
+    title: "", slug: "", excerpt: "", content: "",
+    cover_image: "", status: "draft" as "draft" | "published", category: "seo", focus_keyword: "",
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [imgTab, setImgTab] = useState<"url" | "upload">("url");
+  const [dbCategories, setDbCategories] = useState<DbCategory[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    fetch("/api/categories").then(r => r.json()).then(d => { if (Array.isArray(d)) setDbCategories(d); });
+  }, []);
 
   const update = (field: string, value: string) => {
     setForm((prev) => {
@@ -62,148 +72,279 @@ export default function NewPost() {
   };
 
   return (
-    <div className="p-8 max-w-4xl">
-      <div className="flex items-center gap-4 mb-8">
-        <Link href="/admin/posts" className="text-gray-500 hover:text-white transition-colors">← Bài viết</Link>
-        <span className="text-gray-700">/</span>
-        <h1 className="text-2xl font-bold text-white">Viết bài mới</h1>
+    <div className="min-h-screen bg-gray-100">
+
+      {/* ── Top bar ── */}
+      <div className="sticky top-0 z-20 bg-white border-b border-gray-200 shadow-sm">
+        <div className="flex items-center gap-3 px-5 py-3">
+          <Link href="/admin/posts" className="flex items-center gap-1.5 text-gray-500 hover:text-gray-800 text-sm transition-colors">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Bài viết
+          </Link>
+          <span className="text-gray-300">/</span>
+          <h1 className="text-sm font-semibold text-gray-800">Viết bài mới</h1>
+
+          <div className="ml-auto flex items-center gap-2.5">
+            {error && (
+              <span className="text-xs font-medium px-3 py-1 rounded-full bg-red-100 text-red-700">{error}</span>
+            )}
+            <button
+              onClick={() => handleSave("draft")}
+              disabled={saving}
+              className="px-4 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 transition-colors"
+            >
+              {saving ? "Đang lưu..." : "Lưu nháp"}
+            </button>
+            <button
+              onClick={() => handleSave("published")}
+              disabled={saving}
+              className="px-4 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-sm"
+            >
+              {saving ? "Đang đăng..." : "Đăng bài"}
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div className="space-y-6">
-        <div>
-          <label className="block text-gray-400 text-sm mb-2">Tiêu đề *</label>
-          <input value={form.title} onChange={(e) => update("title", e.target.value)}
-            placeholder="Nhập tiêu đề bài viết..."
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50 transition-all text-lg" />
-        </div>
+      {/* ── Body: 2 columns ── */}
+      <div className="max-w-6xl mx-auto px-5 py-6 flex gap-5 items-start">
 
-        <div>
-          <label className="block text-gray-400 text-sm mb-2">Slug (URL)</label>
-          <div className="flex items-center bg-white/5 border border-white/10 rounded-xl overflow-hidden focus-within:border-blue-500/50 transition-all">
-            <span className="px-4 py-3 text-gray-600 text-sm border-r border-white/10">/blog/</span>
-            <input value={form.slug} onChange={(e) => update("slug", e.target.value)}
-              className="flex-1 px-4 py-3 bg-transparent text-white focus:outline-none text-sm" />
-          </div>
-        </div>
+        {/* ── Left: Title + Content ── */}
+        <div className="flex-1 min-w-0 space-y-4">
 
-        <div>
-          <label className="block text-gray-400 text-sm mb-2">Mô tả ngắn</label>
-          <textarea rows={2} value={form.excerpt} onChange={(e) => update("excerpt", e.target.value)}
-            placeholder="Tóm tắt bài viết..."
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50 transition-all resize-none text-sm" />
-        </div>
-
-        {/* Category */}
-        <div>
-          <label className="block text-gray-400 text-sm mb-3">
-            Danh mục <span className="text-gray-600 font-normal">— chọn 1 danh mục phù hợp</span>
-          </label>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-            {CATEGORIES.map((cat) => {
-              const selected = form.category === cat.value;
-              return (
-                <button key={cat.value} type="button" onClick={() => update("category", cat.value)}
-                  className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border text-sm font-medium transition-all text-left
-                    ${selected
-                      ? `${cat.bg} ${cat.border} ${cat.text} ring-1 ring-inset ${cat.border}`
-                      : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:border-white/20"
-                    }`}
-                >
-                  <span className="text-lg flex-shrink-0">{cat.icon}</span>
-                  <span className="leading-tight">{cat.label}</span>
-                  {selected && (
-                    <svg className="w-4 h-4 ml-auto flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-gray-400 text-sm mb-2">Ảnh bìa</label>
-
-          <div className="flex gap-2 mb-3">
-            {(["url", "upload"] as const).map((tab) => (
-              <button key={tab} onClick={() => setImgTab(tab)}
-                className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                  imgTab === tab ? "bg-blue-600 text-white" : "bg-white/5 text-gray-400 hover:bg-white/10"
-                }`}>
-                {tab === "url" ? "🔗 Nhập URL" : "📁 Tải từ máy"}
-              </button>
-            ))}
-          </div>
-
-          {imgTab === "url" ? (
-            <input
-              type="url"
-              value={(form.cover_image || "").startsWith("data:") ? "" : form.cover_image}
-              onChange={(e) => update("cover_image", e.target.value)}
-              placeholder="https://example.com/image.jpg"
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50 transition-all text-sm"
-            />
-          ) : (
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-white/20 rounded-xl p-6 text-center cursor-pointer hover:border-blue-500/50 hover:bg-blue-500/5 transition-all"
-            >
-              <div className="text-3xl mb-2">🖼️</div>
-              <p className="text-gray-400 text-sm">Nhấp để chọn ảnh từ máy tính</p>
-              <p className="text-gray-600 text-xs mt-1">JPG, PNG, WebP — khuyến nghị 1200×630px</p>
+          {/* Title card */}
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="px-5 py-4 border-b border-gray-100">
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Tiêu đề bài viết *</label>
             </div>
-          )}
-
-          <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (!file) return;
-              const reader = new FileReader();
-              reader.onload = (ev) => update("cover_image", ev.target?.result as string);
-              reader.readAsDataURL(file);
-            }}
-          />
-
-          {form.cover_image && (
-            <div className="mt-3 relative rounded-xl overflow-hidden border border-white/10 group">
-              <img src={form.cover_image} alt="Preview"
-                className="w-full h-48 object-cover"
-                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+            <div className="px-5 py-4">
+              <input
+                type="text"
+                value={form.title}
+                onChange={(e) => update("title", e.target.value)}
+                placeholder="Nhập tiêu đề bài viết..."
+                className="w-full text-xl font-semibold text-gray-900 placeholder-gray-300 border-0 focus:outline-none focus:ring-0 bg-transparent"
+                autoFocus
               />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <button
-                  onClick={() => { update("cover_image", ""); if (fileInputRef.current) fileInputRef.current.value = ""; }}
-                  className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg transition-colors"
-                >
-                  🗑️ Xoá ảnh
-                </button>
+            </div>
+          </div>
+
+          {/* Content editor card */}
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Nội dung</label>
+              <span className="text-xs text-gray-400">Markdown được hỗ trợ</span>
+            </div>
+            <div className="p-4">
+              <RichEditor value={form.content} onChange={(v) => update("content", v)} />
+            </div>
+          </div>
+
+        </div>
+
+        {/* ── Right: Sidebar ── */}
+        <div className="w-72 flex-shrink-0 space-y-4 sticky top-[57px]">
+
+          {/* Slug */}
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+            <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+              <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">🔗 Đường dẫn (URL)</h3>
+            </div>
+            <div className="p-4">
+              <div className="flex items-center border border-gray-300 rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all">
+                <span className="px-2.5 py-2 text-gray-400 text-xs bg-gray-50 border-r border-gray-300 select-none whitespace-nowrap">/blog/</span>
+                <input
+                  type="text"
+                  value={form.slug}
+                  onChange={(e) => update("slug", e.target.value)}
+                  className="flex-1 px-2.5 py-2 text-sm text-gray-900 focus:outline-none bg-white min-w-0"
+                />
               </div>
-              {(form.cover_image || "").startsWith("data:") && (
-                <div className="absolute bottom-2 left-2">
-                  <span className="px-2 py-1 bg-green-600/80 text-white text-xs rounded-md">✓ Ảnh từ máy tính</span>
+              <p className="mt-1.5 text-xs text-gray-400">Tự tạo từ tiêu đề, có thể chỉnh tay</p>
+            </div>
+          </div>
+
+          {/* Focus Keyword */}
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+            <div className="px-4 py-3 bg-amber-50 border-b border-amber-200">
+              <h3 className="text-xs font-semibold text-amber-800 uppercase tracking-wide">🎯 Từ khóa chính SEO</h3>
+            </div>
+            <div className="p-4">
+              <input
+                type="text"
+                value={form.focus_keyword || ""}
+                onChange={(e) => update("focus_keyword", e.target.value)}
+                placeholder="VD: dịch vụ SEO Long Thành"
+                className="w-full px-3 py-2 text-sm text-gray-900 placeholder-gray-400 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all"
+              />
+              <p className="mt-1.5 text-xs text-gray-400">Từ khóa Google muốn bài này rank lên top</p>
+              {form.focus_keyword && form.title && !form.title.toLowerCase().includes(form.focus_keyword.toLowerCase()) && (
+                <p className="mt-2 text-xs text-amber-600 bg-amber-50 px-2.5 py-1.5 rounded-md border border-amber-200">
+                  ⚠️ Tiêu đề chưa chứa từ khóa chính
+                </p>
+              )}
+              {form.focus_keyword && form.title && form.title.toLowerCase().includes(form.focus_keyword.toLowerCase()) && (
+                <p className="mt-2 text-xs text-green-600 bg-green-50 px-2.5 py-1.5 rounded-md border border-green-200">
+                  ✅ Tiêu đề có chứa từ khóa chính
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Excerpt */}
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+            <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+              <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">📝 Mô tả ngắn</h3>
+            </div>
+            <div className="p-4">
+              <textarea
+                rows={4}
+                value={form.excerpt}
+                onChange={(e) => update("excerpt", e.target.value)}
+                placeholder="Tóm tắt bài viết (dùng cho SEO meta description, 150–160 ký tự)..."
+                className="w-full text-sm text-gray-900 placeholder-gray-400 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-all"
+              />
+              <div className="flex justify-between mt-1.5">
+                <span className="text-xs text-gray-400">Meta description</span>
+                <span className={`text-xs font-medium ${form.excerpt.length > 160 ? "text-red-500" : form.excerpt.length > 130 ? "text-green-600" : "text-gray-400"}`}>
+                  {form.excerpt.length}/160
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Category */}
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+            <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+              <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">🏷️ Danh mục</h3>
+            </div>
+            <div className="p-3 space-y-1">
+              {dbCategories.length === 0 && (
+                <p className="text-xs text-gray-400 py-2 px-1">
+                  Chưa có danh mục —{" "}
+                  <a href="/admin/categories" className="text-blue-600 hover:underline">Thêm danh mục</a>
+                </p>
+              )}
+              {dbCategories.map((cat) => {
+                const selected = form.category === cat.value;
+                const c = CAT_LIGHT[cat.color_key] || CAT_LIGHT.blue;
+                return (
+                  <label key={cat.value}
+                    className={`flex items-center gap-2.5 px-3 py-2 rounded-md cursor-pointer transition-all ${
+                      selected ? `${c.bg} border ${c.border}` : "hover:bg-gray-50 border border-transparent"
+                    }`}>
+                    <input
+                      type="radio" name="category" value={cat.value}
+                      checked={selected}
+                      onChange={() => update("category", cat.value)}
+                      className="text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-base leading-none">{cat.icon}</span>
+                    <span className={`text-sm font-medium ${selected ? c.text : "text-gray-700"}`}>{cat.label}</span>
+                    {selected && (
+                      <svg className={`w-4 h-4 ml-auto flex-shrink-0 ${c.text}`} fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Cover Image */}
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+            <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+              <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">🖼️ Ảnh bìa</h3>
+            </div>
+            <div className="p-4 space-y-3">
+              {/* Tabs */}
+              <div className="flex rounded-md border border-gray-200 overflow-hidden">
+                {(["url", "upload"] as const).map((tab) => (
+                  <button key={tab} onClick={() => setImgTab(tab)}
+                    className={`flex-1 py-1.5 text-xs font-medium transition-colors ${
+                      imgTab === tab
+                        ? "bg-blue-600 text-white"
+                        : "bg-white text-gray-500 hover:bg-gray-50"
+                    }`}>
+                    {tab === "url" ? "🔗 Nhập URL" : "📁 Từ máy"}
+                  </button>
+                ))}
+              </div>
+
+              {imgTab === "url" ? (
+                <input
+                  type="url"
+                  value={(form.cover_image || "").startsWith("data:") ? "" : form.cover_image}
+                  onChange={(e) => update("cover_image", e.target.value)}
+                  placeholder="https://example.com/image.jpg"
+                  className="w-full px-3 py-2 text-sm text-gray-900 placeholder-gray-400 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                />
+              ) : (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-2 border-dashed border-gray-300 rounded-lg p-5 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all group"
+                >
+                  <div className="text-2xl mb-1.5">🖼️</div>
+                  <p className="text-gray-600 text-xs font-medium group-hover:text-blue-700">Nhấp để chọn ảnh</p>
+                  <p className="text-gray-400 text-xs mt-0.5">JPG, PNG, WebP · 1200×630px</p>
+                </div>
+              )}
+
+              <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const reader = new FileReader();
+                  reader.onload = (ev) => update("cover_image", ev.target?.result as string);
+                  reader.readAsDataURL(file);
+                }}
+              />
+
+              {form.cover_image && (
+                <div className="relative rounded-lg overflow-hidden border border-gray-200 group">
+                  <img src={form.cover_image} alt="Preview"
+                    className="w-full h-36 object-cover"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <button
+                      onClick={() => { update("cover_image", ""); if (fileInputRef.current) fileInputRef.current.value = ""; }}
+                      className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-md transition-colors shadow"
+                    >
+                      🗑️ Xoá ảnh
+                    </button>
+                  </div>
+                  {(form.cover_image || "").startsWith("data:") && (
+                    <div className="absolute bottom-2 left-2">
+                      <span className="px-2 py-0.5 bg-green-600/80 text-white text-xs rounded">✓ Ảnh từ máy</span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
-          )}
-        </div>
+          </div>
 
-        <div>
-          <label className="block text-gray-400 text-sm mb-2">Nội dung</label>
-          <RichEditor value={form.content} onChange={(v) => update("content", v)} />
-        </div>
+          {/* Bottom action buttons */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleSave("draft")}
+              disabled={saving}
+              className="flex-1 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
+            >
+              💾 Lưu nháp
+            </button>
+            <button
+              onClick={() => handleSave("published")}
+              disabled={saving}
+              className="flex-1 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-sm"
+            >
+              🚀 Đăng bài
+            </button>
+          </div>
 
-        {error && <div className="px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">{error}</div>}
-
-        <div className="flex items-center gap-4 pt-4 border-t border-white/10">
-          <button onClick={() => handleSave("draft")} disabled={saving}
-            className="px-6 py-3 border border-white/20 text-gray-300 font-medium rounded-xl hover:bg-white/5 transition-all disabled:opacity-50">
-            {saving ? "Đang lưu..." : "💾 Lưu nháp"}
-          </button>
-          <button onClick={() => handleSave("published")} disabled={saving}
-            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-violet-600 text-white font-semibold rounded-xl hover:opacity-90 transition-all disabled:opacity-50">
-            {saving ? "Đang đăng..." : "🚀 Đăng bài"}
-          </button>
         </div>
       </div>
     </div>

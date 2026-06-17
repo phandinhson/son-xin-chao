@@ -24,6 +24,8 @@ export type Post = {
   excerpt: string;
   cover_image: string;
   status: "draft" | "published";
+  category: string;
+  focus_keyword: string;
   created_at: string;
   updated_at: string;
 };

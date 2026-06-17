@@ -36,20 +36,22 @@ function ImageModal({ onInsert, onClose }: {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[999] p-4">
-      <div className="bg-gray-900 border border-white/15 rounded-2xl w-full max-w-lg shadow-2xl">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[999] p-4">
+      <div className="bg-white border border-gray-200 rounded-xl w-full max-w-lg shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
-          <h3 className="text-white font-semibold">🖼️ Chèn ảnh vào bài viết</h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-white text-xl transition-colors">✕</button>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+          <h3 className="text-gray-900 font-semibold">🖼️ Chèn ảnh vào bài viết</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-700 text-xl transition-colors leading-none">✕</button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-white/10">
+        <div className="flex border-b border-gray-200">
           {(["upload", "url"] as const).map((t) => (
             <button key={t} onClick={() => setTab(t)}
               className={`flex-1 py-2.5 text-sm font-medium transition-all ${
-                tab === t ? "text-blue-400 border-b-2 border-blue-500 bg-blue-500/5" : "text-gray-500 hover:text-gray-300"
+                tab === t
+                  ? "text-blue-600 border-b-2 border-blue-600 bg-blue-50"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
               }`}>
               {t === "upload" ? "📁 Tải từ máy tính" : "🔗 Nhập URL"}
             </button>
@@ -61,11 +63,11 @@ function ImageModal({ onInsert, onClose }: {
           {tab === "upload" && (
             <div
               onClick={() => fileRef.current?.click()}
-              className="border-2 border-dashed border-white/20 rounded-xl p-8 text-center cursor-pointer hover:border-blue-500/50 hover:bg-blue-500/5 transition-all"
+              className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all group"
             >
               <div className="text-4xl mb-3">🖼️</div>
-              <p className="text-gray-300 text-sm font-medium">Nhấp để chọn ảnh từ máy tính</p>
-              <p className="text-gray-600 text-xs mt-1">JPG, PNG, WebP, GIF</p>
+              <p className="text-gray-600 text-sm font-medium group-hover:text-blue-700">Nhấp để chọn ảnh từ máy tính</p>
+              <p className="text-gray-400 text-xs mt-1">JPG, PNG, WebP, GIF</p>
               <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
             </div>
           )}
@@ -73,35 +75,35 @@ function ImageModal({ onInsert, onClose }: {
           {/* URL */}
           {tab === "url" && (
             <div>
-              <label className="text-gray-400 text-sm mb-1.5 block">URL ảnh</label>
+              <label className="text-gray-600 text-sm mb-1.5 block font-medium">URL ảnh</label>
               <input
                 type="url"
                 value={tab === "url" ? url : ""}
                 onChange={(e) => handleUrlChange(e.target.value)}
                 placeholder="https://example.com/image.jpg"
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50 text-sm transition-all"
+                className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all"
               />
             </div>
           )}
 
           {/* Alt text */}
           <div>
-            <label className="text-gray-400 text-sm mb-1.5 block">
-              Alt text <span className="text-gray-600">(mô tả ảnh — quan trọng cho SEO)</span>
+            <label className="text-gray-600 text-sm mb-1.5 block font-medium">
+              Alt text <span className="text-gray-400 font-normal">(mô tả ảnh — quan trọng cho SEO)</span>
             </label>
             <input
               type="text"
               value={alt}
               onChange={(e) => setAlt(e.target.value)}
               placeholder="Mô tả nội dung ảnh..."
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50 text-sm transition-all"
+              className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all"
             />
           </div>
 
           {/* Preview */}
           {preview && (
-            <div className="rounded-xl overflow-hidden border border-white/10 bg-black/20">
-              <p className="text-xs text-gray-600 px-3 py-1.5 border-b border-white/5">Xem trước</p>
+            <div className="rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
+              <p className="text-xs text-gray-500 px-3 py-1.5 border-b border-gray-200 font-medium">Xem trước</p>
               <img
                 src={preview} alt={alt || "preview"}
                 className="w-full max-h-48 object-contain"
@@ -113,11 +115,11 @@ function ImageModal({ onInsert, onClose }: {
           {/* Buttons */}
           <div className="flex gap-3 pt-2">
             <button onClick={onClose}
-              className="flex-1 py-2.5 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:bg-white/5 text-sm font-medium transition-all">
+              className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 text-sm font-medium transition-all">
               Huỷ
             </button>
             <button onClick={handleInsert} disabled={!url}
-              className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white text-sm font-semibold transition-all">
+              className="flex-1 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white text-sm font-semibold transition-all">
               ✓ Chèn ảnh
             </button>
           </div>
@@ -135,11 +137,11 @@ type Props = {
 const TOOLS = [
   { label: "b",         tag: "strong",     title: "In đậm (Ctrl+B)" },
   { label: "i",         tag: "em",         title: "In nghiêng (Ctrl+I)" },
-  { label: "link",      tag: "a",          title: "Chèn liên kết" },
+  { label: "link",      tag: "a",          title: "Chèn liên kết (Ctrl+K)" },
   { label: "b-quote",   tag: "blockquote", title: "Trích dẫn" },
   { label: "del",       tag: "del",        title: "Gạch ngang" },
   { label: "ins",       tag: "ins",        title: "Gạch chân" },
-  { label: "img",       tag: "img",        title: "Chèn ảnh qua URL" },
+  { label: "img",       tag: "img",        title: "Chèn ảnh" },
   { label: "ul",        tag: "ul",         title: "Danh sách không số" },
   { label: "ol",        tag: "ol",         title: "Danh sách có số" },
   { label: "li",        tag: "li",         title: "Mục danh sách" },
@@ -154,12 +156,10 @@ export default function RichEditor({ value, onChange }: Props) {
   const [mode, setMode] = useState<"visual" | "code">("visual");
   const [fullscreen, setFullscreen] = useState(false);
   const [showImgModal, setShowImgModal] = useState(false);
-  const editorRef  = useRef<HTMLDivElement>(null);
+  const editorRef   = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const prevMode    = useRef<"visual" | "code">("visual");
-  // Lưu vị trí con trỏ trước khi mở modal
   const savedRange  = useRef<Range | null>(null);
-  // Đảm bảo chỉ load dữ liệu ban đầu 1 lần
   const hasInitialized = useRef(false);
 
   // Sync value → editor khi chuyển sang Visual
@@ -170,7 +170,7 @@ export default function RichEditor({ value, onChange }: Props) {
     prevMode.current = mode;
   }, [mode]);
 
-  // Load giá trị ban đầu khi dữ liệu async được tải về từ API
+  // Load giá trị ban đầu khi data async tải về
   useEffect(() => {
     if (editorRef.current && !hasInitialized.current) {
       if (value) {
@@ -243,7 +243,6 @@ export default function RichEditor({ value, onChange }: Props) {
         }
       }
     } else {
-      // Visual mode
       switch (tag) {
         case "strong": return exec("bold");
         case "em":     return exec("italic");
@@ -267,15 +266,13 @@ export default function RichEditor({ value, onChange }: Props) {
           return;
         }
         case "li": return insertHTML("<li>Mục danh sách</li>");
-        case "more": return insertHTML('<hr class="wp-block-separator" /><span style="color:#666;font-size:11px"><!--more--></span>');
+        case "more": return insertHTML('<hr style="border:none;border-top:1px dashed #ccc;margin:16px 0;" /><span style="color:#999;font-size:11px">––– đọc thêm –––</span>');
         case "a": {
-          const sel  = window.getSelection()?.toString();
           const url  = prompt("Nhập URL liên kết:");
           if (url) exec("createLink", url);
           return;
         }
         case "img": {
-          // Lưu vị trí con trỏ rồi mở modal
           const sel = window.getSelection();
           if (sel && sel.rangeCount > 0) savedRange.current = sel.getRangeAt(0).cloneRange();
           setShowImgModal(true);
@@ -288,9 +285,8 @@ export default function RichEditor({ value, onChange }: Props) {
 
   // ── Insert image từ modal ─────────────────────────────────────────────────
   const handleInsertImage = (src: string, alt: string) => {
-    const imgHtml = `<img src="${src}" alt="${alt}" style="max-width:100%;height:auto;border-radius:8px;margin:12px 0;display:block;" />`;
+    const imgHtml = `<img src="${src}" alt="${alt}" style="max-width:100%;height:auto;border-radius:8px;margin:16px 0;display:block;border:1px solid #e5e7eb;" />`;
     if (mode === "code") {
-      // Chèn vào vị trí con trỏ textarea
       const ta = textareaRef.current;
       if (ta) {
         const s = ta.selectionStart;
@@ -299,7 +295,6 @@ export default function RichEditor({ value, onChange }: Props) {
         setTimeout(() => { ta.focus(); ta.selectionStart = ta.selectionEnd = s + imgHtml.length; }, 0);
       }
     } else {
-      // Khôi phục vị trí con trỏ trong visual editor rồi insert
       editorRef.current?.focus();
       const sel = window.getSelection();
       if (sel && savedRange.current) {
@@ -318,7 +313,7 @@ export default function RichEditor({ value, onChange }: Props) {
   };
   const goVisual = () => setMode("visual");
 
-  // ── Keyboard shortcuts (Visual) ───────────────────────────────────────────
+  // ── Keyboard shortcuts ────────────────────────────────────────────────────
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.ctrlKey || e.metaKey) {
       if (e.key === "b") { e.preventDefault(); exec("bold"); }
@@ -327,54 +322,59 @@ export default function RichEditor({ value, onChange }: Props) {
     }
   };
 
-  const minH = fullscreen ? "calc(100vh - 100px)" : "480px";
+  const minH = fullscreen ? "calc(100vh - 108px)" : "500px";
 
   return (
     <>
-    <div className={`border border-white/10 rounded-xl overflow-hidden bg-gray-950 ${
-      fullscreen ? "fixed inset-0 z-50 rounded-none flex flex-col" : ""
+    <div className={`border border-gray-300 rounded-lg overflow-hidden bg-white shadow-sm ${
+      fullscreen ? "fixed inset-0 z-50 rounded-none flex flex-col shadow-2xl" : ""
     }`}>
 
       {/* ── Header: tabs + fullscreen ── */}
-      <div className="flex items-center justify-between bg-gray-900 border-b border-white/10 px-3 py-2 flex-shrink-0">
-        <div className="flex">
+      <div className="flex items-center justify-between bg-gray-50 border-b border-gray-200 px-3 py-2 flex-shrink-0">
+        <div className="flex rounded-md overflow-hidden border border-gray-200">
           <button onClick={goVisual}
-            className={`px-4 py-1.5 text-xs font-semibold rounded-l-lg border transition-all ${
+            className={`px-4 py-1.5 text-xs font-semibold transition-all ${
               mode === "visual"
-                ? "bg-blue-600 text-white border-blue-500"
-                : "bg-white/5 text-gray-400 border-white/10 hover:bg-white/10"
+                ? "bg-blue-600 text-white"
+                : "bg-white text-gray-600 hover:bg-gray-100"
             }`}>
             Trực quan
           </button>
           <button onClick={goCode}
-            className={`px-4 py-1.5 text-xs font-semibold rounded-r-lg border-t border-b border-r transition-all ${
+            className={`px-4 py-1.5 text-xs font-semibold border-l border-gray-200 transition-all ${
               mode === "code"
-                ? "bg-blue-600 text-white border-blue-500"
-                : "bg-white/5 text-gray-400 border-white/10 hover:bg-white/10"
+                ? "bg-blue-600 text-white"
+                : "bg-white text-gray-600 hover:bg-gray-100"
             }`}>
             Mã HTML
           </button>
         </div>
         <button onClick={() => setFullscreen(!fullscreen)}
           title={fullscreen ? "Thu nhỏ" : "Toàn màn hình"}
-          className="text-gray-500 hover:text-white text-base transition-colors px-2 py-1 rounded hover:bg-white/5">
-          {fullscreen ? "✕ Thu nhỏ" : "⛶ Toàn màn hình"}
+          className="flex items-center gap-1.5 text-gray-500 hover:text-gray-800 text-xs font-medium px-3 py-1.5 rounded-md hover:bg-gray-100 border border-gray-200 transition-colors">
+          {fullscreen
+            ? <><span>✕</span><span>Thu nhỏ</span></>
+            : <><span>⛶</span><span>Toàn màn hình</span></>
+          }
         </button>
       </div>
 
       {/* ── Toolbar ── */}
-      <div className="flex flex-wrap gap-1 px-3 py-2 bg-[#1a1a2e] border-b border-white/10 flex-shrink-0">
+      <div className="flex flex-wrap items-center gap-1 px-3 py-2 bg-gray-50 border-b border-gray-200 flex-shrink-0">
         {TOOLS.map((t) => (
           <button key={t.tag} onClick={() => handleTool(t.tag)} title={t.title}
             className={`px-2.5 py-1 text-xs rounded border transition-all font-mono ${
-              ["strong","em"].includes(t.tag)
-                ? "bg-white/10 border-white/15 text-white hover:bg-white/20 font-bold"
-                : "bg-white/5 border-white/10 text-gray-300 hover:bg-white/12 hover:text-white hover:border-white/20"
+              t.tag === "strong"
+                ? "bg-white border-gray-300 text-gray-900 hover:bg-gray-100 font-bold"
+                : t.tag === "em"
+                ? "bg-white border-gray-300 text-gray-700 hover:bg-gray-100 italic"
+                : "bg-white border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-900"
             }`}>
             {t.label}
           </button>
         ))}
-        <div className="ml-auto flex items-center gap-2 text-xs text-gray-600">
+        <div className="ml-auto flex items-center gap-3 text-xs text-gray-400">
           <span>Ctrl+B: đậm</span>
           <span>Ctrl+I: nghiêng</span>
           <span>Ctrl+K: link</span>
@@ -383,27 +383,27 @@ export default function RichEditor({ value, onChange }: Props) {
 
       {/* ── Editor area ── */}
       <div className={`flex-1 ${fullscreen ? "overflow-auto" : ""}`}>
-        {/* Visual */}
+        {/* Visual mode */}
         <div
           ref={editorRef}
           contentEditable={mode === "visual"}
           suppressContentEditableWarning
           onInput={() => onChange(editorRef.current?.innerHTML || "")}
           onKeyDown={handleKeyDown}
-          className={`prose-custom w-full p-5 focus:outline-none text-sm leading-relaxed text-gray-200 ${
+          className={`prose-editor w-full p-5 focus:outline-none text-sm leading-relaxed text-gray-900 bg-white ${
             mode === "visual" ? "block" : "hidden"
           }`}
           style={{ minHeight: minH }}
         />
 
-        {/* Code */}
+        {/* Code mode — giữ dark vì code editor đẹp hơn khi tối */}
         {mode === "code" && (
           <textarea
             ref={textareaRef}
             value={value}
             onChange={(e) => onChange(e.target.value)}
             spellCheck={false}
-            className="w-full p-5 bg-black/30 text-green-300 font-mono text-xs leading-relaxed focus:outline-none resize-none"
+            className="w-full p-5 bg-gray-900 text-green-400 font-mono text-xs leading-relaxed focus:outline-none resize-none"
             style={{ minHeight: minH }}
             onKeyDown={(e) => {
               if (e.key === "Tab") {
@@ -420,9 +420,9 @@ export default function RichEditor({ value, onChange }: Props) {
       </div>
 
       {/* ── Status bar ── */}
-      <div className="flex items-center justify-between px-4 py-1.5 bg-gray-900 border-t border-white/5 text-xs text-gray-600 flex-shrink-0">
+      <div className="flex items-center justify-between px-4 py-1.5 bg-gray-50 border-t border-gray-200 text-xs text-gray-400 flex-shrink-0">
         <span>{mode === "visual" ? "✏️ Chế độ trực quan" : "💻 Chế độ HTML"}</span>
-        <span>{value.replace(/<[^>]+>/g, "").length} ký tự</span>
+        <span>{value.replace(/<[^>]+>/g, "").length.toLocaleString()} ký tự</span>
       </div>
     </div>
 
