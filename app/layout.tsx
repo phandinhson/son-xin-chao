@@ -24,13 +24,15 @@ async function getSiteSettings(): Promise<Record<string, string>> {
 export async function generateMetadata(): Promise<Metadata> {
   const s = await getSiteSettings();
 
-  const title = s.meta_title || "Sơn Xin Chào | SEO · Ads · Website";
+  const title =
+    s.meta_title ||
+    "Sơn Xin Chào | Dịch Vụ SEO, Google Ads & Thiết Kế Website tại Long Thành, Đồng Nai";
   const description =
     s.meta_description ||
-    "Dịch vụ SEO, quảng cáo Google/Facebook Ads và thiết kế Website WordPress chuyên nghiệp tại Long Thành, Đồng Nai. Tăng traffic, tăng lead, tăng doanh thu.";
+    "Phan Đình Sơn – chuyên gia SEO, Google Ads, Facebook Ads và thiết kế website WordPress/React tại Long Thành, Nhơn Trạch, Đồng Nai. Tăng traffic thực, tăng lead chất lượng, tăng doanh thu bền vững. Tư vấn miễn phí!";
   const keywords =
     s.meta_keywords ||
-    "SEO, Google Ads, Facebook Ads, thiết kế website, WordPress, Long Thành, Đồng Nai";
+    "SEO Long Thành, SEO Đồng Nai, Google Ads Long Thành, quảng cáo Google Đồng Nai, thiết kế website Long Thành, làm website Đồng Nai, SEO website Nhơn Trạch, dịch vụ SEO tổng thể, Facebook Ads Đồng Nai, WordPress Long Thành, Phan Đình Sơn";
 
   // Nếu admin đã upload logo → dùng làm favicon; fallback về icon.tsx tự động
   const iconsMeta = s.logo_url
