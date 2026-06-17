@@ -1,0 +1,14 @@
+export const dynamic = "force-dynamic";
+import { NextResponse } from "next/server";
+import { supabaseAdmin } from "@/lib/supabase";
+
+export async function GET() {
+  const db = supabaseAdmin();
+  const { data, error } = await db
+    .from("portfolio")
+    .select("*")
+    .eq("active", true)
+    .order("sort_order");
+  if (error) return NextResponse.json([], { status: 500 });
+  return NextResponse.json(data || []);
+}

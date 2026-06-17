@@ -1,0 +1,298 @@
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   Theme CSS Variables — Dark defaults
+   Overridden by layout.tsx server-side injection
+   ============================================ */
+:root {
+  --th-bg:           #ffffff;
+  --th-bg-alt:       #f8fafc;
+  --th-bg-nav:       rgba(255, 255, 255, 0.95);
+  --th-text:         #0f172a;
+  --th-text-2:       #1e293b;
+  --th-text-3:       #475569;
+  --th-text-4:       #94a3b8;
+  --th-card:         rgba(255, 255, 255, 0.85);
+  --th-card-hover:   rgba(255, 255, 255, 1.0);
+  --th-border:       rgba(0, 0, 0, 0.08);
+  --th-border-sm:    rgba(0, 0, 0, 0.04);
+  --th-border-lg:    rgba(0, 0, 0, 0.15);
+  --th-accent:       #3b82f6;
+  --th-accent-2:     #8b5cf6;
+  --th-font:         'Be Vietnam Pro', 'Inter', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: var(--th-text);
+  background-color: var(--th-bg);
+  font-family: var(--th-font);
+}
+
+/* ============================================
+   Theme-driven Tailwind class overrides
+   These respond to CSS variable changes
+   ============================================ */
+
+/* Backgrounds */
+.bg-gray-950          { background-color: var(--th-bg)      !important; }
+.bg-gray-900          { background-color: var(--th-bg-alt)  !important; }
+
+/* Text */
+.text-white           { color: var(--th-text)   !important; }
+.text-gray-100        { color: var(--th-text)   !important; }
+.text-gray-200        { color: var(--th-text-2) !important; }
+.text-gray-300        { color: var(--th-text-2) !important; }
+.text-gray-400        { color: var(--th-text-3) !important; }
+.text-gray-500        { color: var(--th-text-3) !important; }
+.text-gray-600        { color: var(--th-text-4) !important; }
+
+/* Admin area — force dark theme regardless of root vars */
+[data-admin] {
+  --th-bg:           #030712;
+  --th-bg-alt:       #111827;
+  --th-bg-nav:       rgba(3, 7, 18, 0.92);
+  --th-text:         #ffffff;
+  --th-text-2:       #d1d5db;
+  --th-text-3:       #9ca3af;
+  --th-text-4:       #6b7280;
+  --th-card:         rgba(255, 255, 255, 0.05);
+  --th-card-hover:   rgba(255, 255, 255, 0.10);
+  --th-border:       rgba(255, 255, 255, 0.10);
+  --th-border-sm:    rgba(255, 255, 255, 0.05);
+  --th-border-lg:    rgba(255, 255, 255, 0.20);
+  background-color: #0f0f1a;
+  color: #ffffff;
+  font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #3b82f6;
+  border-radius: 3px;
+}
+
+/* Gradient text utility */
+.gradient-text {
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glow effect */
+.glow-blue {
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+}
+
+.glow-purple {
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+}
+
+/* Card hover */
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(59, 130, 246, 0.2);
+}
+
+/* Animated border */
+.border-gradient {
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+.border-gradient::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+  z-index: -1;
+}
+
+/* Section fade animations */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.animate-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Noise texture overlay */
+.noise-overlay {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+/* ============================================
+   Blog Article Content Styles (prose-custom)
+   ============================================ */
+.prose-custom {
+  color: #334155;
+  font-size: 1.0625rem;
+  line-height: 1.85;
+}
+
+.prose-custom h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.prose-custom h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose-custom p {
+  margin-bottom: 1.25rem;
+  color: #334155;
+}
+
+.prose-custom ul,
+.prose-custom ol {
+  margin: 1rem 0 1.5rem 1.25rem;
+  space-y: 0.5rem;
+}
+
+.prose-custom ul {
+  list-style: none;
+  padding: 0;
+  margin-left: 0;
+}
+
+.prose-custom ul li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.6rem;
+  color: #334155;
+}
+
+.prose-custom ul li::before {
+  content: "▹";
+  position: absolute;
+  left: 0;
+  color: #3b82f6;
+  font-weight: bold;
+}
+
+.prose-custom ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+}
+
+.prose-custom ol li {
+  margin-bottom: 0.6rem;
+  color: #334155;
+  padding-left: 0.25rem;
+}
+
+.prose-custom li strong,
+.prose-custom p strong {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.prose-custom a {
+  color: #3b82f6;
+  text-decoration: underline;
+  text-decoration-color: rgba(59, 130, 246, 0.3);
+  transition: color 0.2s, text-decoration-color 0.2s;
+}
+.prose-custom a:hover {
+  color: #2563eb;
+  text-decoration-color: rgba(37, 99, 235, 0.6);
+}
+
+.prose-custom blockquote {
+  border-left: 3px solid #6366f1;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  background: rgba(99, 102, 241, 0.05);
+  border-radius: 0 0.75rem 0.75rem 0;
+  color: #4f46e5;
+  font-style: italic;
+}
+
+.prose-custom code {
+  background: rgba(0,0,0,0.06);
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.35rem;
+  font-size: 0.875em;
+  color: #db2777;
+  font-family: 'Fira Code', monospace;
+}
+
+.prose-custom pre {
+  background: #1e293b;
+  border: 1px solid rgba(0,0,0,0.10);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.prose-custom pre code {
+  background: none;
+  padding: 0;
+  color: #e2e8f0;
+  font-size: 0.9rem;
+}
+
+.prose-custom hr {
+  border: none;
+  border-top: 1px solid rgba(0,0,0,0.08);
+  margin: 2rem 0;
+}
+
+.prose-custom table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.9rem;
+}
+.prose-custom th {
+  background: rgba(59,130,246,0.08);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  color: #2563eb;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(59,130,246,0.2);
+}
+.prose-custom td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  color: #334155;
+}
+.prose-custom tr:hover td {
+  background: rgba(0,0,0,0.02);
+}
