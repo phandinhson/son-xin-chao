@@ -1,11 +1,17 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
   "/page": "app/page.js",
   "/api/settings/route": "app/api/settings/route.js",
-  "/api/track/route": "app/api/track/route.js",
-  "/icon/[[...__metadata_id__]]/route": "app/icon/[[...__metadata_id__]]/route.js",
-  "/api/posts/[slug]/route": "app/api/posts/[slug]/route.js",
+  "/api/admin/posts/route": "app/api/admin/posts/route.js",
   "/blog/page": "app/blog/page.js",
-  "/blog/[slug]/page": "app/blog/[slug]/page.js",
-  "/admin/settings/page": "app/admin/settings/page.js"
+  "/api/categories/route": "app/api/categories/route.js",
+  "/api/posts/route": "app/api/posts/route.js",
+  "/api/admin/posts/[id]/route": "app/api/admin/posts/[id]/route.js",
+  "/icon/[[...__metadata_id__]]/route": "app/icon/[[...__metadata_id__]]/route.js",
+  "/api/portfolio/route": "app/api/portfolio/route.js",
+  "/api/track/route": "app/api/track/route.js",
+  "/api/addons/route": "app/api/addons/route.js",
+  "/api/pricing/route": "app/api/pricing/route.js",
+  "/admin/dashboard/page": "app/admin/dashboard/page.js",
+  "/admin/posts/page": "app/admin/posts/page.js",
+  "/admin/posts/[id]/page": "app/admin/posts/[id]/page.js"
 }
