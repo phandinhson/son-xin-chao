@@ -1,12 +1,6 @@
 {
-  "/api/settings/route": "app/api/settings/route.js",
-  "/api/portfolio/route": "app/api/portfolio/route.js",
-  "/api/addons/route": "app/api/addons/route.js",
-  "/api/track/route": "app/api/track/route.js",
   "/icon/[[...__metadata_id__]]/route": "app/icon/[[...__metadata_id__]]/route.js",
-  "/api/pricing/route": "app/api/pricing/route.js",
   "/page": "app/page.js",
-  "/api/posts/route": "app/api/posts/route.js",
-  "/api/categories/route": "app/api/categories/route.js",
-  "/blog/page": "app/blog/page.js"
+  "/blog/page": "app/blog/page.js",
+  "/admin/settings/page": "app/admin/settings/page.js"
 }

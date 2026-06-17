@@ -6,7 +6,7 @@ import SeoInjector from "@/components/SeoInjector";
 import ThemeInjector from "@/components/ThemeInjector";
 import PageTracker from "@/components/PageTracker";
 import { supabaseAdmin } from "@/lib/supabase";
-
+import { Analytics } from "@vercel/analytics/react";
 // Fetch settings từ Supabase server-side
 async function getSiteSettings(): Promise<Record<string, string>> {
   try {
@@ -149,6 +149,7 @@ export default async function RootLayout({
         <ThemeInjector />
         <PageTracker />
         {children}
+        <Analytics />
       </body>
     </html>
   );
