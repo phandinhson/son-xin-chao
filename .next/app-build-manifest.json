@@ -110,6 +110,16 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/admin/addons/page.js"
+    ],
+    "/dich-vu/seo-local/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dich-vu/seo-local/page.js"
+    ],
+    "/dich-vu/audit-tu-van/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dich-vu/audit-tu-van/page.js"
     ]
   }
 }
