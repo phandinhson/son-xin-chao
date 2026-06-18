@@ -170,7 +170,7 @@ export default function ServicesPage() {
           <p className="text-blue-100 text-base lg:text-lg max-w-2xl mx-auto mb-8">
             Tôi cung cấp dịch vụ SEO, Quảng cáo & Website chuyên nghiệp — kết quả đo lường được, cam kết rõ ràng.
           </p>
-          <a href="#contact"
+          <a href="/contact"
             className="inline-flex items-center gap-2 px-7 py-3.5 bg-white text-blue-600 font-bold rounded-full hover:shadow-lg hover:scale-105 transition-all text-sm shadow-md">
             Nhận tư vấn miễn phí →
           </a>
@@ -229,7 +229,7 @@ export default function ServicesPage() {
                     <div className="text-xs text-slate-400">Chi phí tham khảo</div>
                     <div className="text-slate-800 font-bold text-sm">{s.price}</div>
                   </div>
-                  <a href="#contact"
+                  <a href="/contact"
                     className="px-4 py-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white text-xs font-bold rounded-full hover:opacity-90 hover:scale-105 transition-all shadow-sm">
                     Tư vấn ngay
                   </a>
@@ -270,7 +270,7 @@ export default function ServicesPage() {
           <h2 className="text-2xl lg:text-3xl font-bold text-white mb-3">Bắt đầu tăng trưởng ngay hôm nay</h2>
           <p className="text-blue-100 mb-8 text-sm">Tư vấn miễn phí — phản hồi trong 2 giờ làm việc. Không cam kết dài hạn ngay từ đầu.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <a href="/#contact"
+            <a href="/contact"
               className="px-8 py-3.5 bg-white text-blue-600 font-bold rounded-full hover:shadow-lg hover:scale-105 transition-all text-sm">
               Liên hệ tư vấn →
             </a>

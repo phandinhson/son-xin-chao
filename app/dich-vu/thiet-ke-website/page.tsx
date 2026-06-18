@@ -170,7 +170,7 @@ export default function WebsiteDesignPage() {
                       </li>
                     ))}
                   </ul>
-                  <a href="/#contact" className="mt-4 block text-center py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-sm font-bold rounded-xl transition-colors">
+                  <a href="/contact" className="mt-4 block text-center py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-sm font-bold rounded-xl transition-colors">
                     Nhận báo giá →
                   </a>
                 </div>
@@ -257,7 +257,7 @@ export default function WebsiteDesignPage() {
                 className="px-8 py-3.5 bg-yellow-400 hover:bg-yellow-300 text-purple-900 font-bold rounded-full transition-all hover:scale-105 shadow-lg">
                 💬 Nhắn Zalo ngay
               </a>
-              <a href="/#contact" className="px-8 py-3.5 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-semibold rounded-full transition-all">
+              <a href="/contact" className="px-8 py-3.5 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-semibold rounded-full transition-all">
                 📝 Gửi yêu cầu tư vấn
               </a>
             </div>

@@ -15,7 +15,7 @@ const SERVICES = [
 ];
 
 const SEO_AI = [
-  { label: "SEO Từ khóa", sub: "Nghiên cứu & chọn từ khóa tiềm năng bằng AI", href: "/#contact", icon: "🔑" },
+  { label: "SEO Từ khóa", sub: "Nghiên cứu & chọn từ khóa tiềm năng bằng AI", href: "/contact", icon: "🔑" },
   { label: "SEO Tổng thể", sub: "Chiến lược SEO toàn diện cho website", href: "/dich-vu/seo", icon: "🚀" },
   { label: "Dịch vụ SEO hiệu quả cao", sub: "Cam kết top Google trong 3–6 tháng", href: "/dich-vu/seo", icon: "📈" },
   { label: "SEO Onpage", sub: "Tối ưu nội dung, cấu trúc, tốc độ trang", href: "/dich-vu/seo", icon: "📝" },
@@ -277,7 +277,7 @@ export default function Navbar() {
             <span className="hidden lg:inline">0968 806 360</span>
           </a>
           <div className="w-px h-5 bg-slate-200" />
-          <a href="/#contact"
+          <a href="/contact"
             className="px-5 py-2.5 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white text-sm font-bold rounded-full shadow-md shadow-red-200 hover:shadow-red-300 hover:scale-105 active:scale-95 transition-all duration-200">
             Liên hệ
           </a>
@@ -375,7 +375,7 @@ export default function Navbar() {
               </svg>
               0968 806 360
             </a>
-            <a href="/#contact" onClick={() => setMenuOpen(false)}
+            <a href="/contact" onClick={() => setMenuOpen(false)}
               className="text-center py-3 bg-gradient-to-r from-blue-600 to-violet-600 text-white text-sm font-bold rounded-xl">
               Liên hệ tư vấn miễn phí →
             </a>

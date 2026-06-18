@@ -85,7 +85,7 @@ export default function SeoLocalPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <a href="/#contact" className="px-8 py-3.5 bg-yellow-400 hover:bg-yellow-300 text-emerald-900 font-bold rounded-full text-base transition-all hover:scale-105 shadow-lg">
+              <a href="/contact" className="px-8 py-3.5 bg-yellow-400 hover:bg-yellow-300 text-emerald-900 font-bold rounded-full text-base transition-all hover:scale-105 shadow-lg">
                 Tư vấn miễn phí →
               </a>
               <a href="/#pricing" className="px-8 py-3.5 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-semibold rounded-full text-base transition-all">
@@ -292,7 +292,7 @@ export default function SeoLocalPage() {
               Miễn phí audit Google Business Profile hiện tại + đề xuất cải thiện ngay hôm nay.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <a href="/#contact" className="px-8 py-4 bg-yellow-400 hover:bg-yellow-300 text-emerald-900 font-bold rounded-full text-lg transition-all hover:scale-105 shadow-xl">
+              <a href="/contact" className="px-8 py-4 bg-yellow-400 hover:bg-yellow-300 text-emerald-900 font-bold rounded-full text-lg transition-all hover:scale-105 shadow-xl">
                 Nhận audit miễn phí →
               </a>
               <a href="tel:0968806360" className="px-8 py-4 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-semibold rounded-full text-lg transition-all">

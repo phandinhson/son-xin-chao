@@ -106,7 +106,7 @@ export default function MobileBar() {
 
             {/* Contact */}
             <a
-              href="#contact"
+              href="/contact"
               className="flex flex-col items-center gap-1 py-2 px-3 active:opacity-80 transition-opacity"
             >
               <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center shadow-md">

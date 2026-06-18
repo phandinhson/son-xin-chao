@@ -369,7 +369,7 @@ export default async function GioiThieuPage() {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <a href="/#contact"
+                <a href="/contact"
                   className="px-7 py-3.5 font-bold text-white rounded-full text-sm hover:opacity-90 hover:scale-105 active:scale-95 transition-all shadow-lg"
                   style={{ background: "linear-gradient(135deg,#3b82f6,#8b5cf6)", boxShadow: "0 8px 24px rgba(99,102,241,0.35)" }}>
                   Tư vấn miễn phí →
@@ -692,7 +692,7 @@ export default async function GioiThieuPage() {
               và lộ trình cụ thể cho doanh nghiệp của bạn.
             </p>
             <div className="flex flex-wrap justify-center gap-4 mb-8">
-              <a href="/#contact"
+              <a href="/contact"
                 className="px-8 py-4 font-bold rounded-full text-sm transition-all hover:scale-105 active:scale-95 shadow-xl"
                 style={{ background: "white", color: "#3b82f6" }}>
                 Đặt lịch tư vấn miễn phí →

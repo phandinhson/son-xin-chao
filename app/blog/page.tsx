@@ -473,7 +473,7 @@ function BlogPageContent() {
         <div className="max-w-2xl mx-auto px-6 text-center">
           <h2 className="text-2xl font-bold text-white mb-2">Nhận kiến thức marketing mỗi tuần</h2>
           <p className="text-blue-100 text-sm mb-6">Bài viết mới nhất về SEO, Ads & Website gửi thẳng vào hộp thư.</p>
-          <Link href="/#contact"
+          <Link href="/contact"
             className="inline-flex items-center gap-2 px-7 py-3 bg-white text-blue-600 font-bold rounded-full hover:shadow-lg hover:scale-105 transition-all text-sm">
             Liên hệ ngay →
           </Link>

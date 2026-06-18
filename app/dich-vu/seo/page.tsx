@@ -99,7 +99,7 @@ export default function SeoServicePage() {
               Tăng 200–400% traffic organic sau 6 tháng. Chiến lược SEO on-page, technical, backlink và content chuẩn Google cho doanh nghiệp tại Long Thành, Đồng Nai.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <a href="/#contact" className="px-8 py-3.5 bg-yellow-400 hover:bg-yellow-300 text-blue-900 font-bold rounded-full text-base transition-all hover:scale-105 shadow-lg">
+              <a href="/contact" className="px-8 py-3.5 bg-yellow-400 hover:bg-yellow-300 text-blue-900 font-bold rounded-full text-base transition-all hover:scale-105 shadow-lg">
                 Tư vấn miễn phí ngay →
               </a>
               <a href="/#pricing" className="px-8 py-3.5 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-semibold rounded-full text-base transition-all">
@@ -299,7 +299,7 @@ export default function SeoServicePage() {
                 className="px-8 py-3.5 bg-yellow-400 hover:bg-yellow-300 text-blue-900 font-bold rounded-full transition-all hover:scale-105 shadow-lg">
                 💬 Nhắn Zalo ngay
               </a>
-              <a href="/#contact"
+              <a href="/contact"
                 className="px-8 py-3.5 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-semibold rounded-full transition-all">
                 📝 Gửi yêu cầu tư vấn
               </a>

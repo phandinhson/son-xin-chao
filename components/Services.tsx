@@ -142,7 +142,7 @@ export default function Services() {
 
               {/* CTA */}
               <a
-                href="#contact"
+                href="/contact"
                 className={`mt-6 flex items-center justify-center gap-2 w-full py-3 rounded-2xl bg-gradient-to-r ${service.color} text-white font-semibold text-sm hover:opacity-90 transition-opacity shadow-lg ${service.glow}`}
               >
                 Tư vấn ngay
@@ -158,7 +158,7 @@ export default function Services() {
         <div className="mt-16 text-center animate-on-scroll">
           <p className="text-gray-400 mb-6">
             Không chắc dịch vụ nào phù hợp?{" "}
-            <a href="#contact" className="text-blue-400 hover:underline font-medium">
+            <a href="/contact" className="text-blue-400 hover:underline font-medium">
               Nói chuyện với tôi
             </a>{" "}
             — tôi sẽ tư vấn miễn phí.

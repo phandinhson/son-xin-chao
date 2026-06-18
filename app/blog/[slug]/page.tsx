@@ -486,7 +486,7 @@ export default function BlogPostPage() {
                       Liên hệ ngay để được phân tích website & đề xuất giải pháp phù hợp — miễn phí, không ràng buộc.
                     </p>
                   </div>
-                  <Link href="/#contact"
+                  <Link href="/contact"
                     className="flex-shrink-0 px-6 py-3 bg-white text-blue-600 font-bold rounded-xl hover:bg-blue-50 hover:scale-105 transition-all text-sm shadow-md whitespace-nowrap">
                     Tư vấn miễn phí →
                   </Link>
@@ -515,7 +515,7 @@ export default function BlogPostPage() {
                   <p className="text-slate-500 text-sm leading-relaxed mb-4">
                     Chuyên gia SEO, Google Ads & Facebook Ads với 3+ năm kinh nghiệm.
                   </p>
-                  <Link href="/#contact"
+                  <Link href="/contact"
                     className="block w-full py-2.5 bg-gradient-to-r from-blue-600 to-violet-600 text-white font-semibold rounded-xl text-center hover:opacity-90 transition-all text-sm shadow">
                     💬 Tư vấn miễn phí
                   </Link>

@@ -153,7 +153,7 @@ export default function Hero() {
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <a
-                href="#contact"
+                href="/contact"
                 className="px-8 py-4 bg-gradient-to-r from-blue-600 to-violet-600 text-white font-semibold rounded-full hover:opacity-90 hover:scale-105 transition-all shadow-lg shadow-blue-500/30 text-center"
               >
                 Tư vấn miễn phí →

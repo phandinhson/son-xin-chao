@@ -18,7 +18,7 @@ export default function Footer() {
         { label: "Portfolio", href: "#portfolio" },
         { label: "Bảng giá", href: "#pricing" },
         { label: "Blog & Kiến thức", href: "/blog" },
-        { label: "Liên hệ tư vấn", href: "#contact" },
+        { label: "Liên hệ tư vấn", href: "/contact" },
       ],
     },
     {
@@ -29,7 +29,7 @@ export default function Footer() {
         { label: "Facebook & TikTok Ads", href: "#services" },
         { label: "Thiết kế Website WordPress", href: "#services" },
         { label: "SEO Local (Google Map)", href: "#services" },
-        { label: "Audit & Tư vấn Marketing", href: "#contact" },
+        { label: "Audit & Tư vấn Marketing", href: "/contact" },
       ],
     },
     {
@@ -45,11 +45,11 @@ export default function Footer() {
     {
       title: "Khu vực phục vụ",
       links: [
-        { label: "Long Thành, Đồng Nai", href: "#contact" },
-        { label: "Nhơn Trạch, Đồng Nai", href: "#contact" },
-        { label: "Biên Hòa, Đồng Nai", href: "#contact" },
-        { label: "TP. Hồ Chí Minh", href: "#contact" },
-        { label: "Toàn quốc (Online)", href: "#contact" },
+        { label: "Long Thành, Đồng Nai", href: "/contact" },
+        { label: "Nhơn Trạch, Đồng Nai", href: "/contact" },
+        { label: "Biên Hòa, Đồng Nai", href: "/contact" },
+        { label: "TP. Hồ Chí Minh", href: "/contact" },
+        { label: "Toàn quốc (Online)", href: "/contact" },
       ],
     },
   ];
@@ -215,7 +215,7 @@ export default function Footer() {
               <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-50 to-violet-50 border border-blue-100">
                 <p className="text-slate-700 text-sm font-semibold mb-1">Cần tư vấn miễn phí?</p>
                 <p className="text-slate-500 text-xs mb-3">Gửi yêu cầu ngay — phản hồi trong 2 giờ.</p>
-                <a href="#contact"
+                <a href="/contact"
                   className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white text-xs font-bold rounded-full hover:opacity-90 transition-opacity shadow-sm">
                   Liên hệ ngay →
                 </a>

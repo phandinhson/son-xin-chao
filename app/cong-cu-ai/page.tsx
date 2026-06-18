@@ -713,7 +713,7 @@ export default function CongCuAiPage() {
             Tôi giúp bạn chọn đúng công cụ AI phù hợp với ngân sách và mục tiêu — tiết kiệm thời gian, tăng chất lượng nội dung.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <a href="/#contact"
+            <a href="/contact"
               className="px-8 py-3.5 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-2xl transition-colors">
               Tư vấn miễn phí →
             </a>

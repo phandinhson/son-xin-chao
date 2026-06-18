@@ -382,7 +382,7 @@ export default async function FacebookAdsPage() {
                 Nhắn Zalo ngay
                 <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
               </a>
-              <a href="/#contact"
+              <a href="/contact"
                 className="flex items-center justify-center gap-2 px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 text-white font-semibold rounded-2xl transition-all text-base">
                 <span>📝</span>
                 Gửi yêu cầu tư vấn

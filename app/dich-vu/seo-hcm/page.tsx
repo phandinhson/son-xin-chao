@@ -631,7 +631,7 @@ export default function SeoHcmPage() {
                     ))}
                   </ul>
                   <a
-                    href="/#contact"
+                    href="/contact"
                     className={`block text-center py-2.5 rounded-xl font-semibold text-sm transition-colors ${pkg.btnClass}`}
                   >
                     Bắt đầu ngay →
@@ -679,7 +679,7 @@ export default function SeoHcmPage() {
                 💬 Nhắn Zalo — Audit miễn phí
               </a>
               <a
-                href="/#contact"
+                href="/contact"
                 className="px-8 py-3.5 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-semibold rounded-full transition-all"
               >
                 📝 Gửi yêu cầu tư vấn

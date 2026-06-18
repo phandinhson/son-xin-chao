@@ -246,7 +246,7 @@ export default function GoogleAdsPage() {
                 className="px-8 py-3.5 bg-yellow-400 hover:bg-yellow-300 text-green-900 font-bold rounded-full transition-all hover:scale-105 shadow-lg">
                 💬 Nhắn Zalo ngay
               </a>
-              <a href="/#contact" className="px-8 py-3.5 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-semibold rounded-full transition-all">
+              <a href="/contact" className="px-8 py-3.5 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-semibold rounded-full transition-all">
                 📝 Gửi yêu cầu tư vấn
               </a>
             </div>

@@ -113,7 +113,7 @@ export default function AuditTuVanPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <a href="/#contact" className="px-8 py-3.5 bg-blue-400 hover:bg-blue-300 text-slate-900 font-bold rounded-full text-base transition-all hover:scale-105 shadow-lg">
+              <a href="/contact" className="px-8 py-3.5 bg-blue-400 hover:bg-blue-300 text-slate-900 font-bold rounded-full text-base transition-all hover:scale-105 shadow-lg">
                 Đặt lịch tư vấn miễn phí →
               </a>
               <a href="#checklist" className="px-8 py-3.5 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-semibold rounded-full text-base transition-all">
@@ -283,7 +283,7 @@ export default function AuditTuVanPage() {
                       </li>
                     ))}
                   </ul>
-                  <a href="/#contact" className={`block text-center py-3 rounded-xl text-sm font-semibold transition-all ${pkg.btn}`}>
+                  <a href="/contact" className={`block text-center py-3 rounded-xl text-sm font-semibold transition-all ${pkg.btn}`}>
                     {pkg.price === "Miễn phí" ? "Đặt lịch ngay →" : "Đặt mua →"}
                   </a>
                 </div>
@@ -356,7 +356,7 @@ export default function AuditTuVanPage() {
             </p>
             <p className="text-slate-400 text-sm mb-8">Không cam kết · Không bán hàng áp lực · Chỉ tư vấn thực chất</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <a href="/#contact" className="px-8 py-4 bg-blue-400 hover:bg-blue-300 text-slate-900 font-bold rounded-full text-lg transition-all hover:scale-105 shadow-xl">
+              <a href="/contact" className="px-8 py-4 bg-blue-400 hover:bg-blue-300 text-slate-900 font-bold rounded-full text-lg transition-all hover:scale-105 shadow-xl">
                 Đặt lịch tư vấn miễn phí →
               </a>
               <a href="tel:0968806360" className="px-8 py-4 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-semibold rounded-full text-lg transition-all">
