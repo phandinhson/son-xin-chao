@@ -4,14 +4,17 @@ import Footer from "@/components/Footer";
 import MobileBar from "@/components/MobileBar";
 
 export const metadata: Metadata = {
-  title: "Dịch Vụ Thiết Kế Website tại Long Thành, Đồng Nai | Sơn Xin Chào",
+  title: "Thiết Kế Website WordPress tại Đồng Nai & TP.HCM | Sơn Xin Chào",
   description:
-    "Thiết kế website WordPress chuẩn SEO, tốc độ cao tại Long Thành, Đồng Nai. Hoàn thành trong 7–14 ngày. PageSpeed 90+, mobile responsive, bàn giao toàn bộ. Tư vấn miễn phí!",
+    "Thiết kế website WordPress chuẩn SEO, tốc độ cao tại Long Thành, Đồng Nai và TP.HCM. Hoàn thành trong 7–14 ngày. PageSpeed 90+, mobile responsive, bàn giao toàn bộ. Tư vấn miễn phí!",
   keywords:
-    "thiết kế website Long Thành, làm website Đồng Nai, thiết kế website WordPress Đồng Nai, website chuẩn SEO Long Thành, làm website doanh nghiệp Đồng Nai, thiết kế web Nhơn Trạch",
+    "thiết kế website Long Thành, làm website Đồng Nai, thiết kế website TP HCM, làm website HCM giá rẻ, thiết kế web WordPress HCM, website chuẩn SEO Đồng Nai, làm website doanh nghiệp HCM, thiết kế web Nhơn Trạch",
+  alternates: {
+    canonical: "https://www.sonxinchao.com/dich-vu/thiet-ke-website",
+  },
   openGraph: {
-    title: "Dịch Vụ Thiết Kế Website tại Long Thành, Đồng Nai | Sơn Xin Chào",
-    description: "Website WordPress chuẩn SEO, PageSpeed 90+, hoàn thành 7–14 ngày. Bàn giao toàn bộ, hỗ trợ trọn đời.",
+    title: "Thiết Kế Website WordPress tại Đồng Nai & TP.HCM | Sơn Xin Chào",
+    description: "Website WordPress chuẩn SEO, PageSpeed 90+, hoàn thành 7–14 ngày. Phục vụ Long Thành, Đồng Nai và TP.HCM. Bàn giao toàn bộ, hỗ trợ trọn đời.",
     url: "https://www.sonxinchao.com/dich-vu/thiet-ke-website",
     type: "website",
   },
@@ -57,7 +60,7 @@ export default function WebsiteDesignPage() {
               "telephone": "0968806360",
               "address": { "@type": "PostalAddress", "addressLocality": "Long Thành", "addressRegion": "Đồng Nai", "addressCountry": "VN" }
             },
-            "areaServed": ["Long Thành", "Nhơn Trạch", "Đồng Nai"],
+            "areaServed": ["Long Thành", "Nhơn Trạch", "Biên Hòa", "Đồng Nai", "TP. Hồ Chí Minh", "Thủ Đức", "Quận 7", "Bình Dương"],
             "description": "Thiết kế website WordPress chuẩn SEO, tốc độ cao cho doanh nghiệp tại Long Thành, Đồng Nai",
           })
         }}

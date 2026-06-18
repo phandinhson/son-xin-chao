@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
@@ -11,9 +12,80 @@ import MobileBar from "@/components/MobileBar";
 import FloatingContacts from "@/components/FloatingContacts";
 import SearchStrip from "@/components/SearchStrip";
 
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "https://www.sonxinchao.com",
+  },
+};
+
+const localBusinessSchema = {
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "Sơn Xin Chào — SEO · Ads · Website",
+  "alternateName": "sonxinchao.com",
+  "url": "https://www.sonxinchao.com",
+  "logo": "https://www.sonxinchao.com/favicon.svg",
+  "image": "https://www.sonxinchao.com/og-image.jpg",
+  "description": "Dịch vụ SEO, Google Ads, Facebook Ads và thiết kế website WordPress chuẩn SEO tại Long Thành, Đồng Nai. Phục vụ toàn bộ khu vực TP.HCM và Đông Nam Bộ.",
+  "telephone": "+84968806360",
+  "email": "son@sonxinchao.com",
+  "founder": {
+    "@type": "Person",
+    "name": "Phan Đình Sơn",
+    "jobTitle": "Digital Marketing Specialist"
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Long Thành",
+    "addressLocality": "Long Thành",
+    "addressRegion": "Đồng Nai",
+    "addressCountry": "VN"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": "10.8009",
+    "longitude": "107.0391"
+  },
+  "areaServed": [
+    { "@type": "City", "name": "Long Thành" },
+    { "@type": "City", "name": "Nhơn Trạch" },
+    { "@type": "City", "name": "Biên Hòa" },
+    { "@type": "AdministrativeArea", "name": "Đồng Nai" },
+    { "@type": "City", "name": "TP. Hồ Chí Minh" },
+    { "@type": "City", "name": "Thủ Đức" },
+    { "@type": "City", "name": "Bình Dương" }
+  ],
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Dịch vụ Digital Marketing",
+    "itemListElement": [
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "SEO Organic" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Google Ads" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Facebook Ads" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Thiết kế Website WordPress" } },
+      { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "SEO Local" } }
+    ]
+  },
+  "sameAs": [
+    "https://fb.com/sonxinchao",
+    "https://zalo.me/0968806360"
+  ],
+  "openingHoursSpecification": {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+    "opens": "08:00",
+    "closes": "21:00"
+  },
+  "priceRange": "₫₫"
+};
+
 export default function Home() {
   return (
     <main className="min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+      />
       <Navbar />
       <SearchStrip />
       <Hero />

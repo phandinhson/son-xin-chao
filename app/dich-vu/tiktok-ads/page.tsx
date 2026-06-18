@@ -4,14 +4,17 @@ import Footer from "@/components/Footer";
 import MobileBar from "@/components/MobileBar";
 
 export const metadata: Metadata = {
-  title: "Dịch Vụ Quảng Cáo TikTok Ads tại Long Thành, Đồng Nai | Sơn Xin Chào",
+  title: "Dịch Vụ TikTok Ads tại Đồng Nai & TP.HCM | Sơn Xin Chào",
   description:
-    "Chạy quảng cáo TikTok Ads hiệu quả tại Long Thành, Đồng Nai. Tiếp cận hàng triệu khách hàng trẻ, chi phí thấp, viral cao. Tư vấn chiến lược & sản xuất content TikTok. Tư vấn miễn phí!",
+    "Chạy quảng cáo TikTok Ads hiệu quả tại Long Thành, Đồng Nai và TP.HCM. Tiếp cận hàng triệu khách hàng trẻ, chi phí thấp, viral cao. Tư vấn chiến lược & sản xuất content TikTok. Tư vấn miễn phí!",
   keywords:
-    "TikTok Ads Long Thành, quảng cáo TikTok Đồng Nai, chạy TikTok Ads Đồng Nai, dịch vụ TikTok Ads, quảng cáo TikTok hiệu quả, TikTok marketing Đồng Nai",
+    "TikTok Ads Long Thành, quảng cáo TikTok Đồng Nai, dịch vụ TikTok Ads TP HCM, TikTok Ads HCM, chạy TikTok Ads Đồng Nai, quảng cáo TikTok hiệu quả, TikTok marketing HCM",
+  alternates: {
+    canonical: "https://www.sonxinchao.com/dich-vu/tiktok-ads",
+  },
   openGraph: {
-    title: "Dịch Vụ Quảng Cáo TikTok Ads tại Long Thành, Đồng Nai | Sơn Xin Chào",
-    description: "Tiếp cận hàng triệu người dùng TikTok. CPM thấp hơn Facebook 40%. Chiến lược TikTok Ads + content viral cho doanh nghiệp tại Đồng Nai.",
+    title: "Dịch Vụ TikTok Ads tại Đồng Nai & TP.HCM | Sơn Xin Chào",
+    description: "Tiếp cận hàng triệu người dùng TikTok. CPM thấp hơn Facebook 40%. Chiến lược TikTok Ads + content viral tại Long Thành, Đồng Nai và TP.HCM.",
     url: "https://www.sonxinchao.com/dich-vu/tiktok-ads",
     type: "website",
   },
@@ -80,7 +83,7 @@ export default function TikTokAdsPage() {
         "provider": { "@type": "LocalBusiness", "name": "Sơn Xin Chào", "url": "https://www.sonxinchao.com", "telephone": "0968806360",
           "address": { "@type": "PostalAddress", "addressLocality": "Long Thành", "addressRegion": "Đồng Nai", "addressCountry": "VN" }
         },
-        "areaServed": ["Long Thành", "Nhơn Trạch", "Đồng Nai"],
+        "areaServed": ["Long Thành", "Nhơn Trạch", "Biên Hòa", "Đồng Nai", "TP. Hồ Chí Minh", "Thủ Đức", "Quận 7", "Bình Dương"],
         "description": "Dịch vụ quảng cáo TikTok Ads chuyên nghiệp, tiếp cận giới trẻ, chi phí thấp tại Đồng Nai",
       })}} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({

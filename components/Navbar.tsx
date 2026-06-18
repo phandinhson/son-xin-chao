@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 /* ── Nav data ── */
 const SERVICES = [
   { label: "SEO Organic", sub: "Lên top Google bền vững, tăng traffic tự nhiên", href: "/dich-vu/seo", icon: "🔍" },
+  { label: "SEO TP.HCM", sub: "Chuyên biệt cho doanh nghiệp tại TP. Hồ Chí Minh", href: "/dich-vu/seo-hcm", icon: "🏙️" },
   { label: "Google Ads", sub: "Quảng cáo tìm kiếm & display hiệu quả", href: "/dich-vu/google-ads", icon: "📈" },
   { label: "Facebook Ads", sub: "Tiếp cận đúng khách hàng mục tiêu trên Meta", href: "/dich-vu/facebook-ads", icon: "📣" },
   { label: "TikTok Ads", sub: "Viral content & quảng cáo video TikTok", href: "/dich-vu/tiktok-ads", icon: "🎵" },
@@ -348,6 +349,7 @@ export default function Navbar() {
               { href: "/dich-vu/tiktok-ads", label: "Quảng cáo TikTok Ads" },
               { href: "/dich-vu/thiet-ke-website", label: "Thiết kế Website WordPress" },
               { href: "/dich-vu/seo-local", label: "SEO Local (Google Map)" },
+              { href: "/dich-vu/seo-hcm", label: "SEO TP.HCM" },
               { href: "/dich-vu/audit-tu-van", label: "Audit & Tư vấn Marketing" },
             ]} />
 

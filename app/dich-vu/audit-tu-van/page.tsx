@@ -4,14 +4,17 @@ import Footer from "@/components/Footer";
 import MobileBar from "@/components/MobileBar";
 
 export const metadata: Metadata = {
-  title: "Dịch Vụ Audit SEO & Tư Vấn Chiến Lược Digital Marketing | Sơn Xin Chào",
+  title: "Audit SEO & Tư Vấn Digital Marketing tại Đồng Nai & HCM | Sơn Xin Chào",
   description:
-    "Audit SEO toàn diện 50+ điểm kiểm tra, phân tích đối thủ, lộ trình digital marketing cụ thể cho doanh nghiệp tại Long Thành, Đồng Nai và toàn quốc. Tư vấn miễn phí đầu tiên!",
+    "Audit SEO toàn diện 50+ điểm kiểm tra, phân tích đối thủ, lộ trình digital marketing cụ thể cho doanh nghiệp tại Long Thành, Đồng Nai, TP.HCM và toàn quốc. Buổi tư vấn đầu miễn phí!",
   keywords:
-    "audit SEO, tư vấn SEO, phân tích website, tư vấn digital marketing, audit website Long Thành, chiến lược marketing Đồng Nai, tư vấn marketing online",
+    "audit SEO, tư vấn SEO, tư vấn digital marketing HCM, audit website Đồng Nai, phân tích website HCM, chiến lược marketing Đồng Nai, tư vấn marketing online HCM, audit SEO Long Thành",
+  alternates: {
+    canonical: "https://www.sonxinchao.com/dich-vu/audit-tu-van",
+  },
   openGraph: {
-    title: "Audit SEO & Tư Vấn Chiến Lược Digital Marketing | Sơn Xin Chào",
-    description: "Báo cáo audit 50+ điểm, phân tích đối thủ chi tiết, lộ trình hành động cụ thể. Buổi tư vấn đầu miễn phí.",
+    title: "Audit SEO & Tư Vấn Digital Marketing tại Đồng Nai & HCM | Sơn Xin Chào",
+    description: "Báo cáo audit 50+ điểm, phân tích đối thủ chi tiết, lộ trình hành động cụ thể. Phục vụ Đồng Nai, TP.HCM và toàn quốc. Buổi tư vấn đầu miễn phí.",
     url: "https://www.sonxinchao.com/dich-vu/audit-tu-van",
     type: "website",
   },

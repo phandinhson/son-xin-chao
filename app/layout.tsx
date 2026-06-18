@@ -54,9 +54,6 @@ export async function generateMetadata(): Promise<Metadata> {
     keywords,
     authors: [{ name: "Phan Đình Sơn" }],
     icons: iconsMeta,
-    alternates: {
-      canonical: "https://www.sonxinchao.com",
-    },
     openGraph: {
       title: s.og_title || title,
       description: s.og_description || description,

@@ -4,14 +4,17 @@ import Footer from "@/components/Footer";
 import MobileBar from "@/components/MobileBar";
 
 export const metadata: Metadata = {
-  title: "Dịch Vụ Quảng Cáo Facebook Ads tại Long Thành, Đồng Nai | Sơn Xin Chào",
+  title: "Dịch Vụ Facebook Ads tại Đồng Nai & TP.HCM | Sơn Xin Chào",
   description:
-    "Chạy quảng cáo Facebook Ads hiệu quả tại Long Thành, Đồng Nai. Target đúng khách hàng, tối ưu chi phí, tăng doanh số. ROAS trung bình 4–6x. Tư vấn miễn phí!",
+    "Chạy quảng cáo Facebook Ads hiệu quả tại Long Thành, Đồng Nai và TP.HCM. Target đúng khách hàng, tối ưu chi phí, tăng doanh số. ROAS trung bình 4–6x. Tư vấn miễn phí!",
   keywords:
-    "Facebook Ads Long Thành, quảng cáo Facebook Đồng Nai, chạy Facebook Ads Đồng Nai, dịch vụ Facebook Ads Long Thành, Meta Ads Đồng Nai, quảng cáo Facebook hiệu quả",
+    "Facebook Ads Long Thành, quảng cáo Facebook Đồng Nai, chạy Facebook Ads TP HCM, dịch vụ Facebook Ads HCM, Meta Ads HCM, quảng cáo Facebook Đồng Nai, Facebook Ads Bình Dương, quảng cáo Facebook hiệu quả",
+  alternates: {
+    canonical: "https://www.sonxinchao.com/dich-vu/facebook-ads",
+  },
   openGraph: {
-    title: "Dịch Vụ Quảng Cáo Facebook Ads tại Long Thành, Đồng Nai | Sơn Xin Chào",
-    description: "Target đúng khách hàng tiềm năng. Tối ưu ROAS 4–6x. Quản lý Facebook & Instagram Ads chuyên nghiệp tại Đồng Nai.",
+    title: "Dịch Vụ Facebook Ads tại Đồng Nai & TP.HCM | Sơn Xin Chào",
+    description: "Target đúng khách hàng tiềm năng. Tối ưu ROAS 4–6x. Quản lý Facebook & Instagram Ads tại Long Thành, Đồng Nai và TP.HCM.",
     url: "https://www.sonxinchao.com/dich-vu/facebook-ads",
     type: "website",
   },
@@ -89,7 +92,7 @@ export default function FacebookAdsPage() {
         "provider": { "@type": "LocalBusiness", "name": "Sơn Xin Chào", "url": "https://www.sonxinchao.com", "telephone": "0968806360",
           "address": { "@type": "PostalAddress", "addressLocality": "Long Thành", "addressRegion": "Đồng Nai", "addressCountry": "VN" }
         },
-        "areaServed": ["Long Thành", "Nhơn Trạch", "Đồng Nai"],
+        "areaServed": ["Long Thành", "Nhơn Trạch", "Biên Hòa", "Đồng Nai", "TP. Hồ Chí Minh", "Thủ Đức", "Quận 7", "Bình Dương"],
         "description": "Dịch vụ quảng cáo Facebook Ads chuyên nghiệp, target đúng đối tượng, tối ưu ROAS cho doanh nghiệp tại Đồng Nai",
       })}} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({

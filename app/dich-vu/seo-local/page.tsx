@@ -4,14 +4,17 @@ import Footer from "@/components/Footer";
 import MobileBar from "@/components/MobileBar";
 
 export const metadata: Metadata = {
-  title: "Dịch Vụ SEO Local tại Long Thành, Đồng Nai | Google Maps & Tìm Kiếm Địa Phương",
+  title: "Dịch Vụ SEO Local Google Maps tại Đồng Nai & TP.HCM | Sơn Xin Chào",
   description:
-    "SEO Local giúp doanh nghiệp hiển thị top Google Maps khi khách tìm kiếm gần Long Thành, Nhơn Trạch, Biên Hòa. Tối ưu Google Business Profile, citation địa phương. Tư vấn miễn phí!",
+    "SEO Local giúp doanh nghiệp hiển thị top Google Maps khi khách tìm kiếm gần Long Thành, Nhơn Trạch, Biên Hòa, Đồng Nai và TP.HCM. Tối ưu Google Business Profile, citation địa phương. Tư vấn miễn phí!",
   keywords:
-    "SEO local Long Thành, SEO google maps Đồng Nai, tối ưu google business profile, SEO địa phương, dịch vụ SEO local, SEO near me Long Thành",
+    "SEO local Long Thành, SEO google maps Đồng Nai, SEO local TP HCM, SEO Google Maps HCM, tối ưu google business profile HCM, SEO địa phương HCM, dịch vụ SEO local, SEO near me Đồng Nai",
+  alternates: {
+    canonical: "https://www.sonxinchao.com/dich-vu/seo-local",
+  },
   openGraph: {
-    title: "Dịch Vụ SEO Local – Google Maps & Tìm Kiếm Địa Phương | Sơn Xin Chào",
-    description: "Lên top Google Maps, xuất hiện khi khách tìm kiếm gần bạn. Tối ưu Google Business Profile & SEO địa phương chuẩn 2026.",
+    title: "Dịch Vụ SEO Local Google Maps tại Đồng Nai & TP.HCM | Sơn Xin Chào",
+    description: "Lên top Google Maps, xuất hiện khi khách tìm kiếm gần bạn. Tối ưu Google Business Profile & SEO địa phương tại Đồng Nai và TP.HCM.",
     url: "https://www.sonxinchao.com/dich-vu/seo-local",
     type: "website",
   },
@@ -39,7 +42,7 @@ export default function SeoLocalPage() {
           "telephone": "0968806360",
           "address": { "@type": "PostalAddress", "addressLocality": "Long Thành", "addressRegion": "Đồng Nai", "addressCountry": "VN" }
         },
-        "areaServed": ["Long Thành", "Nhơn Trạch", "Biên Hòa", "Đồng Nai"],
+        "areaServed": ["Long Thành", "Nhơn Trạch", "Biên Hòa", "Đồng Nai", "TP. Hồ Chí Minh", "Thủ Đức", "Quận 7", "Bình Dương"],
         "description": "Dịch vụ SEO Local giúp doanh nghiệp lên top Google Maps và tìm kiếm địa phương"
       })}} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({

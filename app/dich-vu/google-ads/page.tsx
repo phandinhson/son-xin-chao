@@ -4,14 +4,17 @@ import Footer from "@/components/Footer";
 import MobileBar from "@/components/MobileBar";
 
 export const metadata: Metadata = {
-  title: "Dịch Vụ Google Ads tại Long Thành, Đồng Nai | Sơn Xin Chào",
+  title: "Dịch Vụ Google Ads tại Đồng Nai & TP.HCM | Sơn Xin Chào",
   description:
-    "Chạy quảng cáo Google Ads hiệu quả tại Long Thành, Đồng Nai. Thiết lập, tối ưu chiến dịch Search, Display, Shopping. ROAS trung bình 4–6x. Tư vấn miễn phí!",
+    "Chạy quảng cáo Google Ads hiệu quả tại Long Thành, Đồng Nai và TP.HCM. Thiết lập, tối ưu chiến dịch Search, Display, Shopping. ROAS trung bình 4–6x. Tư vấn miễn phí!",
   keywords:
-    "Google Ads Long Thành, chạy quảng cáo Google Đồng Nai, dịch vụ Google Ads Đồng Nai, quảng cáo Google tìm kiếm, tối ưu Google Ads, quảng cáo Google Ads Long Thành",
+    "Google Ads Long Thành, chạy quảng cáo Google Đồng Nai, dịch vụ Google Ads TP HCM, Google Ads HCM, quảng cáo Google Ads Bình Dương, dịch vụ Google Ads Đồng Nai, tối ưu Google Ads, quảng cáo Google tìm kiếm",
+  alternates: {
+    canonical: "https://www.sonxinchao.com/dich-vu/google-ads",
+  },
   openGraph: {
-    title: "Dịch Vụ Google Ads tại Long Thành, Đồng Nai | Sơn Xin Chào",
-    description: "ROAS trung bình 4–6x. Quản lý Google Ads Search, Display, Shopping chuyên nghiệp tại Đồng Nai.",
+    title: "Dịch Vụ Google Ads tại Đồng Nai & TP.HCM | Sơn Xin Chào",
+    description: "ROAS trung bình 4–6x. Quản lý Google Ads Search, Display, Shopping chuyên nghiệp tại Long Thành, Đồng Nai và TP.HCM.",
     url: "https://www.sonxinchao.com/dich-vu/google-ads",
     type: "website",
   },
@@ -57,7 +60,7 @@ export default function GoogleAdsPage() {
               "telephone": "0968806360",
               "address": { "@type": "PostalAddress", "addressLocality": "Long Thành", "addressRegion": "Đồng Nai", "addressCountry": "VN" }
             },
-            "areaServed": ["Long Thành", "Nhơn Trạch", "Đồng Nai"],
+            "areaServed": ["Long Thành", "Nhơn Trạch", "Biên Hòa", "Đồng Nai", "TP. Hồ Chí Minh", "Thủ Đức", "Quận 7", "Bình Dương"],
             "description": "Dịch vụ quảng cáo Google Ads chuyên nghiệp, tối ưu ROAS cho doanh nghiệp tại Đồng Nai",
           })
         }}

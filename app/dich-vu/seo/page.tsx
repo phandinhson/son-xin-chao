@@ -4,14 +4,17 @@ import Footer from "@/components/Footer";
 import MobileBar from "@/components/MobileBar";
 
 export const metadata: Metadata = {
-  title: "Dịch Vụ SEO Tổng Thể tại Long Thành, Đồng Nai | Sơn Xin Chào",
+  title: "Dịch Vụ SEO Tổng Thể tại Đồng Nai & TP.HCM | Sơn Xin Chào",
   description:
-    "Dịch vụ SEO lên top Google bền vững tại Long Thành, Nhơn Trạch, Đồng Nai. Tối ưu SEO on-page, technical, backlink và content. Tăng 200–400% traffic sau 6 tháng. Tư vấn miễn phí!",
+    "Dịch vụ SEO lên top Google bền vững tại Long Thành, Nhơn Trạch, Đồng Nai và TP.HCM. Tối ưu SEO on-page, technical, backlink và content. Tăng 200–400% traffic sau 6 tháng. Tư vấn miễn phí!",
   keywords:
-    "dịch vụ SEO Long Thành, SEO Đồng Nai, SEO tổng thể, SEO website Long Thành, công ty SEO Đồng Nai, SEO lên top Google, dịch vụ SEO uy tín",
+    "dịch vụ SEO Long Thành, SEO Đồng Nai, dịch vụ SEO TP HCM, SEO Thủ Đức HCM, SEO Bình Dương, SEO tổng thể, SEO website Đồng Nai, công ty SEO HCM, SEO lên top Google, dịch vụ SEO uy tín",
+  alternates: {
+    canonical: "https://www.sonxinchao.com/dich-vu/seo",
+  },
   openGraph: {
-    title: "Dịch Vụ SEO Tổng Thể tại Long Thành, Đồng Nai | Sơn Xin Chào",
-    description: "Tăng traffic organic 200–400% sau 6 tháng. SEO on-page, technical, backlink, content chuẩn Google 2026.",
+    title: "Dịch Vụ SEO Tổng Thể tại Đồng Nai & TP.HCM | Sơn Xin Chào",
+    description: "Tăng traffic organic 200–400% sau 6 tháng. SEO on-page, technical, backlink, content chuẩn Google 2026. Phục vụ Long Thành, Đồng Nai và TP.HCM.",
     url: "https://www.sonxinchao.com/dich-vu/seo",
     type: "website",
   },
@@ -57,7 +60,7 @@ export default function SeoServicePage() {
               "telephone": "0968806360",
               "address": { "@type": "PostalAddress", "addressLocality": "Long Thành", "addressRegion": "Đồng Nai", "addressCountry": "VN" }
             },
-            "areaServed": ["Long Thành", "Nhơn Trạch", "Đồng Nai"],
+            "areaServed": ["Long Thành", "Nhơn Trạch", "Biên Hòa", "Đồng Nai", "TP. Hồ Chí Minh", "Thủ Đức", "Quận 7", "Bình Dương"],
             "description": "Dịch vụ SEO tổng thể giúp website lên top Google bền vững",
             "offers": { "@type": "Offer", "priceCurrency": "VND", "price": "3500000", "priceSpecification": { "@type": "UnitPriceSpecification", "unitText": "tháng" } }
           })
