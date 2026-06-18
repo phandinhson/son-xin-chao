@@ -2,17 +2,17 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import { supabaseAdmin } from "@/lib/supabase";
 
-export const dynamic = "force-dynamic"; // always fetch fresh CMS data
+export const revalidate = 60; // ISR: serve from cache, revalidate in background
 
 /* ─── Fetch CMS content ─────────────────────────────────── */
 async function getPageData() {
   try {
     const db = supabaseAdmin();
-    const { data } = await db
-      .from("site_settings")
-      .select("value")
-      .eq("key", "page_gioi_thieu")
-      .single();
+    // Timeout after 3s so a slow Supabase never hangs the page
+    const { data } = await Promise.race([
+      db.from("site_settings").select("value").eq("key", "page_gioi_thieu").single(),
+      new Promise<{ data: null }>((resolve) => setTimeout(() => resolve({ data: null }), 3000)),
+    ]);
     if (data?.value) return JSON.parse(data.value);
   } catch { /* fallback to defaults below */ }
   return null;
