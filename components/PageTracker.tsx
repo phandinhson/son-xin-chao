@@ -16,6 +16,7 @@ export default function PageTracker() {
         page: pathname,
         referrer: document.referrer || "",
       }),
+      keepalive: true, // đảm bảo request hoàn thành dù user navigate đi
     }).catch(() => {});
   }, [pathname]);
 

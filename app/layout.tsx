@@ -13,7 +13,7 @@ import { Analytics } from "@vercel/analytics/react";
 
 // Self-hosted font via Next.js — no blocking Google Fonts request
 const beVietnam = Be_Vietnam_Pro({
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700", "800"], // bỏ "300" (light) — ít dùng, tiết kiệm 2 font file
   subsets: ["latin", "vietnamese"],
   variable: "--font-be-vietnam",
   display: "swap",
