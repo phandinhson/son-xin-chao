@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Facebook crawler
+User-agent: facebookexternalhit
+Allow: /
+
+# Zalo crawler
+User-agent: ZaloPC
+Allow: /
+
+User-agent: ZaloApp
+Allow: /
+
+Sitemap: https://www.sonxinchao.com/sitemap.xml
