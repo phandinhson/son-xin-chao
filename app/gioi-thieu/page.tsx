@@ -33,6 +33,12 @@ export const metadata: Metadata = {
     url: "https://www.sonxinchao.com/gioi-thieu",
     type: "profile",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Phan Đình Sơn – Chuyên gia SEO & Digital Marketing",
+    description:
+      "Cử nhân CNTT – Sư Phạm Kỹ Thuật TP.HCM. Hơn 5 năm thực chiến SEO, Google Ads, Facebook Ads & Website.",
+  },
 };
 
 /* ─── JSON-LD ───────────────────────────────────────────── */
