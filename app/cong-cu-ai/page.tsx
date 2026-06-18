@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -316,10 +316,96 @@ function dbToTool(d: DbTool): Tool {
 // Fallback hardcoded data (shown while loading or if DB empty)
 const FALLBACK_TOOLS: Tool[] = TOOLS;
 
+/* ─── Tool Detail Modal ─── */
+function ToolDetailModal({ tool, onClose }: { tool: Tool; onClose: () => void }) {
+  const lightStyle = CAT_LIGHT[tool.category];
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      {/* Card */}
+      <div
+        className="relative z-10 w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header gradient */}
+        <div className={`bg-gradient-to-br ${CAT_GRADIENT[tool.category]} p-6 text-center`}>
+          <div className="text-6xl mb-3">{tool.icon}</div>
+          <h2 className="text-2xl font-extrabold text-white">{tool.name}</h2>
+          <div className="flex items-center justify-center gap-2 mt-2 flex-wrap">
+            <span className="text-xs bg-white/20 text-white px-3 py-1 rounded-full font-semibold">{tool.category}</span>
+            <span className={`text-xs px-3 py-1 rounded-full font-semibold bg-white ${
+              tool.badge === "Miễn phí" ? "text-emerald-700" : tool.badge === "Freemium" ? "text-amber-700" : "text-slate-600"
+            }`}>{tool.badge}</span>
+            {tool.hot && <span className="text-xs bg-orange-500 text-white px-3 py-1 rounded-full font-black tracking-widest">🔥 HOT</span>}
+          </div>
+        </div>
+
+        {/* Body */}
+        <div className="p-6">
+          <p className="text-gray-600 text-sm leading-relaxed mb-5">{tool.desc}</p>
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-2 mb-6">
+            {tool.tags.map((tag) => (
+              <span key={tag} className={`text-xs font-semibold px-3 py-1 rounded-full border ${lightStyle}`}>{tag}</span>
+            ))}
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3">
+            <a
+              href={tool.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-gradient-to-r ${CAT_GRADIENT[tool.category]} text-white font-bold text-sm transition-opacity hover:opacity-90`}
+            >
+              Dùng ngay
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+            <button
+              onClick={onClose}
+              className="px-5 py-3 rounded-2xl border-2 border-gray-200 text-gray-600 font-semibold text-sm hover:border-gray-400 transition-colors"
+            >
+              Đóng
+            </button>
+          </div>
+        </div>
+
+        {/* Close X */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/40 text-white transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function CongCuAiPage() {
   const [active, setActive] = useState<Category>("Tất cả");
   const [search, setSearch] = useState("");
   const [allTools, setAllTools] = useState<Tool[]>(FALLBACK_TOOLS);
+  const [selectedTool, setSelectedTool] = useState<Tool | null>(null);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  // Close suggestion dropdown on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
   useEffect(() => {
     fetch("/api/ai-tools", { cache: "no-store" })
@@ -335,6 +421,15 @@ export default function CongCuAiPage() {
       });
   }, []);
 
+  const suggestions = search.trim().length >= 1
+    ? allTools
+        .filter((t) =>
+          t.name.toLowerCase().includes(search.toLowerCase()) ||
+          t.tags.some((tg) => tg.toLowerCase().includes(search.toLowerCase()))
+        )
+        .slice(0, 6)
+    : [];
+
   const filtered = allTools.filter((t) => {
     const matchCat = active === "Tất cả" || t.category === active;
     const q = search.toLowerCase();
@@ -346,6 +441,9 @@ export default function CongCuAiPage() {
 
   return (
     <>
+    {/* Tool Detail Modal */}
+    {selectedTool && <ToolDetailModal tool={selectedTool} onClose={() => setSelectedTool(null)} />}
+
     <Navbar />
     <main className="min-h-screen bg-gray-50">
 
@@ -376,24 +474,57 @@ export default function CongCuAiPage() {
           </p>
 
           {/* Search box */}
-          <div className="relative max-w-lg mx-auto">
-            <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <div ref={searchRef} className="relative max-w-lg mx-auto">
+            <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <input
               type="text"
               placeholder="Tìm tên công cụ, tính năng..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => { setSearch(e.target.value); setShowSuggestions(true); }}
+              onFocus={() => setShowSuggestions(true)}
               className="w-full pl-12 pr-4 py-4 bg-white border-2 border-gray-200 rounded-2xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-violet-400 transition-all text-sm shadow-sm"
             />
             {search && (
-              <button onClick={() => setSearch("")}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+              <button onClick={() => { setSearch(""); setShowSuggestions(false); }}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 z-10">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
+            )}
+
+            {/* Autocomplete dropdown */}
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-2xl shadow-2xl z-30 overflow-hidden">
+                <div className="px-3 py-2 text-[11px] text-gray-400 font-semibold uppercase tracking-wider border-b border-gray-100">
+                  Gợi ý ({suggestions.length})
+                </div>
+                {suggestions.map((t) => (
+                  <button
+                    key={t.name}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => {
+                      setSelectedTool(t);
+                      setSearch("");
+                      setShowSuggestions(false);
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-violet-50 transition-colors text-left group"
+                  >
+                    <div className="w-9 h-9 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center text-xl flex-shrink-0">
+                      {t.icon}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-bold text-gray-900 text-sm group-hover:text-violet-700 transition-colors">{t.name}</div>
+                      <div className="text-xs text-gray-400 truncate">{t.desc}</div>
+                    </div>
+                    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border flex-shrink-0 ${CAT_LIGHT[t.category]}`}>
+                      {t.category}
+                    </span>
+                  </button>
+                ))}
+              </div>
             )}
           </div>
         </div>
@@ -436,8 +567,8 @@ export default function CongCuAiPage() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {hotTools.map((t) => (
-              <a key={t.name} href={t.url} target="_blank" rel="noopener noreferrer"
-                className="group flex flex-col items-center text-center bg-white rounded-2xl border-2 border-gray-100 p-5 hover:border-violet-300 hover:shadow-lg hover:-translate-y-1 transition-all">
+              <button key={t.name} onClick={() => setSelectedTool(t)}
+                className="group flex flex-col items-center text-center bg-white rounded-2xl border-2 border-gray-100 p-5 hover:border-violet-300 hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer">
                 <div className="text-4xl mb-2">{t.icon}</div>
                 <div className="font-bold text-gray-800 text-sm mb-1">{t.name}</div>
                 <div className={`text-[11px] px-2.5 py-0.5 rounded-full font-semibold border ${CAT_LIGHT[t.category]}`}>
@@ -447,9 +578,9 @@ export default function CongCuAiPage() {
                   {t.badge}
                 </div>
                 <div className="mt-3 text-xs font-semibold text-violet-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                  Dùng ngay →
+                  Xem chi tiết →
                 </div>
-              </a>
+              </button>
             ))}
           </div>
         </section>
@@ -507,7 +638,8 @@ export default function CongCuAiPage() {
               const lightStyle = CAT_LIGHT[tool.category];
               return (
                 <div key={tool.name}
-                  className={`group relative flex flex-col bg-white rounded-2xl border-t-4 border border-gray-100 ${topBorder} overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-200`}>
+                  onClick={() => setSelectedTool(tool)}
+                  className={`group relative flex flex-col bg-white rounded-2xl border-t-4 border border-gray-100 ${topBorder} overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-200 cursor-pointer`}>
 
                   {/* HOT ribbon */}
                   {tool.hot && (
@@ -549,6 +681,7 @@ export default function CongCuAiPage() {
                       </span>
                       <div className="flex-1" />
                       <a href={tool.url} target="_blank" rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
                         className="flex items-center gap-1.5 px-4 py-1.5 bg-gray-900 hover:bg-violet-600 text-white text-xs font-bold rounded-full transition-colors">
                         Dùng ngay
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
