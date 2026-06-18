@@ -1,12 +1,12 @@
 "use client";
 import { useEffect } from "react";
+import { useSettings } from "@/components/SettingsContext";
 
 export default function SeoInjector() {
+  const d = useSettings();
   useEffect(() => {
-    fetch("/api/settings")
-      .then((r) => r.json())
-      .then((d) => {
-        if (!d || d.error) return;
+    if (!d || Object.keys(d).length === 0) return;
+    {
 
         // Helper: inject raw HTML vào <head>
         const injectHead = (html: string, id: string) => {
@@ -59,9 +59,8 @@ export default function SeoInjector() {
 
         // 5. Body JS
         injectBody(d.seo_body_js || "", "sxc-body-js");
-      })
-      .catch(() => {});
-  }, []);
+    }
+  }, [d]);
 
   return null;
 }

@@ -1,23 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useSettings } from "@/components/SettingsContext";
 
 export default function MobileBar() {
-  const [phone, setPhone] = useState("0968806360");
-  const [zalo, setZalo] = useState("0968806360");
-  const [facebook, setFacebook] = useState("fb.com/sonxinchao");
+  const s = useSettings();
+  const phone    = (s.contact_phone    || "0968806360").replace(/\s/g, "");
+  const zalo     = (s.contact_zalo     || "0968806360").replace(/\s/g, "");
+  const facebook = s.contact_facebook  || "fb.com/sonxinchao";
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Hiện sau 1 giây
     const t = setTimeout(() => setVisible(true), 800);
-    fetch("/api/settings")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d?.contact_phone) setPhone(d.contact_phone.replace(/\s/g, ""));
-        if (d?.contact_zalo) setZalo(d.contact_zalo.replace(/\s/g, ""));
-        if (d?.contact_facebook) setFacebook(d.contact_facebook);
-      })
-      .catch(() => {});
     return () => clearTimeout(t);
   }, []);
 

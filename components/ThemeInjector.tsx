@@ -1,5 +1,6 @@
 "use client";
 import { useEffect } from "react";
+import { useSettings } from "@/components/SettingsContext";
 
 /**
  * Client-side theme injector — cập nhật CSS variables live
@@ -76,12 +77,9 @@ export function applyTheme(settings: Record<string, string>) {
 }
 
 export default function ThemeInjector() {
+  const s = useSettings();
   useEffect(() => {
-    fetch("/api/settings")
-      .then((r) => r.json())
-      .then((d) => { if (d && !d.error) applyTheme(d); })
-      .catch(() => {});
-  }, []);
-
+    if (s && Object.keys(s).length > 0) applyTheme(s);
+  }, [s]);
   return null;
 }

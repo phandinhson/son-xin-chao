@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { useSettings } from "@/components/SettingsContext";
 
 /* ── Nav data ── */
 const SERVICES = [
@@ -80,11 +81,12 @@ function MobileAccordion({
 }
 
 export default function Navbar() {
+  const s = useSettings();
+  const logoUrl  = s.logo_url  || "";
+  const logoText = s.logo_text || "Sơn Xin Chào";
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [logoUrl, setLogoUrl] = useState("");
-  const [logoText, setLogoText] = useState("Sơn Xin Chào");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -98,16 +100,6 @@ export default function Navbar() {
     const onToggle = () => setMenuOpen(v => !v);
     window.addEventListener("toggle-mobile-menu", onToggle);
     return () => window.removeEventListener("toggle-mobile-menu", onToggle);
-  }, []);
-
-  useEffect(() => {
-    fetch("/api/settings")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d?.logo_url) setLogoUrl(d.logo_url);
-        if (d?.logo_text) setLogoText(d.logo_text);
-      })
-      .catch(() => {});
   }, []);
 
   const handleMouseEnter = (key: string) => {

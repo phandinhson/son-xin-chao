@@ -7,6 +7,7 @@ import "./globals.css";
 import SeoInjector from "@/components/SeoInjector";
 import ThemeInjector from "@/components/ThemeInjector";
 import PageTracker from "@/components/PageTracker";
+import { SettingsProvider } from "@/components/SettingsContext";
 import { supabaseAdmin } from "@/lib/supabase";
 import { Analytics } from "@vercel/analytics/react";
 
@@ -161,10 +162,12 @@ export default async function RootLayout({
         {themeCSS && (
           <style id="site-theme" dangerouslySetInnerHTML={{ __html: themeCSS }} />
         )}
-        <SeoInjector />
-        <ThemeInjector />
-        <PageTracker />
-        {children}
+        <SettingsProvider value={s}>
+          <SeoInjector />
+          <ThemeInjector />
+          <PageTracker />
+          {children}
+        </SettingsProvider>
         <Analytics />
       </body>
     </html>

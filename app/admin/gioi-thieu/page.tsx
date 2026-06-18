@@ -117,14 +117,34 @@ function ImageUpload({
   label: string; hint?: string; value: string; onChange: (v: string) => void; aspectHint?: string;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadErr, setUploadErr] = useState("");
 
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => onChange(ev.target?.result as string);
-    reader.readAsDataURL(file);
+    // Reset input so same file can be re-selected
+    e.target.value = "";
+
+    setUploading(true);
+    setUploadErr("");
+    try {
+      const fd = new FormData();
+      fd.append("files", file);
+      const res = await fetch("/api/admin/media", { method: "POST", body: fd });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Upload thất bại");
+      const url: string = json.urls?.[0] ?? json.url ?? "";
+      if (!url) throw new Error("Không nhận được URL ảnh");
+      onChange(url);
+    } catch (err: unknown) {
+      setUploadErr(err instanceof Error ? err.message : "Upload thất bại");
+    } finally {
+      setUploading(false);
+    }
   };
+
+  const isBase64 = value.startsWith("data:");
 
   return (
     <div className="space-y-3">
@@ -137,13 +157,20 @@ function ImageUpload({
         {/* Preview */}
         {value ? (
           <div className="relative mb-3 rounded-2xl overflow-hidden border border-white/10 bg-white/5 group">
-            <img src={value} alt="preview" className="w-full max-h-52 object-cover" onError={() => onChange("")} />
+            <img src={value} alt="preview" className="w-full max-h-52 object-cover" />
+            {/* Cảnh báo nếu vẫn còn base64 cũ */}
+            {isBase64 && (
+              <div className="absolute top-2 left-2 px-2 py-1 rounded-lg bg-orange-500/90 text-white text-xs font-semibold">
+                ⚠️ Ảnh base64 — hãy upload lại để tối ưu
+              </div>
+            )}
             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-              <button onClick={() => fileRef.current?.click()}
-                className="px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-xl hover:bg-blue-500 transition-all">
-                🔄 Đổi ảnh
+              <button type="button" onClick={() => fileRef.current?.click()}
+                disabled={uploading}
+                className="px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-xl hover:bg-blue-500 transition-all disabled:opacity-50">
+                {uploading ? "⏳ Đang upload..." : "🔄 Đổi ảnh"}
               </button>
-              <button onClick={() => onChange("")}
+              <button type="button" onClick={() => onChange("")}
                 className="px-4 py-2 bg-red-600/80 text-white text-xs font-semibold rounded-xl hover:bg-red-500 transition-all">
                 🗑️ Xóa
               </button>
@@ -151,34 +178,49 @@ function ImageUpload({
           </div>
         ) : (
           <div
-            onClick={() => fileRef.current?.click()}
-            className="mb-3 border-2 border-dashed border-white/15 rounded-2xl p-6 text-center cursor-pointer hover:border-blue-500/50 hover:bg-blue-500/5 transition-all group">
-            <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">🖼️</div>
-            <p className="text-gray-400 text-sm font-medium">Nhấp để tải ảnh lên</p>
-            <p className="text-gray-600 text-xs mt-1">PNG, JPG, WebP · {aspectHint}</p>
+            onClick={() => !uploading && fileRef.current?.click()}
+            className={`mb-3 border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all group ${
+              uploading
+                ? "border-blue-500/50 bg-blue-500/5"
+                : "border-white/15 hover:border-blue-500/50 hover:bg-blue-500/5"
+            }`}>
+            <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">
+              {uploading ? "⏳" : "🖼️"}
+            </div>
+            <p className="text-gray-400 text-sm font-medium">
+              {uploading ? "Đang tải lên Supabase Storage..." : "Nhấp để tải ảnh lên"}
+            </p>
+            <p className="text-gray-600 text-xs mt-1">PNG, JPG, WebP · {aspectHint} · Tối đa 5MB</p>
           </div>
+        )}
+
+        {/* Error */}
+        {uploadErr && (
+          <p className="text-red-400 text-xs mb-2">❌ {uploadErr}</p>
         )}
 
         {/* URL input */}
         <div className="flex gap-2">
           <input
             type="text"
-            value={value.startsWith("data:") ? "" : value}
+            value={isBase64 ? "" : value}
             onChange={e => onChange(e.target.value)}
             placeholder="Hoặc dán URL ảnh từ Thư viện ảnh..."
             className={inp + " flex-1"}
           />
           <button
+            type="button"
             onClick={() => fileRef.current?.click()}
-            className="px-4 py-2.5 bg-white/10 border border-white/15 text-gray-300 text-xs font-semibold rounded-xl hover:bg-white/15 hover:text-white transition-all whitespace-nowrap">
-            📁 Upload
+            disabled={uploading}
+            className="px-4 py-2.5 bg-white/10 border border-white/15 text-gray-300 text-xs font-semibold rounded-xl hover:bg-white/15 hover:text-white transition-all whitespace-nowrap disabled:opacity-50">
+            {uploading ? "⏳" : "📁 Upload"}
           </button>
         </div>
 
         <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
 
         <p className="text-gray-700 text-xs mt-1.5">
-          💡 Upload từ máy tính hoặc copy URL từ{" "}
+          ✅ Ảnh upload lên <strong className="text-gray-500">Supabase Storage</strong> — lưu URL thay vì base64, load nhanh hơn nhiều. Hoặc copy URL từ{" "}
           <Link href="/admin/media" target="_blank" className="text-violet-400 hover:underline">
             Thư viện ảnh
           </Link>
@@ -299,6 +341,8 @@ export default function AdminGioiThieu() {
   const [saving, setSaving]     = useState(false);
   const [saved, setSaved]       = useState(false);
   const [saveErr, setSaveErr]   = useState("");
+  const [migrating, setMigrating] = useState(false);
+  const [migrateMsg, setMigrateMsg] = useState("");
 
   useEffect(() => {
     fetch("/api/admin/gioi-thieu")
@@ -306,6 +350,26 @@ export default function AdminGioiThieu() {
       .then(d => { if (d && Object.keys(d).length > 0) setData({ ...DEFAULTS, ...d }); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);
+
+  // Kiểm tra xem có ảnh base64 không
+  const hasBase64 = (
+    data.hero_avatar_url?.startsWith("data:") ||
+    data.story_image_url?.startsWith("data:") ||
+    data.values.some(v => v.image_url?.startsWith("data:"))
+  );
+
+  const handleMigrate = async () => {
+    setMigrating(true); setMigrateMsg("");
+    const res = await fetch("/api/admin/gioi-thieu/migrate-images", { method: "POST" });
+    const j = await res.json();
+    setMigrateMsg(j.message || j.error || "Xong");
+    if (res.ok && j.migrated?.length > 0) {
+      // Reload data from server to get new URLs
+      const fresh = await fetch("/api/admin/gioi-thieu").then(r => r.json());
+      if (fresh && Object.keys(fresh).length > 0) setData({ ...DEFAULTS, ...fresh });
+    }
+    setMigrating(false);
+  };
 
   const handleSave = async () => {
     setSaving(true); setSaveErr("");
@@ -337,6 +401,30 @@ export default function AdminGioiThieu() {
 
   return (
     <div className="p-8 max-w-4xl">
+
+      {/* Banner cảnh báo base64 */}
+      {hasBase64 && (
+        <div className="mb-6 p-4 rounded-2xl bg-orange-500/10 border border-orange-500/30 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <p className="text-orange-400 font-semibold text-sm">⚠️ Phát hiện ảnh base64 trong dữ liệu</p>
+            <p className="text-orange-300/70 text-xs mt-0.5">
+              Ảnh đang nhúng thẳng vào HTML làm trang nặng. Bấm migrate để chuyển sang Supabase Storage.
+            </p>
+            {migrateMsg && <p className="text-green-400 text-xs mt-1 font-medium">{migrateMsg}</p>}
+          </div>
+          <button
+            onClick={handleMigrate}
+            disabled={migrating}
+            className="px-5 py-2.5 bg-orange-500 hover:bg-orange-400 text-white text-sm font-semibold rounded-xl transition-all disabled:opacity-50 whitespace-nowrap">
+            {migrating ? "⏳ Đang migrate..." : "🚀 Migrate ảnh → Supabase Storage"}
+          </button>
+        </div>
+      )}
+      {migrateMsg && !hasBase64 && (
+        <div className="mb-4 p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm">
+          {migrateMsg}
+        </div>
+      )}
 
       {/* Header */}
       <div className="flex items-center justify-between mb-8">

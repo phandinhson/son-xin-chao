@@ -1,27 +1,14 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useSettings } from "@/components/SettingsContext";
 
 export default function Footer() {
-  const [logoUrl, setLogoUrl] = useState("");
-  const [logoText, setLogoText] = useState("Sơn Xin Chào");
-  const [zalo, setZalo] = useState("0968806360");
-  const [facebook, setFacebook] = useState("fb.com/sonxinchao");
-  const [phone, setPhone] = useState("0968 806 360");
-  const [email, setEmail] = useState("phandinhsonlp116@gmail.com");
-
-  useEffect(() => {
-    fetch("/api/settings")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d?.logo_url) setLogoUrl(d.logo_url);
-        if (d?.logo_text) setLogoText(d.logo_text);
-        if (d?.contact_zalo) setZalo(d.contact_zalo);
-        if (d?.contact_facebook) setFacebook(d.contact_facebook);
-        if (d?.contact_phone) setPhone(d.contact_phone);
-        if (d?.contact_email) setEmail(d.contact_email);
-      })
-      .catch(() => {});
-  }, []);
+  const s = useSettings();
+  const logoUrl = s.logo_url  || "";
+  const logoText = s.logo_text || "Sơn Xin Chào";
+  const zalo    = s.contact_zalo     || "0968806360";
+  const facebook = s.contact_facebook || "fb.com/sonxinchao";
+  const phone   = s.contact_phone    || "0968 806 360";
+  const email   = s.contact_email    || "phandinhsonlp116@gmail.com";
 
   const columns = [
     {
