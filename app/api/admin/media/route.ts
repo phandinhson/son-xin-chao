@@ -1,9 +1,8 @@
 export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { supabaseAdmin } from "@/lib/supabase";
 
-const IMAGES_DIR = path.join(process.cwd(), "public", "images");
+const BUCKET = "images";
 const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif", "image/svg+xml"];
 const MAX_SIZE_MB = 5;
 
@@ -12,52 +11,45 @@ function checkAuth(req: NextRequest) {
   return session === process.env.ADMIN_SECRET;
 }
 
-function ensureDir() {
-  if (!fs.existsSync(IMAGES_DIR)) {
-    fs.mkdirSync(IMAGES_DIR, { recursive: true });
-  }
-}
-
-function getExt(filename: string) {
-  return path.extname(filename).toLowerCase().replace(".", "");
-}
-
 function formatSize(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-// GET — list all images
+function getPublicUrl(filename: string) {
+  return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${filename}`;
+}
+
+// GET — list all images from Supabase Storage
 export async function GET(req: NextRequest) {
   if (!checkAuth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  ensureDir();
+  const sb = supabaseAdmin();
+  const { data, error } = await sb.storage.from(BUCKET).list("", {
+    limit: 200,
+    sortBy: { column: "created_at", order: "desc" },
+  });
 
-  const files = fs.readdirSync(IMAGES_DIR)
-    .filter(f => !f.startsWith(".") && /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(f))
-    .map(f => {
-      const filePath = path.join(IMAGES_DIR, f);
-      const stat = fs.statSync(filePath);
-      return {
-        name: f,
-        url: `/images/${f}`,
-        size: stat.size,
-        sizeLabel: formatSize(stat.size),
-        ext: getExt(f),
-        uploadedAt: stat.mtime.toISOString(),
-      };
-    })
-    .sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  const files = (data || [])
+    .filter(f => f.name && /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(f.name))
+    .map(f => ({
+      name: f.name,
+      url: getPublicUrl(f.name),
+      size: f.metadata?.size ?? 0,
+      sizeLabel: formatSize(f.metadata?.size ?? 0),
+      ext: (f.name.split(".").pop() ?? "").toLowerCase(),
+      uploadedAt: f.created_at ?? new Date().toISOString(),
+    }));
 
   return NextResponse.json(files);
 }
 
-// POST — upload image
+// POST — upload image(s) to Supabase Storage
 export async function POST(req: NextRequest) {
   if (!checkAuth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  ensureDir();
 
   let formData: FormData;
   try {
@@ -66,31 +58,30 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Không thể đọc form data" }, { status: 400 });
   }
 
-  const uploaded: string[] = [];
-  const errors: string[] = [];
-
   const files = formData.getAll("files") as File[];
   if (!files || files.length === 0) {
     return NextResponse.json({ error: "Không có file nào được gửi lên" }, { status: 400 });
   }
 
+  const sb = supabaseAdmin();
+  const uploaded: string[] = [];
+  const urls: string[] = [];
+  const errors: string[] = [];
+
   for (const file of files) {
-    // Validate type
     if (!ALLOWED_TYPES.includes(file.type)) {
       errors.push(`${file.name}: định dạng không hỗ trợ`);
       continue;
     }
-
-    // Validate size
     if (file.size > MAX_SIZE_MB * 1024 * 1024) {
       errors.push(`${file.name}: vượt quá ${MAX_SIZE_MB}MB`);
       continue;
     }
 
-    // Build safe filename: keep original but sanitize
-    const originalName = file.name;
-    const ext = path.extname(originalName);
-    const baseName = path.basename(originalName, ext)
+    // Sanitize filename
+    const ext = (file.name.split(".").pop() ?? "").toLowerCase();
+    const baseName = file.name
+      .replace(/\.[^.]+$/, "")
       .toLowerCase()
       .normalize("NFD")
       .replace(/[̀-ͯ]/g, "")
@@ -99,23 +90,26 @@ export async function POST(req: NextRequest) {
       .replace(/-+/g, "-")
       .replace(/^-|-$/g, "");
 
-    // Deduplicate: append timestamp if file exists
-    let finalName = `${baseName}${ext.toLowerCase()}`;
-    if (fs.existsSync(path.join(IMAGES_DIR, finalName))) {
-      finalName = `${baseName}-${Date.now()}${ext.toLowerCase()}`;
+    const finalName = `${baseName}-${Date.now()}.${ext}`;
+    const buffer = await file.arrayBuffer();
+
+    const { error } = await sb.storage.from(BUCKET).upload(finalName, buffer, {
+      contentType: file.type,
+      upsert: false,
+    });
+
+    if (error) {
+      errors.push(`${file.name}: ${error.message}`);
+    } else {
+      uploaded.push(finalName);
+      urls.push(getPublicUrl(finalName));
     }
-
-    const destPath = path.join(IMAGES_DIR, finalName);
-    const buffer = Buffer.from(await file.arrayBuffer());
-    fs.writeFileSync(destPath, buffer);
-
-    uploaded.push(finalName);
   }
 
-  return NextResponse.json({ uploaded, errors });
+  return NextResponse.json({ uploaded, urls, errors });
 }
 
-// DELETE — xóa file
+// DELETE — remove image from Supabase Storage
 export async function DELETE(req: NextRequest) {
   if (!checkAuth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -131,19 +125,10 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ error: "Thiếu tên file" }, { status: 400 });
   }
 
-  // Prevent path traversal
-  const safeName = path.basename(filename);
-  const filePath = path.join(IMAGES_DIR, safeName);
+  const sb = supabaseAdmin();
+  const { error } = await sb.storage.from(BUCKET).remove([filename]);
 
-  try {
-    if (!fs.existsSync(filePath)) {
-      return NextResponse.json({ error: "File không tồn tại" }, { status: 404 });
-    }
-    fs.unlinkSync(filePath);
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err);
-    return NextResponse.json({ error: `Không thể xóa file: ${msg}` }, { status: 500 });
-  }
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  return NextResponse.json({ success: true, deleted: safeName });
+  return NextResponse.json({ success: true, deleted: filename });
 }

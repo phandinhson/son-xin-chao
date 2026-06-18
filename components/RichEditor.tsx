@@ -42,8 +42,8 @@ function ImageModal({ onInsert, onClose }: {
     try {
       const res  = await fetch("/api/admin/media", { method: "POST", body: fd });
       const data = await res.json();
-      if (data.uploaded?.length) {
-        const imgUrl = `/images/${data.uploaded[0]}`;
+      if (data.uploaded?.length && data.urls?.length) {
+        const imgUrl = data.urls[0];
         setUrl(imgUrl);
         setPreview(imgUrl);
         // Auto-fill alt từ tên file nếu chưa nhập
@@ -113,7 +113,7 @@ function ImageModal({ onInsert, onClose }: {
                 <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
               </div>
               {uploadErr && <p className="text-red-500 text-xs bg-red-50 border border-red-200 rounded-lg px-3 py-2">{uploadErr}</p>}
-              {url.startsWith("/images/") && (
+              {url && !uploadErr && tab === "upload" && preview && (
                 <div className="flex items-center gap-2.5 bg-green-50 border border-green-200 rounded-lg px-4 py-2.5">
                   <span className="text-green-600 text-lg">✓</span>
                   <div>

@@ -1,15 +1,14 @@
 export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { supabaseAdmin } from "@/lib/supabase";
 
-const IMAGES_DIR = path.join(process.cwd(), "public", "images");
+const BUCKET = "images";
 
 function checkAuth(req: NextRequest) {
   return req.cookies.get("admin_session")?.value === process.env.ADMIN_SECRET;
 }
 
-// POST — nhận file đã nén từ Canvas API phía client, ghi đè bản gốc
+// POST — nhận file đã nén từ Canvas API phía client, ghi đè lên Supabase Storage
 export async function POST(req: NextRequest) {
   if (!checkAuth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -24,20 +23,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Thiếu file hoặc originalName" }, { status: 400 });
   }
 
-  // Chỉ cho phép tên file an toàn
-  const safeName = path.basename(originalName);
-  const destPath = path.join(IMAGES_DIR, safeName);
+  const sb = supabaseAdmin();
 
-  if (!fs.existsSync(destPath)) {
-    return NextResponse.json({ error: "File gốc không tồn tại" }, { status: 404 });
-  }
+  // Lấy kích thước file gốc từ Supabase Storage metadata
+  const { data: listing } = await sb.storage.from(BUCKET).list("", { search: originalName });
+  const originalSize = listing?.find(f => f.name === originalName)?.metadata?.size ?? 0;
 
-  const originalSize = fs.statSync(destPath).size;
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const newSize = buffer.length;
+  const buffer = await file.arrayBuffer();
+  const newSize = buffer.byteLength;
 
   // Chỉ lưu nếu thực sự nhỏ hơn
-  if (newSize >= originalSize) {
+  if (originalSize > 0 && newSize >= originalSize) {
     return NextResponse.json({
       skipped: true,
       message: "File nén không nhỏ hơn bản gốc, giữ nguyên.",
@@ -46,13 +42,19 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  fs.writeFileSync(destPath, buffer);
+  // Overwrite file trong Supabase Storage
+  const { error } = await sb.storage.from(BUCKET).upload(originalName, buffer, {
+    contentType: file.type,
+    upsert: true,
+  });
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   return NextResponse.json({
     success: true,
     originalSize,
     newSize,
     saved: originalSize - newSize,
-    savedPercent: Math.round((1 - newSize / originalSize) * 100),
+    savedPercent: originalSize > 0 ? Math.round((1 - newSize / originalSize) * 100) : 0,
   });
 }
