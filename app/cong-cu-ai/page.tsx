@@ -448,13 +448,15 @@ export default function CongCuAiPage() {
     <main className="min-h-screen bg-gray-50">
 
       {/* ── Hero sáng ── */}
-      <section className="relative overflow-hidden bg-white pt-24 pb-16 px-6 border-b border-gray-100">
-        {/* Blobs */}
-        <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full opacity-10"
-          style={{ background: "radial-gradient(circle, #7c3aed, transparent)" }} />
-        <div className="absolute -top-20 right-0 w-80 h-80 rounded-full opacity-10"
-          style={{ background: "radial-gradient(circle, #2563eb, transparent)" }} />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-violet-400 to-transparent opacity-30" />
+      <section className="relative bg-white pt-24 pb-16 px-6 border-b border-gray-100">
+        {/* Blobs (clipped so they don't overflow) */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full opacity-10"
+            style={{ background: "radial-gradient(circle, #7c3aed, transparent)" }} />
+          <div className="absolute -top-20 right-0 w-80 h-80 rounded-full opacity-10"
+            style={{ background: "radial-gradient(circle, #2563eb, transparent)" }} />
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-violet-400 to-transparent opacity-30" />
+        </div>
 
         <div className="relative max-w-3xl mx-auto text-center">
           {/* Badge */}
