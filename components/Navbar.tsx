@@ -32,6 +32,51 @@ const navLinks = [
   { href: "#pricing", label: "Bảng giá", dropdown: null },
 ];
 
+/* ── Mobile Accordion Component ── */
+function MobileAccordion({
+  label,
+  items,
+  onClose,
+}: {
+  label: string;
+  items: { href: string; label: string }[];
+  onClose: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border-b border-slate-100">
+      <button
+        onClick={() => setOpen(!open)}
+        className={`w-full flex items-center justify-between px-5 py-4 text-[15px] font-semibold transition-colors ${
+          open ? "bg-blue-600 text-white" : "text-slate-800 hover:bg-slate-50"
+        }`}
+      >
+        {label}
+        <svg
+          className={`w-4 h-4 transition-transform duration-200 ${open ? "rotate-180 text-white" : "text-slate-400"}`}
+          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      <div className={`overflow-hidden transition-all duration-300 ${open ? "max-h-96" : "max-h-0"}`}>
+        <div className="bg-slate-50 flex flex-col">
+          {items.map((item) => (
+            <a
+              key={item.href + item.label}
+              href={item.href}
+              onClick={onClose}
+              className="px-8 py-3.5 text-[14px] text-slate-600 hover:text-blue-600 hover:bg-blue-50 border-b border-slate-100 last:border-0 transition-colors"
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -81,7 +126,7 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-4 relative">
 
         {/* ── Logo ── */}
-        <a href="#" className="flex items-center gap-2.5 flex-shrink-0 group md:static absolute left-1/2 -translate-x-1/2 md:translate-x-0">
+        <a href="/" className="flex items-center gap-2.5 flex-shrink-0 group md:static absolute left-1/2 -translate-x-1/2 md:translate-x-0">
           {logoUrl ? (
             <img src={logoUrl} alt="Logo" className="w-9 h-9 rounded-xl object-cover shadow group-hover:scale-105 transition-transform" />
           ) : (
@@ -258,41 +303,85 @@ export default function Navbar() {
       </div>
 
       {/* ── Mobile menu ── */}
-      <div className={`md:hidden overflow-hidden transition-all duration-300 ${menuOpen ? "max-h-[600px]" : "max-h-0"}`}>
-        <div className="bg-white border-t border-slate-100 px-4 py-3 flex flex-col gap-1">
-          {[
-            { href: "/#about", label: "Về Sơn" },
-            { href: "/dich-vu/seo", label: "🤖 SEO AI" },
-            { href: "/dich-vu/seo", label: "🔍 SEO Organic" },
-            { href: "/dich-vu/google-ads", label: "📊 Google Ads" },
-            { href: "/dich-vu/thiet-ke-website", label: "💻 Thiết kế Website" },
-            { href: "/dich-vu/facebook-ads", label: "📣 Facebook Ads" },
-            { href: "/dich-vu/tiktok-ads", label: "🎵 TikTok Ads" },
-            { href: "/dich-vu/seo-local", label: "📍 SEO Local" },
-            { href: "/dich-vu/audit-tu-van", label: "🎯 Audit & Tư vấn" },
-            { href: "/#portfolio", label: "Portfolio" },
-            { href: "/#pricing", label: "Bảng giá" },
-            { href: "/blog", label: "Kiến thức" },
-          ].map((link) => (
-            <a key={link.href} href={link.href}
-              className="px-4 py-3 text-slate-700 hover:text-blue-600 hover:bg-blue-50 text-sm font-semibold rounded-xl transition-colors"
-              onClick={() => setMenuOpen(false)}>
-              {link.label}
+      <div className={`md:hidden overflow-hidden transition-all duration-500 ${menuOpen ? "max-h-[800px]" : "max-h-0"}`}>
+        <div className="bg-white border-t border-slate-100">
+
+          {/* Header mobile menu */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+            <a href="/" className="flex items-center gap-2.5" onClick={() => setMenuOpen(false)}>
+              {logoUrl
+                ? <img src={logoUrl} alt="Logo" className="w-8 h-8 rounded-lg object-cover" />
+                : <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm">S</div>
+              }
+              <div>
+                <div className="font-extrabold text-sm text-slate-900 tracking-tight leading-none">
+                  {logoText.split(" ")[0]}{" "}
+                  <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
+                    {logoText.split(" ").slice(1).join(" ")}
+                  </span>
+                </div>
+                <div className="text-[10px] text-slate-400 tracking-widest uppercase mt-0.5">SEO · ADS · WEBSITE</div>
+              </div>
             </a>
-          ))}
-          <div className="mt-2 pt-3 border-t border-slate-100 flex flex-col gap-2">
-            <a href="tel:0968806360"
-              className="flex items-center gap-3 px-4 py-3 text-slate-600 text-sm font-medium rounded-xl bg-slate-50"
-              onClick={() => setMenuOpen(false)}>
+            <button onClick={() => setMenuOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors">
+              <svg className="w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Nav items */}
+          <div className="flex flex-col">
+
+            {/* Về Sơn */}
+            <a href="/#about" onClick={() => setMenuOpen(false)}
+              className="flex items-center justify-between px-5 py-4 text-[15px] font-semibold text-slate-800 border-b border-slate-100 hover:bg-slate-50 transition-colors">
+              Về Sơn
+            </a>
+
+            {/* Dịch vụ — accordion */}
+            <MobileAccordion label="Dịch vụ" onClose={() => setMenuOpen(false)} items={[
+              { href: "/dich-vu/seo", label: "Dịch vụ SEO tổng thể" },
+              { href: "/dich-vu/google-ads", label: "Quảng cáo Google Ads" },
+              { href: "/dich-vu/facebook-ads", label: "Quảng cáo Facebook Ads" },
+              { href: "/dich-vu/tiktok-ads", label: "Quảng cáo TikTok Ads" },
+              { href: "/dich-vu/thiet-ke-website", label: "Thiết kế Website WordPress" },
+              { href: "/dich-vu/seo-local", label: "SEO Local (Google Map)" },
+              { href: "/dich-vu/audit-tu-van", label: "Audit & Tư vấn Marketing" },
+            ]} />
+
+            {/* Kiến thức — accordion */}
+            <MobileAccordion label="Kiến thức" onClose={() => setMenuOpen(false)} items={[
+              { href: "/blog", label: "Blog & Kiến thức SEO" },
+              { href: "/blog", label: "Hướng dẫn Google Ads" },
+              { href: "/blog", label: "Xây dựng Website" },
+            ]} />
+
+            {/* Portfolio */}
+            <a href="/#portfolio" onClick={() => setMenuOpen(false)}
+              className="flex items-center justify-between px-5 py-4 text-[15px] font-semibold text-slate-800 border-b border-slate-100 hover:bg-slate-50 transition-colors">
+              Portfolio
+            </a>
+
+            {/* Bảng giá */}
+            <a href="/#pricing" onClick={() => setMenuOpen(false)}
+              className="flex items-center justify-between px-5 py-4 text-[15px] font-semibold text-slate-800 border-b border-slate-100 hover:bg-slate-50 transition-colors">
+              Bảng giá
+            </a>
+          </div>
+
+          {/* CTA bottom */}
+          <div className="px-5 py-4 flex flex-col gap-3">
+            <a href="tel:0968806360" onClick={() => setMenuOpen(false)}
+              className="flex items-center justify-center gap-2 py-3 border border-slate-200 rounded-xl text-slate-700 text-sm font-semibold hover:bg-slate-50 transition-colors">
               <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
               </svg>
               0968 806 360
             </a>
-            <a href="/#contact"
-              className="text-center py-3 bg-gradient-to-r from-red-500 to-rose-500 text-white text-sm font-bold rounded-2xl shadow-md"
-              onClick={() => setMenuOpen(false)}>
-              Liên hệ ngay →
+            <a href="/#contact" onClick={() => setMenuOpen(false)}
+              className="text-center py-3 bg-gradient-to-r from-blue-600 to-violet-600 text-white text-sm font-bold rounded-xl">
+              Liên hệ tư vấn miễn phí →
             </a>
           </div>
         </div>

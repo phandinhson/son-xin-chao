@@ -1,17 +1,13 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
   "/icon/[[...__metadata_id__]]/route": "app/icon/[[...__metadata_id__]]/route.js",
-  "/blog/[slug]/page": "app/blog/[slug]/page.js",
-  "/api/track/route": "app/api/track/route.js",
   "/api/settings/route": "app/api/settings/route.js",
-  "/dich-vu/seo-local/page": "app/dich-vu/seo-local/page.js",
-  "/dich-vu/audit-tu-van/page": "app/dich-vu/audit-tu-van/page.js",
-  "/api/posts/route": "app/api/posts/route.js",
-  "/api/pricing/route": "app/api/pricing/route.js",
-  "/api/addons/route": "app/api/addons/route.js",
-  "/dich-vu/tiktok-ads/page": "app/dich-vu/tiktok-ads/page.js",
-  "/api/categories/route": "app/api/categories/route.js",
-  "/api/admin/posts/[id]/route": "app/api/admin/posts/[id]/route.js",
+  "/api/track/route": "app/api/track/route.js",
   "/page": "app/page.js",
   "/api/portfolio/route": "app/api/portfolio/route.js",
-  "/admin/posts/[id]/page": "app/admin/posts/[id]/page.js"
+  "/api/pricing/route": "app/api/pricing/route.js",
+  "/api/addons/route": "app/api/addons/route.js",
+  "/api/posts/route": "app/api/posts/route.js",
+  "/blog/page": "app/blog/page.js",
+  "/api/categories/route": "app/api/categories/route.js"
 }
