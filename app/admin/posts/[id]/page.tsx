@@ -51,8 +51,12 @@ export default function PostEditor() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ text: string; ok: boolean } | null>(null);
   const [loading, setLoading] = useState(!isNew);
-  const [imgTab, setImgTab] = useState<"url" | "upload">("url");
+  const [imgTab, setImgTab] = useState<"url" | "upload" | "library">("url");
   const [dbCategories, setDbCategories] = useState<DbCategory[]>([]);
+  const [coverUploading, setCoverUploading] = useState(false);
+  const [coverUploadErr, setCoverUploadErr] = useState("");
+  const [libImages, setLibImages] = useState<{name:string;url:string}[]>([]);
+  const [libLoaded, setLibLoaded] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -63,6 +67,31 @@ export default function PostEditor() {
         .then((d) => { setForm(d); setLoading(false); });
     }
   }, [id, isNew]);
+
+  const loadLibrary = () => {
+    if (libLoaded) return;
+    fetch("/api/admin/media").then(r => r.json()).then(d => {
+      if (Array.isArray(d)) { setLibImages(d); setLibLoaded(true); }
+    }).catch(() => {});
+  };
+
+  const uploadCoverImage = async (file: File) => {
+    setCoverUploading(true);
+    setCoverUploadErr("");
+    const fd = new FormData();
+    fd.append("files", file);
+    try {
+      const res  = await fetch("/api/admin/media", { method: "POST", body: fd });
+      const data = await res.json();
+      if (data.uploaded?.length) {
+        update("cover_image", `/images/${data.uploaded[0]}`);
+        setLibLoaded(false); // refresh library next open
+      } else {
+        setCoverUploadErr(data.errors?.[0] || data.error || "Upload thất bại");
+      }
+    } catch { setCoverUploadErr("Không thể kết nối server"); }
+    finally { setCoverUploading(false); }
+  };
 
   const update = (field: keyof FormData, value: string) => {
     setForm((prev) => {
@@ -371,66 +400,93 @@ export default function PostEditor() {
             </div>
             <div className="p-4 space-y-3">
               {/* Tabs */}
-              <div className="flex rounded-md border border-gray-200 overflow-hidden">
-                {(["url", "upload"] as const).map((tab) => (
-                  <button key={tab} onClick={() => setImgTab(tab)}
-                    className={`flex-1 py-1.5 text-xs font-medium transition-colors ${
-                      imgTab === tab
-                        ? "bg-blue-600 text-white"
-                        : "bg-white text-gray-500 hover:bg-gray-50"
+              <div className="flex rounded-md border border-gray-200 overflow-hidden text-xs">
+                {(["url", "upload", "library"] as const).map((tab) => (
+                  <button key={tab} onClick={() => { setImgTab(tab); if (tab === "library") loadLibrary(); }}
+                    className={`flex-1 py-1.5 font-medium transition-colors ${
+                      imgTab === tab ? "bg-blue-600 text-white" : "bg-white text-gray-500 hover:bg-gray-50"
                     }`}>
-                    {tab === "url" ? "🔗 Nhập URL" : "📁 Từ máy"}
+                    {tab === "url" ? "🔗 URL" : tab === "upload" ? "📁 Tải lên" : "🖼️ Thư viện"}
                   </button>
                 ))}
               </div>
 
-              {imgTab === "url" ? (
-                <input
-                  type="url"
-                  value={(form.cover_image || "").startsWith("data:") ? "" : form.cover_image}
+              {/* URL */}
+              {imgTab === "url" && (
+                <input type="url" value={form.cover_image.startsWith("/images/") || form.cover_image.startsWith("http") ? form.cover_image : ""}
                   onChange={(e) => update("cover_image", e.target.value)}
                   placeholder="https://example.com/image.jpg"
-                  className="w-full px-3 py-2 text-sm text-gray-900 placeholder-gray-400 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  className="w-full px-3 py-2 text-sm text-gray-900 placeholder-gray-400 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                 />
-              ) : (
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-gray-300 rounded-lg p-5 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all group"
-                >
-                  <div className="text-2xl mb-1.5">🖼️</div>
-                  <p className="text-gray-600 text-xs font-medium group-hover:text-blue-700">Nhấp để chọn ảnh</p>
-                  <p className="text-gray-400 text-xs mt-0.5">JPG, PNG, WebP · 1200×630px</p>
+              )}
+
+              {/* Upload → lưu vào media library */}
+              {imgTab === "upload" && (
+                <>
+                  <div onClick={() => !coverUploading && fileInputRef.current?.click()}
+                    className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-all group ${
+                      coverUploading ? "border-blue-300 bg-blue-50 opacity-70 cursor-wait" : "border-gray-300 hover:border-blue-400 hover:bg-blue-50"
+                    }`}>
+                    <div className="text-xl mb-1">{coverUploading ? "⏳" : "📁"}</div>
+                    <p className="text-gray-600 text-xs font-medium">
+                      {coverUploading ? "Đang lưu vào thư viện..." : "Nhấp để chọn ảnh"}
+                    </p>
+                    <p className="text-gray-400 text-xs mt-0.5">Tự động lưu vào /public/images/</p>
+                  </div>
+                  {coverUploadErr && <p className="text-red-500 text-xs">{coverUploadErr}</p>}
+                  {form.cover_image.startsWith("/images/") && (
+                    <p className="text-green-600 text-xs bg-green-50 border border-green-200 rounded px-2 py-1.5">
+                      ✓ Đã lưu: <code>{form.cover_image}</code>
+                    </p>
+                  )}
+                </>
+              )}
+
+              {/* Library picker */}
+              {imgTab === "library" && (
+                <div className="max-h-48 overflow-y-auto">
+                  {libImages.length === 0 ? (
+                    <p className="text-xs text-gray-400 text-center py-4">Thư viện trống — hãy upload ảnh trước.</p>
+                  ) : (
+                    <div className="grid grid-cols-3 gap-2">
+                      {libImages.map(img => (
+                        <button key={img.name} type="button" onClick={() => update("cover_image", img.url)}
+                          className={`relative rounded-lg overflow-hidden border-2 transition-all ${
+                            form.cover_image === img.url ? "border-blue-500 ring-1 ring-blue-300" : "border-transparent hover:border-blue-300"
+                          }`}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={img.url} alt={img.name} className="w-full aspect-square object-cover" loading="lazy" />
+                          {form.cover_image === img.url && (
+                            <div className="absolute inset-0 bg-blue-600/20 flex items-center justify-center">
+                              <span className="w-5 h-5 bg-blue-600 rounded-full text-white text-xs flex items-center justify-center">✓</span>
+                            </div>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
               <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  const reader = new FileReader();
-                  reader.onload = (ev) => update("cover_image", ev.target?.result as string);
-                  reader.readAsDataURL(file);
-                }}
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadCoverImage(f); }}
               />
 
               {/* Preview */}
               {form.cover_image && (
                 <div className="relative rounded-lg overflow-hidden border border-gray-200 group">
-                  <img src={form.cover_image} alt="Preview ảnh bìa"
-                    className="w-full h-36 object-cover"
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-                  />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={form.cover_image} alt="Preview ảnh bìa" className="w-full h-36 object-cover"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <button
-                      onClick={() => { update("cover_image", ""); if (fileInputRef.current) fileInputRef.current.value = ""; }}
-                      className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-md transition-colors shadow"
-                    >
+                    <button onClick={() => { update("cover_image", ""); if (fileInputRef.current) fileInputRef.current.value = ""; }}
+                      className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-md shadow">
                       🗑️ Xoá ảnh
                     </button>
                   </div>
-                  {(form.cover_image || "").startsWith("data:") && (
+                  {form.cover_image.startsWith("/images/") && (
                     <div className="absolute bottom-2 left-2">
-                      <span className="px-2 py-0.5 bg-green-600/80 text-white text-xs rounded">✓ Ảnh từ máy</span>
+                      <span className="px-2 py-0.5 bg-blue-600/80 text-white text-xs rounded">📁 Thư viện</span>
                     </div>
                   )}
                 </div>

@@ -1,128 +1,221 @@
 "use client";
 import { useRef, useState, useEffect, useCallback } from "react";
 
-// ── Image Modal ────────────────────────────────────────────────────────────
+type LibImg = { name: string; url: string; sizeLabel: string };
+
+// ── Image Modal — upload lưu vào /public/images/, chọn từ thư viện ──────────
 function ImageModal({ onInsert, onClose }: {
   onInsert: (src: string, alt: string) => void;
   onClose: () => void;
 }) {
-  const [tab, setTab]     = useState<"upload" | "url">("upload");
-  const [url, setUrl]     = useState("");
-  const [alt, setAlt]     = useState("");
+  const [tab, setTab]         = useState<"upload" | "library" | "url">("upload");
+  const [url, setUrl]         = useState("");
+  const [alt, setAlt]         = useState("");
   const [preview, setPreview] = useState("");
+  const [uploading, setUploading]   = useState(false);
+  const [uploadErr, setUploadErr]   = useState("");
+  const [libImages, setLibImages]   = useState<LibImg[]>([]);
+  const [libLoading, setLibLoading] = useState(false);
+  const [libSearch, setLibSearch]   = useState("");
+  const [picked, setPicked]         = useState<LibImg | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Load thư viện khi chuyển tab
+  useEffect(() => {
+    if (tab !== "library") return;
+    setLibLoading(true);
+    fetch("/api/admin/media")
+      .then(r => r.json())
+      .then(d => { setLibImages(Array.isArray(d) ? d : []); setLibLoading(false); })
+      .catch(() => setLibLoading(false));
+  }, [tab]);
+
+  // Upload lên /public/images/ qua media API
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const src = ev.target?.result as string;
-      setPreview(src);
-      setUrl(src);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleUrlChange = (v: string) => {
-    setUrl(v);
-    setPreview(v);
+    setUploading(true);
+    setUploadErr("");
+    setUrl(""); setPreview("");
+    const fd = new FormData();
+    fd.append("files", file);
+    try {
+      const res  = await fetch("/api/admin/media", { method: "POST", body: fd });
+      const data = await res.json();
+      if (data.uploaded?.length) {
+        const imgUrl = `/images/${data.uploaded[0]}`;
+        setUrl(imgUrl);
+        setPreview(imgUrl);
+        // Auto-fill alt từ tên file nếu chưa nhập
+        setAlt(prev => prev || data.uploaded[0].replace(/[-_]/g, " ").replace(/\.[^.]+$/, ""));
+      } else {
+        setUploadErr(data.errors?.[0] || data.error || "Upload thất bại");
+      }
+    } catch { setUploadErr("Không thể kết nối server"); }
+    finally { setUploading(false); }
   };
 
   const handleInsert = () => {
-    if (!url) return;
-    onInsert(url, alt);
+    const finalUrl = tab === "library" ? (picked?.url ?? "") : url;
+    const finalAlt = alt || (tab === "library" ? (picked?.name ?? "") : "");
+    if (!finalUrl) return;
+    onInsert(finalUrl, finalAlt);
     onClose();
   };
 
+  const canInsert = tab === "library" ? !!picked : !!url;
+  const filteredLib = libImages.filter(i =>
+    i.name.toLowerCase().includes(libSearch.toLowerCase())
+  );
+
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[999] p-4">
-      <div className="bg-white border border-gray-200 rounded-xl w-full max-w-lg shadow-xl">
+      <div className="bg-white border border-gray-200 rounded-xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[90vh]">
+
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
           <h3 className="text-gray-900 font-semibold">🖼️ Chèn ảnh vào bài viết</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-700 text-xl transition-colors leading-none">✕</button>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-700 text-xl leading-none transition-colors">✕</button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-200">
-          {(["upload", "url"] as const).map((t) => (
+        <div className="flex border-b border-gray-200 flex-shrink-0">
+          {(["upload", "library", "url"] as const).map(t => (
             <button key={t} onClick={() => setTab(t)}
               className={`flex-1 py-2.5 text-sm font-medium transition-all ${
                 tab === t
                   ? "text-blue-600 border-b-2 border-blue-600 bg-blue-50"
                   : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
               }`}>
-              {t === "upload" ? "📁 Tải từ máy tính" : "🔗 Nhập URL"}
+              {t === "upload" ? "📁 Tải lên" : t === "library" ? "🖼️ Thư viện" : "🔗 Nhập URL"}
             </button>
           ))}
         </div>
 
-        <div className="p-6 space-y-4">
-          {/* Upload */}
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto p-5 space-y-4">
+
+          {/* ── Tab: Upload ── */}
           {tab === "upload" && (
-            <div
-              onClick={() => fileRef.current?.click()}
-              className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all group"
-            >
-              <div className="text-4xl mb-3">🖼️</div>
-              <p className="text-gray-600 text-sm font-medium group-hover:text-blue-700">Nhấp để chọn ảnh từ máy tính</p>
-              <p className="text-gray-400 text-xs mt-1">JPG, PNG, WebP, GIF</p>
-              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
-            </div>
+            <>
+              <div
+                onClick={() => !uploading && fileRef.current?.click()}
+                className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all group ${
+                  uploading
+                    ? "border-blue-300 bg-blue-50 opacity-70 cursor-wait"
+                    : "border-gray-300 hover:border-blue-400 hover:bg-blue-50"
+                }`}>
+                <div className="text-4xl mb-2">{uploading ? "⏳" : "📁"}</div>
+                <p className="text-gray-600 text-sm font-medium">
+                  {uploading ? "Đang lưu vào thư viện ảnh..." : "Nhấp hoặc kéo & thả ảnh vào đây"}
+                </p>
+                <p className="text-gray-400 text-xs mt-1">JPG · PNG · WebP · GIF · Tự động lưu vào /public/images/</p>
+                <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+              </div>
+              {uploadErr && <p className="text-red-500 text-xs bg-red-50 border border-red-200 rounded-lg px-3 py-2">{uploadErr}</p>}
+              {url.startsWith("/images/") && (
+                <div className="flex items-center gap-2.5 bg-green-50 border border-green-200 rounded-lg px-4 py-2.5">
+                  <span className="text-green-600 text-lg">✓</span>
+                  <div>
+                    <p className="text-green-700 text-sm font-medium">Đã lưu vào thư viện ảnh!</p>
+                    <code className="text-green-600 text-xs">{url}</code>
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
-          {/* URL */}
+          {/* ── Tab: Thư viện ── */}
+          {tab === "library" && (
+            <>
+              <input
+                type="text"
+                placeholder="🔍 Tìm ảnh theo tên..."
+                value={libSearch}
+                onChange={e => setLibSearch(e.target.value)}
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
+              />
+              {libLoading ? (
+                <div className="text-center py-8 text-gray-400 text-sm">Đang tải thư viện...</div>
+              ) : filteredLib.length === 0 ? (
+                <div className="text-center py-8 text-gray-400">
+                  <div className="text-3xl mb-2">📭</div>
+                  <p className="text-sm">{libImages.length === 0 ? "Thư viện trống — upload ảnh trước." : "Không tìm thấy ảnh phù hợp."}</p>
+                  {libImages.length === 0 && (
+                    <button onClick={() => setTab("upload")} className="mt-2 text-blue-600 text-sm hover:underline">Upload ngay →</button>
+                  )}
+                </div>
+              ) : (
+                <div className="grid grid-cols-4 gap-2.5">
+                  {filteredLib.map(img => (
+                    <button key={img.name} type="button"
+                      onClick={() => { setPicked(img); setAlt(prev => prev || img.name.replace(/[-_]/g, " ").replace(/\.[^.]+$/, "")); }}
+                      className={`relative rounded-xl overflow-hidden border-2 transition-all text-left ${
+                        picked?.name === img.name
+                          ? "border-blue-500 ring-2 ring-blue-200"
+                          : "border-transparent hover:border-blue-300"
+                      }`}>
+                      <div className="aspect-square bg-gray-100">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={img.url} alt={img.name} className="w-full h-full object-cover" loading="lazy" />
+                      </div>
+                      <p className="text-xs text-gray-500 truncate px-1.5 py-1 bg-white">{img.name}</p>
+                      {picked?.name === img.name && (
+                        <div className="absolute top-1.5 right-1.5 w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center shadow">
+                          <span className="text-white text-xs leading-none">✓</span>
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+
+          {/* ── Tab: URL ── */}
           {tab === "url" && (
             <div>
               <label className="text-gray-600 text-sm mb-1.5 block font-medium">URL ảnh</label>
-              <input
-                type="url"
-                value={tab === "url" ? url : ""}
-                onChange={(e) => handleUrlChange(e.target.value)}
+              <input type="url" value={url}
+                onChange={e => { setUrl(e.target.value); setPreview(e.target.value); }}
                 placeholder="https://example.com/image.jpg"
-                className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               />
             </div>
           )}
 
-          {/* Alt text */}
+          {/* Alt text — luôn hiện */}
           <div>
             <label className="text-gray-600 text-sm mb-1.5 block font-medium">
               Alt text <span className="text-gray-400 font-normal">(mô tả ảnh — quan trọng cho SEO)</span>
             </label>
-            <input
-              type="text"
-              value={alt}
-              onChange={(e) => setAlt(e.target.value)}
+            <input type="text" value={alt} onChange={e => setAlt(e.target.value)}
               placeholder="Mô tả nội dung ảnh..."
-              className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
             />
           </div>
 
           {/* Preview */}
-          {preview && (
+          {(preview || picked) && (
             <div className="rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
               <p className="text-xs text-gray-500 px-3 py-1.5 border-b border-gray-200 font-medium">Xem trước</p>
-              <img
-                src={preview} alt={alt || "preview"}
-                className="w-full max-h-48 object-contain"
-                onError={() => setPreview("")}
-              />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={picked ? picked.url : preview} alt={alt || "preview"}
+                className="w-full max-h-52 object-contain" onError={() => setPreview("")} />
             </div>
           )}
+        </div>
 
-          {/* Buttons */}
-          <div className="flex gap-3 pt-2">
-            <button onClick={onClose}
-              className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 text-sm font-medium transition-all">
-              Huỷ
-            </button>
-            <button onClick={handleInsert} disabled={!url}
-              className="flex-1 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white text-sm font-semibold transition-all">
-              ✓ Chèn ảnh
-            </button>
-          </div>
+        {/* Footer */}
+        <div className="flex gap-3 px-5 py-4 border-t border-gray-200 flex-shrink-0">
+          <button onClick={onClose}
+            className="flex-1 py-2.5 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 text-sm font-medium transition-all">
+            Huỷ
+          </button>
+          <button onClick={handleInsert} disabled={!canInsert}
+            className="flex-1 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white text-sm font-semibold transition-all">
+            ✓ Chèn ảnh
+          </button>
         </div>
       </div>
     </div>
