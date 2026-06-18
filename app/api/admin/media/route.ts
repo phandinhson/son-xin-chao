@@ -119,7 +119,14 @@ export async function POST(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   if (!checkAuth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { filename } = await req.json();
+  let body: { filename?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Body không hợp lệ" }, { status: 400 });
+  }
+
+  const { filename } = body;
   if (!filename || typeof filename !== "string") {
     return NextResponse.json({ error: "Thiếu tên file" }, { status: 400 });
   }
@@ -128,10 +135,15 @@ export async function DELETE(req: NextRequest) {
   const safeName = path.basename(filename);
   const filePath = path.join(IMAGES_DIR, safeName);
 
-  if (!fs.existsSync(filePath)) {
-    return NextResponse.json({ error: "File không tồn tại" }, { status: 404 });
+  try {
+    if (!fs.existsSync(filePath)) {
+      return NextResponse.json({ error: "File không tồn tại" }, { status: 404 });
+    }
+    fs.unlinkSync(filePath);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: `Không thể xóa file: ${msg}` }, { status: 500 });
   }
 
-  fs.unlinkSync(filePath);
   return NextResponse.json({ success: true, deleted: safeName });
 }

@@ -71,10 +71,25 @@ export async function PUT(req: NextRequest) {
 // DELETE — xóa meta của 1 file
 export async function DELETE(req: NextRequest) {
   if (!checkAuth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const { filename } = await req.json();
+
+  let body: { filename?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Body không hợp lệ" }, { status: 400 });
+  }
+
+  const { filename } = body;
   if (!filename) return NextResponse.json({ error: "Thiếu filename" }, { status: 400 });
-  const meta = readMeta();
-  delete meta[filename];
-  writeMeta(meta);
+
+  try {
+    const meta = readMeta();
+    delete meta[filename];
+    writeMeta(meta);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: `Lỗi ghi meta: ${msg}` }, { status: 500 });
+  }
+
   return NextResponse.json({ success: true });
 }
