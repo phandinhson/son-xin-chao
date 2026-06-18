@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import { supabaseAdmin } from "@/lib/supabase";
 
-export const revalidate = 60; // ISR: serve from cache, revalidate in background
+export const revalidate = 300; // ISR: cache 5 phút — giảm Supabase cold-start trên mobile
 
 /* ─── Fetch CMS content ─────────────────────────────────── */
 async function getPageData() {
@@ -258,10 +259,10 @@ export default async function GioiThieuPage() {
         <section className="relative overflow-hidden"
           style={{ background: "linear-gradient(135deg,#f0f7ff 0%,#faf5ff 50%,#fff1f5 100%)" }}>
 
-          {/* Decorative blobs */}
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full opacity-30 blur-3xl pointer-events-none"
+          {/* Decorative blobs — ẩn trên mobile, chỉ hiện desktop (blur-3xl nặng GPU mobile) */}
+          <div className="hidden md:block absolute top-0 right-0 w-[500px] h-[500px] rounded-full opacity-30 blur-3xl pointer-events-none"
             style={{ background: "radial-gradient(circle,#a78bfa,transparent 70%)", transform: "translate(30%,-30%)" }} />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full opacity-20 blur-3xl pointer-events-none"
+          <div className="hidden md:block absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full opacity-20 blur-3xl pointer-events-none"
             style={{ background: "radial-gradient(circle,#60a5fa,transparent 70%)", transform: "translate(-30%,30%)" }} />
 
           <div className="relative max-w-6xl mx-auto px-6 py-20 lg:py-28 grid lg:grid-cols-5 gap-12 items-center">
@@ -277,10 +278,17 @@ export default async function GioiThieuPage() {
                     boxShadow: "0 25px 60px rgba(99,102,241,0.15)",
                   }}>
                   <div className="w-full h-full flex flex-col items-center justify-center gap-3 p-6">
-                    {/* Avatar circle / photo */}
+                    {/* Avatar circle / photo — dùng next/image để tối ưu WebP + LCP */}
                     {D.hero_avatar_url ? (
                       <div className="w-28 h-28 rounded-full overflow-hidden shadow-lg ring-4 ring-white">
-                        <img src={D.hero_avatar_url} alt={D.hero_name} className="w-full h-full object-cover" />
+                        <Image
+                          src={D.hero_avatar_url}
+                          alt={D.hero_name}
+                          width={112} height={112}
+                          className="w-full h-full object-cover"
+                          priority
+                          sizes="112px"
+                        />
                       </div>
                     ) : (
                       <div className="w-28 h-28 rounded-full flex items-center justify-center text-5xl font-black text-white shadow-lg"
@@ -472,8 +480,14 @@ export default async function GioiThieuPage() {
                     <p>{D.story_p3}</p>
                   </div>
                   <div className="rounded-2xl overflow-hidden shadow-md border border-slate-100 order-first lg:order-none">
-                    <img src={D.story_image_url} alt="Câu chuyện của Phan Đình Sơn"
-                      className="w-full h-full object-cover max-h-72 lg:max-h-none" />
+                    <Image
+                      src={D.story_image_url}
+                      alt="Câu chuyện của Phan Đình Sơn"
+                      width={600} height={400}
+                      className="w-full h-auto object-cover max-h-72 lg:max-h-none"
+                      loading="lazy"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
                   </div>
                 </div>
               ) : (

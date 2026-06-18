@@ -1,12 +1,24 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
-    // Bỏ qua lỗi TypeScript khi build production
     ignoreBuildErrors: true,
   },
   eslint: {
-    // Bỏ qua lỗi ESLint khi build production
     ignoreDuringBuilds: true,
+  },
+  images: {
+    // Cho phép next/image optimize ảnh từ Supabase Storage
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "kpgtiqepktofdfyxgsbw.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+    ],
+    // Thêm WebP + AVIF để giảm kích thước ảnh trên mobile
+    formats: ["image/avif", "image/webp"],
+    // Cache ảnh đã optimize 30 ngày
+    minimumCacheTTL: 2592000,
   },
 };
 
