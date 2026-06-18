@@ -170,15 +170,23 @@ export default function BlogPostPage() {
           let rawHtml = d.content || "";
           // Strip cover image from content if it appears there too (avoid duplicate)
           if (d.cover_image && rawHtml) {
-            try {
-              const escaped = d.cover_image.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-              rawHtml = rawHtml.replace(
-                new RegExp(`<img[^>]*src=["']${escaped}["'][^>]*\\/?>`, "gi"),
-                ""
-              );
-            } catch {
-              // regex failed — keep original content
-            }
+            // Use simple string matching — more reliable than regex for URLs
+            const removeImgWithSrc = (html: string, src: string) => {
+              const needle = `src="${src}"`;
+              const needle2 = `src='${src}'`;
+              for (const n of [needle, needle2]) {
+                const srcIdx = html.indexOf(n);
+                if (srcIdx === -1) continue;
+                const tagStart = html.lastIndexOf("<img", srcIdx);
+                if (tagStart === -1) continue;
+                // img tag ends at > (account for self-closing />)
+                const tagEnd = html.indexOf(">", srcIdx);
+                if (tagEnd === -1) continue;
+                html = html.substring(0, tagStart) + html.substring(tagEnd + 1);
+              }
+              return html;
+            };
+            rawHtml = removeImgWithSrc(rawHtml, d.cover_image);
           }
           const { toc: t, html } = buildTocAndInjectIds(rawHtml);
           setToc(t);

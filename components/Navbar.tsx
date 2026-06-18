@@ -149,7 +149,7 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-1 flex-1 justify-center" ref={dropdownRef}>
 
           {/* Về Sơn */}
-          <a href="/#about" className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all">
+          <a href="/gioi-thieu" className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all">
             Về Sơn
           </a>
 
@@ -336,7 +336,7 @@ export default function Navbar() {
           <div className="flex flex-col">
 
             {/* Về Sơn */}
-            <a href="/#about" onClick={() => setMenuOpen(false)}
+            <a href="/gioi-thieu" onClick={() => setMenuOpen(false)}
               className="flex items-center justify-between px-5 py-4 text-[15px] font-semibold text-slate-800 border-b border-slate-100 hover:bg-slate-50 transition-colors">
               Về Sơn
             </a>

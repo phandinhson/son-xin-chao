@@ -2,6 +2,18 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import MobileBar from "@/components/MobileBar";
+import { supabaseAdmin } from "@/lib/supabase";
+
+export const revalidate = 60;
+
+async function getPageData() {
+  try {
+    const db = supabaseAdmin();
+    const { data } = await db.from("site_settings").select("value").eq("key", "page_facebook_ads").single();
+    if (data?.value) return JSON.parse(data.value);
+  } catch { /* fallback */ }
+  return null;
+}
 
 export const metadata: Metadata = {
   title: "Dịch Vụ Facebook Ads tại Đồng Nai & TP.HCM | Sơn Xin Chào",
@@ -83,7 +95,30 @@ const included = [
   "Cập nhật theo thay đổi chính sách Meta",
 ];
 
-export default function FacebookAdsPage() {
+export default async function FacebookAdsPage() {
+  const cms = await getPageData();
+  const D = {
+    hero_badge:           cms?.hero_badge           ?? "Quảng cáo Facebook & Instagram · Long Thành, Đồng Nai",
+    hero_title:           cms?.hero_title           ?? "Dịch Vụ Facebook Ads",
+    hero_subtitle:        cms?.hero_subtitle        ?? "Đúng Người · Đúng Lúc · Đúng Chi Phí",
+    hero_desc:            cms?.hero_desc            ?? "Target chính xác khách hàng tiềm năng tại Long Thành, Đồng Nai và toàn quốc.\nTối ưu ROAS, giảm CPA. Quản lý toàn diện Facebook & Instagram Ads.",
+    hero_cta_primary:     cms?.hero_cta_primary     ?? "Tư vấn miễn phí ngay",
+    hero_cta_primary_url: cms?.hero_cta_primary_url ?? "https://zalo.me/0968806360",
+    hero_trust_badges:    cms?.hero_trust_badges    ?? ["✅ Không cần hợp đồng dài hạn", "⚡ Chạy trong 48h", "📊 Báo cáo hàng tuần", "🛡️ Cam kết có lead"],
+    stats:    cms?.stats    ?? [
+      { num: "4–6x",  label: "ROAS trung bình",               icon: "📈" },
+      { num: "3.5M+", label: "User Facebook tại Đồng Nai",    icon: "👥" },
+      { num: "48h",   label: "Bắt đầu có lead",               icon: "⚡" },
+      { num: "40%",   label: "Giảm CPA so với tự chạy",       icon: "💰" },
+    ],
+    adTypes:  cms?.adTypes  ?? adTypes,
+    steps:    cms?.steps    ?? steps,
+    included: cms?.included ?? included,
+    faqs:     cms?.faqs     ?? faqs,
+    cta_title:    cms?.cta_title    ?? "Sẵn Sàng Bắt Đầu",
+    cta_subtitle: cms?.cta_subtitle ?? "Chiến Dịch Facebook Ads?",
+    cta_desc:     cms?.cta_desc     ?? "Tư vấn miễn phí — tôi phân tích đối thủ và đề xuất chiến lược phù hợp cho doanh nghiệp bạn trong 24 giờ.",
+  };
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
@@ -117,7 +152,7 @@ export default function FacebookAdsPage() {
             <div className="flex justify-center mb-8">
               <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-5 py-2 text-white text-sm font-medium">
                 <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                Quảng cáo Facebook & Instagram · Long Thành, Đồng Nai
+                {D.hero_badge}
               </div>
             </div>
 
@@ -125,30 +160,30 @@ export default function FacebookAdsPage() {
             <div className="text-center mb-8">
               <h1 className="font-extrabold text-white leading-tight tracking-tight mb-5">
                 <div className="text-4xl md:text-6xl mb-2">
-                  Dịch Vụ{" "}
                   <span className="relative inline-block">
                     <span className="relative z-10 bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">
-                      Facebook Ads
+                      {D.hero_title}
                     </span>
                     <span className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-yellow-300 to-orange-400 rounded-full opacity-60" />
                   </span>
                 </div>
                 <div className="text-xl md:text-3xl text-blue-200 whitespace-nowrap">
-                  Đúng Người · Đúng Lúc · Đúng Chi Phí
+                  {D.hero_subtitle}
                 </div>
               </h1>
               <p className="text-blue-50 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-                Target chính xác khách hàng tiềm năng tại Long Thành, Đồng Nai và toàn quốc.<br />
-                Tối ưu ROAS, giảm CPA. Quản lý toàn diện Facebook & Instagram Ads.
+                {D.hero_desc.split("\n").map((line: string, i: number) => (
+                  <span key={i}>{line}{i < D.hero_desc.split("\n").length - 1 && <br />}</span>
+                ))}
               </p>
             </div>
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <a href="https://zalo.me/0968806360" target="_blank" rel="noopener noreferrer"
+              <a href={D.hero_cta_primary_url} target="_blank" rel="noopener noreferrer"
                 className="group flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-300 hover:to-orange-300 text-blue-900 font-bold rounded-2xl transition-all hover:scale-105 shadow-2xl shadow-yellow-500/30 text-base">
                 <span className="text-xl">💬</span>
-                Tư vấn miễn phí ngay
+                {D.hero_cta_primary}
                 <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
               </a>
               <a href="/#pricing"
@@ -159,7 +194,7 @@ export default function FacebookAdsPage() {
 
             {/* Trust badges */}
             <div className="flex flex-wrap justify-center gap-3 mb-12">
-              {["✅ Không cần hợp đồng dài hạn", "⚡ Chạy trong 48h", "📊 Báo cáo hàng tuần", "🛡️ Cam kết có lead"].map(b => (
+              {D.hero_trust_badges.map((b: string) => (
                 <span key={b} className="bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-xs px-3 py-1.5 rounded-full font-medium">{b}</span>
               ))}
             </div>
@@ -177,18 +212,17 @@ export default function FacebookAdsPage() {
         <section className="py-12 px-4 bg-white">
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                { num: "4–6x", label: "ROAS trung bình", icon: "📈", color: "from-blue-500 to-indigo-600" },
-                { num: "3.5M+", label: "User Facebook tại Đồng Nai", icon: "👥", color: "from-violet-500 to-purple-600" },
-                { num: "48h", label: "Bắt đầu có lead", icon: "⚡", color: "from-orange-500 to-amber-600" },
-                { num: "40%", label: "Giảm CPA so với tự chạy", icon: "💰", color: "from-green-500 to-emerald-600" },
-              ].map(s => (
-                <div key={s.num} className="relative overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-5 border border-slate-200/60 text-center group hover:shadow-lg transition-all duration-300">
-                  <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center text-lg mx-auto mb-3`}>{s.icon}</div>
-                  <div className={`text-2xl md:text-3xl font-extrabold bg-gradient-to-br ${s.color} bg-clip-text text-transparent leading-none mb-1`}>{s.num}</div>
-                  <div className="text-slate-500 text-xs leading-snug">{s.label}</div>
-                </div>
-              ))}
+              {(D.stats as { num: string; label: string; icon: string }[]).map((s, idx) => {
+                const colors = ["from-blue-500 to-indigo-600","from-violet-500 to-purple-600","from-orange-500 to-amber-600","from-green-500 to-emerald-600"];
+                const color = colors[idx % colors.length];
+                return (
+                  <div key={idx} className="relative overflow-hidden bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-5 border border-slate-200/60 text-center group hover:shadow-lg transition-all duration-300">
+                    <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center text-lg mx-auto mb-3`}>{s.icon}</div>
+                    <div className={`text-2xl md:text-3xl font-extrabold bg-gradient-to-br ${color} bg-clip-text text-transparent leading-none mb-1`}>{s.num}</div>
+                    <div className="text-slate-500 text-xs leading-snug">{s.label}</div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -202,7 +236,7 @@ export default function FacebookAdsPage() {
               <p className="text-slate-500 max-w-xl mx-auto">Mỗi mục tiêu kinh doanh cần loại chiến dịch khác nhau — tôi sẽ chọn đúng combo cho bạn</p>
             </div>
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
-              {adTypes.map((t, i) => (
+              {(D.adTypes as typeof adTypes).map((t, i) => (
                 <div key={t.title}
                   className="group bg-white rounded-2xl p-6 border border-slate-100 hover:border-blue-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-default">
                   <div className="flex items-start justify-between mb-4">
@@ -255,7 +289,7 @@ export default function FacebookAdsPage() {
               <p className="text-blue-200 max-w-xl mx-auto">Từ phân tích đến kết quả — quy trình rõ ràng, minh bạch từng bước</p>
             </div>
             <div className="grid md:grid-cols-2 gap-5">
-              {steps.map((p, i) => (
+              {(D.steps as typeof steps).map((p, i) => (
                 <div key={p.step} className="group bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:bg-white/20 transition-all duration-300">
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0">
@@ -287,7 +321,7 @@ export default function FacebookAdsPage() {
               <p className="text-slate-500">Tất cả trong một gói — không phát sinh chi phí ẩn</p>
             </div>
             <div className="grid sm:grid-cols-2 gap-3">
-              {included.map((item, i) => (
+              {(D.included as string[]).map((item, i) => (
                 <div key={item} className="flex items-center gap-3 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-100 rounded-xl px-5 py-3.5 group hover:border-green-300 hover:shadow-sm transition-all">
                   <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 shadow-sm shadow-green-200">
                     <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -309,7 +343,7 @@ export default function FacebookAdsPage() {
               <h2 className="text-3xl md:text-4xl font-extrabold text-slate-800 mb-3">Câu Hỏi Thường Gặp</h2>
             </div>
             <div className="space-y-4">
-              {faqs.map((faq, i) => (
+              {(D.faqs as typeof faqs).map((faq, i) => (
                 <div key={i} className="bg-white rounded-2xl border border-slate-100 overflow-hidden hover:border-blue-200 hover:shadow-md transition-all duration-300">
                   <div className="p-6">
                     <div className="flex items-start gap-3">
@@ -337,15 +371,12 @@ export default function FacebookAdsPage() {
               Phản hồi trong 2 giờ làm việc
             </div>
             <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">
-              Sẵn Sàng Bắt Đầu<br />
-              <span className="bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">Chiến Dịch Facebook Ads?</span>
+              {D.cta_title}<br />
+              <span className="bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">{D.cta_subtitle}</span>
             </h2>
-            <p className="text-blue-200 mb-8 text-lg leading-relaxed">
-              Tư vấn miễn phí — tôi phân tích đối thủ và đề xuất chiến lược<br className="hidden md:block" />
-              phù hợp cho doanh nghiệp bạn trong 24 giờ.
-            </p>
+            <p className="text-blue-200 mb-8 text-lg leading-relaxed">{D.cta_desc}</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-              <a href="https://zalo.me/0968806360" target="_blank" rel="noopener noreferrer"
+              <a href={D.hero_cta_primary_url} target="_blank" rel="noopener noreferrer"
                 className="group flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-400 hover:from-yellow-300 hover:to-orange-300 text-slate-900 font-bold rounded-2xl transition-all hover:scale-105 shadow-2xl shadow-yellow-500/20 text-base">
                 <span className="text-lg">💬</span>
                 Nhắn Zalo ngay
