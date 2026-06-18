@@ -1,13 +1,12 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
+  "/cong-cu-ai/page": "app/cong-cu-ai/page.js",
+  "/page": "app/page.js",
   "/icon/[[...__metadata_id__]]/route": "app/icon/[[...__metadata_id__]]/route.js",
+  "/blog/page": "app/blog/page.js",
   "/api/settings/route": "app/api/settings/route.js",
   "/api/track/route": "app/api/track/route.js",
-  "/page": "app/page.js",
-  "/api/portfolio/route": "app/api/portfolio/route.js",
-  "/api/pricing/route": "app/api/pricing/route.js",
-  "/api/addons/route": "app/api/addons/route.js",
-  "/api/posts/route": "app/api/posts/route.js",
-  "/blog/page": "app/blog/page.js",
-  "/api/categories/route": "app/api/categories/route.js"
+  "/api/admin/ai-tools/[id]/route": "app/api/admin/ai-tools/[id]/route.js",
+  "/api/ai-tools/route": "app/api/ai-tools/route.js",
+  "/admin/dashboard/page": "app/admin/dashboard/page.js",
+  "/admin/ai-tools/page": "app/admin/ai-tools/page.js"
 }

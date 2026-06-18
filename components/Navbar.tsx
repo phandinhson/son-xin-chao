@@ -24,6 +24,7 @@ const KNOWLEDGE = [
   { label: "Hướng dẫn SEO", sub: "Từ cơ bản đến nâng cao", href: "/blog", icon: "🔍" },
   { label: "Google Ads", sub: "Chạy quảng cáo hiệu quả, tiết kiệm chi phí", href: "/blog", icon: "📊" },
   { label: "Website & WordPress", sub: "Xây dựng website chuẩn SEO", href: "/blog", icon: "🌐" },
+  { label: "Thủ thuật AI", sub: "Công cụ AI tạo ảnh, video, âm thanh & văn phòng", href: "/cong-cu-ai", icon: "🤖" },
 ];
 
 const navLinks = [
@@ -355,6 +356,7 @@ export default function Navbar() {
               { href: "/blog", label: "Blog & Kiến thức SEO" },
               { href: "/blog", label: "Hướng dẫn Google Ads" },
               { href: "/blog", label: "Xây dựng Website" },
+              { href: "/cong-cu-ai", label: "Thủ thuật AI" },
             ]} />
 
             {/* Portfolio */}

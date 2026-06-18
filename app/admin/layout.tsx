@@ -8,6 +8,7 @@ const navItems = [
   { href: "/admin/posts", label: "Bài viết", icon: "📝" },
   { href: "/admin/categories", label: "Danh mục", icon: "🏷️" },
   { href: "/admin/portfolio", label: "Portfolio", icon: "🗂️" },
+  { href: "/admin/ai-tools", label: "Công cụ AI", icon: "🤖" },
   { href: "/admin/pricing", label: "Bảng giá", icon: "💰" },
   { href: "/admin/addons", label: "Dịch vụ bổ sung", icon: "➕" },
   { href: "/admin/settings", label: "Cài đặt trang", icon: "⚙️" },
