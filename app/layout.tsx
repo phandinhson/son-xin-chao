@@ -1,12 +1,23 @@
-export const dynamic = "force-dynamic";
+// Cache site settings for 60s — avoids hitting Supabase on every page load
+export const revalidate = 60;
 
 import type { Metadata } from "next";
+import { Be_Vietnam_Pro } from "next/font/google";
 import "./globals.css";
 import SeoInjector from "@/components/SeoInjector";
 import ThemeInjector from "@/components/ThemeInjector";
 import PageTracker from "@/components/PageTracker";
 import { supabaseAdmin } from "@/lib/supabase";
 import { Analytics } from "@vercel/analytics/react";
+
+// Self-hosted font via Next.js — no blocking Google Fonts request
+const beVietnam = Be_Vietnam_Pro({
+  weight: ["300", "400", "500", "600", "700", "800"],
+  subsets: ["latin", "vietnamese"],
+  variable: "--font-be-vietnam",
+  display: "swap",
+  preload: true,
+});
 // Fetch settings từ Supabase server-side
 async function getSiteSettings(): Promise<Record<string, string>> {
   try {
@@ -145,7 +156,7 @@ export default async function RootLayout({
   const themeCSS = buildThemeCSS(s);
 
   return (
-    <html lang="vi" suppressHydrationWarning>
+    <html lang="vi" suppressHydrationWarning className={beVietnam.variable}>
       <body className="antialiased" suppressHydrationWarning>
         {themeCSS && (
           <style id="site-theme" dangerouslySetInnerHTML={{ __html: themeCSS }} />
