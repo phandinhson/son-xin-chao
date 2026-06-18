@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
@@ -61,7 +61,7 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
-export default function BlogPage() {
+function BlogPageContent() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [categories, setCategories] = useState<DbCategory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -483,5 +483,13 @@ export default function BlogPage() {
       <MobileBar />
       <FloatingContacts />
     </div>
+  );
+}
+
+export default function BlogPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+      <BlogPageContent />
+    </Suspense>
   );
 }
