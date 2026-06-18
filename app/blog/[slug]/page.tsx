@@ -167,14 +167,18 @@ export default function BlogPostPage() {
       })
       .then((d: Post | null) => {
         if (d) {
-          let rawHtml = d.content;
+          let rawHtml = d.content || "";
           // Strip cover image from content if it appears there too (avoid duplicate)
-          if (d.cover_image) {
-            const escaped = d.cover_image.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-            rawHtml = rawHtml.replace(
-              new RegExp(`<img[^>]*src=["']${escaped}["'][^>]*\/?>`, "gi"),
-              ""
-            );
+          if (d.cover_image && rawHtml) {
+            try {
+              const escaped = d.cover_image.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+              rawHtml = rawHtml.replace(
+                new RegExp(`<img[^>]*src=["']${escaped}["'][^>]*\\/?>`, "gi"),
+                ""
+              );
+            } catch {
+              // regex failed — keep original content
+            }
           }
           const { toc: t, html } = buildTocAndInjectIds(rawHtml);
           setToc(t);
