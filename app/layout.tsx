@@ -54,11 +54,14 @@ export async function generateMetadata(): Promise<Metadata> {
     keywords,
     authors: [{ name: "Phan Đình Sơn" }],
     icons: iconsMeta,
+    alternates: {
+      canonical: "https://www.sonxinchao.com",
+    },
     openGraph: {
       title: s.og_title || title,
       description: s.og_description || description,
       type: "website",
-      url: "https://sonxinchao.com",
+      url: "https://www.sonxinchao.com",
       siteName: s.logo_text || "Sơn Xin Chào",
       ...(s.og_image ? { images: [{ url: s.og_image, width: 1200, height: 630 }] } : {}),
     },
