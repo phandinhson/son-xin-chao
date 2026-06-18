@@ -7,6 +7,7 @@ const navItems = [
   { href: "/admin/analytics", label: "Phân tích", icon: "📈" },
   { href: "/admin/posts", label: "Bài viết", icon: "📝" },
   { href: "/admin/categories", label: "Danh mục", icon: "🏷️" },
+  { href: "/admin/media", label: "Thư viện ảnh", icon: "🖼️" },
   { href: "/admin/portfolio", label: "Portfolio", icon: "🗂️" },
   { href: "/admin/ai-tools", label: "Công cụ AI", icon: "🤖" },
   { href: "/admin/pricing", label: "Bảng giá", icon: "💰" },

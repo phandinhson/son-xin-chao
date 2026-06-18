@@ -40,7 +40,7 @@ const faqs = [
   },
   {
     q: "Doanh nghiệp nhỏ tại HCM có nên làm SEO không?",
-    a: "Rất nên! Đặc biệt SEO Local — khi khách ở Quận 7 tìm 'thiết kế website Quận 7' hay 'SEO Thủ Đức', cạnh tranh không cao như từ khóa toàn quốc. Đây là cơ hội vàng cho doanh nghiệp nhỏ chiếm thị phần trước khi các đối thủ lớn để ý.",
+    a: <>Rất nên! Đặc biệt <a href="/dich-vu/seo-local" className="text-violet-600 underline underline-offset-2 hover:text-violet-800 font-medium">SEO Local Google Maps</a> — khi khách ở Quận 7 tìm &apos;thiết kế website Quận 7&apos; hay &apos;SEO Thủ Đức&apos;, cạnh tranh không cao như từ khóa toàn quốc. Đây là cơ hội vàng cho doanh nghiệp nhỏ chiếm thị phần trước khi các đối thủ lớn để ý.</>,
   },
   {
     q: "Tôi cần chuẩn bị gì trước khi bắt đầu SEO?",
@@ -168,6 +168,69 @@ export default function SeoHcmPage() {
             <p className="text-blue-300 text-sm">
               📍 Phục vụ: Quận 1 · Quận 7 · Thủ Đức · Bình Thạnh · Gò Vấp · Tân Bình · và tất cả quận/huyện TP.HCM
             </p>
+
+            {/* SVG Illustration — Google SERP + Traffic Chart */}
+            <div className="mt-10 max-w-md mx-auto w-full select-none">
+              <svg viewBox="0 0 420 215" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className="w-full drop-shadow-xl">
+                {/* Browser chrome */}
+                <rect width="420" height="215" rx="14" fill="rgba(15,23,42,0.55)" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5"/>
+                <rect width="420" height="30" rx="14" fill="rgba(0,0,0,0.35)"/>
+                <rect y="16" width="420" height="14" fill="rgba(0,0,0,0.35)"/>
+                {/* Traffic lights */}
+                <circle cx="18" cy="15" r="4.5" fill="rgba(255,255,255,0.25)"/>
+                <circle cx="32" cy="15" r="4.5" fill="rgba(255,255,255,0.25)"/>
+                <circle cx="46" cy="15" r="4.5" fill="rgba(255,255,255,0.25)"/>
+                {/* URL bar */}
+                <rect x="62" y="8" width="244" height="14" rx="7" fill="rgba(255,255,255,0.12)"/>
+                <text x="184" y="18.5" fill="rgba(255,255,255,0.6)" fontSize="7.5" fontFamily="system-ui,sans-serif" textAnchor="middle">google.com/search?q=dịch+vụ+SEO+TP.HCM</text>
+
+                {/* LEFT PANEL — SERP Results */}
+                {/* Result #1 highlighted */}
+                <rect x="12" y="40" width="256" height="50" rx="9" fill="rgba(34,197,94,0.18)" stroke="rgba(134,239,172,0.5)" strokeWidth="1.5"/>
+                <text x="24" y="58" fill="#86EFAC" fontSize="9.5" fontFamily="system-ui,sans-serif" fontWeight="bold">#1</text>
+                <text x="42" y="58" fill="white" fontSize="10" fontFamily="system-ui,sans-serif" fontWeight="600">sonxinchao.com</text>
+                <text x="42" y="72" fill="rgba(255,255,255,0.65)" fontSize="8.5" fontFamily="system-ui,sans-serif">Dịch Vụ SEO TP.HCM — Cá Nhân Hoá 1-1</text>
+                <text x="42" y="84" fill="rgba(255,255,255,0.4)" fontSize="7.5" fontFamily="system-ui,sans-serif">Chi phí hợp lý · Không ràng buộc · Tư vấn miễn phí</text>
+                {/* TOP 1 badge */}
+                <rect x="214" y="47" width="46" height="18" rx="9" fill="#FBBF24"/>
+                <text x="237" y="60" fill="#1e3a8a" fontSize="8" fontFamily="system-ui,sans-serif" fontWeight="800" textAnchor="middle">TOP 1 ⭐</text>
+
+                {/* Result #2 */}
+                <rect x="12" y="97" width="256" height="36" rx="7" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" strokeWidth="1"/>
+                <text x="24" y="113" fill="rgba(255,255,255,0.38)" fontSize="9" fontFamily="system-ui,sans-serif">#2</text>
+                <text x="42" y="113" fill="rgba(255,255,255,0.42)" fontSize="9" fontFamily="system-ui,sans-serif">agencyseohcm.vn</text>
+                <text x="42" y="126" fill="rgba(255,255,255,0.28)" fontSize="8" fontFamily="system-ui,sans-serif">Dịch vụ SEO TP.HCM từ 15 triệu/tháng...</text>
+
+                {/* Result #3 */}
+                <rect x="12" y="140" width="256" height="34" rx="7" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.07)" strokeWidth="1"/>
+                <text x="24" y="155" fill="rgba(255,255,255,0.25)" fontSize="9" fontFamily="system-ui,sans-serif">#3</text>
+                <text x="42" y="155" fill="rgba(255,255,255,0.28)" fontSize="9" fontFamily="system-ui,sans-serif">congtydigitalhcm.com</text>
+                <text x="42" y="167" fill="rgba(255,255,255,0.18)" fontSize="8" fontFamily="system-ui,sans-serif">Báo giá SEO website HCM tốt nhất...</text>
+
+                {/* Divider */}
+                <line x1="284" y1="38" x2="284" y2="205" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="3 3"/>
+
+                {/* RIGHT PANEL — Traffic chart */}
+                <text x="352" y="52" fill="rgba(255,255,255,0.7)" fontSize="8.5" fontFamily="system-ui,sans-serif" fontWeight="600" textAnchor="middle">Traffic Organic</text>
+                {/* Chart bars */}
+                <rect x="298" y="148" width="16" height="32" rx="4" fill="rgba(139,92,246,0.45)"/>
+                <rect x="318" y="130" width="16" height="50" rx="4" fill="rgba(139,92,246,0.55)"/>
+                <rect x="338" y="108" width="16" height="72" rx="4" fill="rgba(139,92,246,0.7)"/>
+                <rect x="358" y="78" width="16" height="102" rx="4" fill="rgba(250,204,21,0.85)"/>
+                {/* Arrow up on last bar */}
+                <text x="366" y="73" fill="#FCD34D" fontSize="12" fontFamily="system-ui,sans-serif" fontWeight="900" textAnchor="middle">↑</text>
+                {/* +340% label */}
+                <rect x="316" y="59" width="72" height="16" rx="8" fill="rgba(250,204,21,0.2)" stroke="rgba(250,204,21,0.5)" strokeWidth="1"/>
+                <text x="352" y="71" fill="#FCD34D" fontSize="9" fontFamily="system-ui,sans-serif" fontWeight="700" textAnchor="middle">+340% traffic</text>
+                {/* X labels */}
+                <text x="306" y="194" fill="rgba(255,255,255,0.35)" fontSize="7" fontFamily="system-ui,sans-serif" textAnchor="middle">T1</text>
+                <text x="326" y="194" fill="rgba(255,255,255,0.35)" fontSize="7" fontFamily="system-ui,sans-serif" textAnchor="middle">T2</text>
+                <text x="346" y="194" fill="rgba(255,255,255,0.35)" fontSize="7" fontFamily="system-ui,sans-serif" textAnchor="middle">T4</text>
+                <text x="366" y="194" fill="rgba(255,255,255,0.35)" fontSize="7" fontFamily="system-ui,sans-serif" textAnchor="middle">T6</text>
+                {/* Chart floor line */}
+                <line x1="292" y1="180" x2="410" y2="180" stroke="rgba(255,255,255,0.1)" strokeWidth="1"/>
+              </svg>
+            </div>
           </div>
         </section>
 
@@ -254,7 +317,7 @@ export default function SeoHcmPage() {
                 {
                   icon: "⚡",
                   title: "Kết quả nhanh với từ khóa local",
-                  desc: "Ưu tiên từ khóa 'dịch vụ + quận/huyện' ít cạnh tranh để tạo traffic sớm trong 2–3 tháng đầu, trước khi tấn công từ khóa lớn.",
+                  desc: <>Ưu tiên từ khóa &apos;dịch vụ + quận/huyện&apos; ít cạnh tranh để tạo traffic sớm trong 2–3 tháng đầu. Kết hợp với <a href="/dich-vu/seo-local" className="text-violet-600 underline underline-offset-2 hover:text-violet-800 font-medium">SEO Local Google Maps</a> để chiếm top trước đối thủ.</>,
                 },
                 {
                   icon: "🔄",
@@ -310,7 +373,7 @@ export default function SeoHcmPage() {
                 {
                   step: "05",
                   title: "Content Marketing & Backlink xây dựng",
-                  desc: "Viết 2–4 bài blog/tháng nhắm từ khóa HCM cụ thể. Xây dựng backlink từ báo điện tử, diễn đàn ngành, directory uy tín để tăng Domain Authority.",
+                  desc: <>Viết 2–4 <a href="/blog" className="text-violet-600 underline underline-offset-2 hover:text-violet-800 font-medium">bài blog chuẩn SEO</a>/tháng nhắm từ khóa HCM cụ thể. Xây dựng backlink từ báo điện tử, diễn đàn ngành, directory uy tín để tăng Domain Authority.</>,
                   tag: "Tháng 2–6",
                 },
                 {
