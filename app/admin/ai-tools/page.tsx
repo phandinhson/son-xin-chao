@@ -386,13 +386,13 @@ export default function AdminAiToolsPage() {
                   <label className="block text-xs font-semibold text-gray-600 mb-1">Icon</label>
                   <input type="text" value={form.icon}
                     onChange={e => setForm(f => ({ ...f, icon: e.target.value }))}
-                    className="w-16 text-center text-2xl border border-gray-200 rounded-lg py-2 focus:outline-none focus:border-blue-400" />
+                    className="w-16 text-center text-2xl text-gray-900 border border-gray-200 rounded-lg py-2 focus:outline-none focus:border-blue-400" />
                 </div>
                 <div className="flex-1">
                   <label className="block text-xs font-semibold text-gray-600 mb-1">Tên công cụ <span className="text-red-400">*</span></label>
                   <input type="text" placeholder="VD: Midjourney" value={form.name}
                     onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400" />
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400" />
                 </div>
               </div>
 
@@ -403,7 +403,7 @@ export default function AdminAiToolsPage() {
                 </label>
                 <input type="url" placeholder="https://..." value={form.url}
                   onChange={e => setForm(f => ({ ...f, url: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 font-mono" />
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400 font-mono" />
               </div>
 
               {/* Mô tả */}
@@ -411,7 +411,7 @@ export default function AdminAiToolsPage() {
                 <label className="block text-xs font-semibold text-gray-600 mb-1">Mô tả</label>
                 <textarea rows={3} placeholder="Mô tả ngắn về công cụ..." value={form.description}
                   onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 resize-none" />
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400 resize-none" />
               </div>
 
               {/* Category + Badge */}
@@ -420,7 +420,7 @@ export default function AdminAiToolsPage() {
                   <label className="block text-xs font-semibold text-gray-600 mb-1">Danh mục</label>
                   <select value={form.category}
                     onChange={e => setForm(f => ({ ...f, category: e.target.value as AiTool["category"] }))}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 bg-white">
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-400 bg-white">
                     <option value="Hình ảnh">🖼️ Hình ảnh</option>
                     <option value="Video">🎬 Video</option>
                     <option value="Âm thanh">🎵 Âm thanh</option>
@@ -431,7 +431,7 @@ export default function AdminAiToolsPage() {
                   <label className="block text-xs font-semibold text-gray-600 mb-1">Giá</label>
                   <select value={form.badge}
                     onChange={e => setForm(f => ({ ...f, badge: e.target.value as AiTool["badge"] }))}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 bg-white">
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-400 bg-white">
                     <option value="Miễn phí">Miễn phí</option>
                     <option value="Freemium">Freemium</option>
                     <option value="Trả phí">Trả phí</option>
@@ -454,7 +454,7 @@ export default function AdminAiToolsPage() {
                   <input type="text" placeholder="Thêm tag..." value={tagInput}
                     onChange={e => setTagInput(e.target.value)}
                     onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); addTag(); } }}
-                    className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400" />
+                    className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400" />
                   <button onClick={addTag}
                     className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-sm font-medium transition-colors">
                     Thêm
@@ -467,7 +467,7 @@ export default function AdminAiToolsPage() {
                 <label className="block text-xs font-semibold text-gray-600 mb-1">Thứ tự hiển thị</label>
                 <input type="number" min={0} value={form.sort_order}
                   onChange={e => setForm(f => ({ ...f, sort_order: Number(e.target.value) }))}
-                  className="w-28 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400" />
+                  className="w-28 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-400" />
                 <span className="text-xs text-gray-400 ml-2">Số nhỏ hơn hiển thị trước</span>
               </div>
 
