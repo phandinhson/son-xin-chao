@@ -83,10 +83,18 @@ export default function AdminAiToolsPage() {
 
   const openEdit = (t: AiTool) => {
     setEditing(t);
+    // null-safety: DB có thể trả null thay vì "" → React input bị uncontrolled
     setForm({
-      name: t.name, description: t.description, category: t.category,
-      badge: t.badge, url: t.url, icon: t.icon, is_hot: t.is_hot,
-      tags: [...t.tags], sort_order: t.sort_order, active: t.active,
+      name:        t.name        ?? "",
+      description: t.description ?? "",
+      category:    (t.category   ?? "Văn phòng") as AiTool["category"],
+      badge:       (t.badge      ?? "Freemium")  as AiTool["badge"],
+      url:         t.url         ?? "",
+      icon:        t.icon        ?? "🤖",
+      is_hot:      t.is_hot      ?? false,
+      tags:        Array.isArray(t.tags) ? [...t.tags] : [],
+      sort_order:  t.sort_order  ?? 0,
+      active:      t.active      ?? true,
     });
     setTagInput("");
     setPanelOpen(true);
