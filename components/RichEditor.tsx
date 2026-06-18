@@ -249,6 +249,7 @@ export default function RichEditor({ value, onChange }: Props) {
   const [mode, setMode] = useState<"visual" | "code">("visual");
   const [fullscreen, setFullscreen] = useState(false);
   const [showImgModal, setShowImgModal] = useState(false);
+  const [pasteMsg, setPasteMsg] = useState<{ type: "loading" | "ok" | "err"; text: string } | null>(null);
   const editorRef   = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const prevMode    = useRef<"visual" | "code">("visual");
@@ -299,6 +300,56 @@ export default function RichEditor({ value, onChange }: Props) {
     editorRef.current?.focus();
     document.execCommand("insertHTML", false, html);
     onChange(editorRef.current?.innerHTML || "");
+  };
+
+  // ── Paste handler: intercept images → upload to Supabase ─────────────────
+  const handlePaste = async (e: React.ClipboardEvent<HTMLDivElement>) => {
+    const items = Array.from(e.clipboardData.items);
+    const imageItems = items.filter(item => item.type.startsWith("image/"));
+
+    // Case 1: Image file pasted from clipboard (screenshot, copy file, etc.)
+    if (imageItems.length > 0) {
+      e.preventDefault();
+      setPasteMsg({ type: "loading", text: `Đang upload ${imageItems.length} ảnh...` });
+
+      for (const item of imageItems) {
+        const file = item.getAsFile();
+        if (!file) continue;
+        const fd = new FormData();
+        fd.append("files", file, `paste-${Date.now()}.png`);
+        try {
+          const res  = await fetch("/api/admin/media", { method: "POST", body: fd });
+          const data = await res.json();
+          if (data.urls?.length) {
+            insertHTML(`<img src="${data.urls[0]}" alt="" style="max-width:100%;border-radius:6px;margin:8px 0">`);
+            setPasteMsg({ type: "ok", text: "✓ Ảnh đã lưu vào thư viện" });
+          } else {
+            setPasteMsg({ type: "err", text: data.errors?.[0] || "Upload thất bại" });
+          }
+        } catch {
+          setPasteMsg({ type: "err", text: "Không kết nối được server" });
+        }
+      }
+      setTimeout(() => setPasteMsg(null), 3000);
+      return;
+    }
+
+    // Case 2: HTML paste containing base64 images (copy from Word, browser, etc.)
+    const html = e.clipboardData.getData("text/html");
+    if (html && html.includes("data:image/")) {
+      e.preventDefault();
+      // Remove base64 imgs, keep text content
+      const cleaned = html
+        .replace(/<img[^>]*src="data:image\/[^"]*"[^>]*\/?>/gi, "")
+        .replace(/<img[^>]*src='data:image\/[^']*'[^>]*\/?>/gi, "");
+      document.execCommand("insertHTML", false, cleaned);
+      onChange(editorRef.current?.innerHTML || "");
+      setPasteMsg({ type: "err", text: "⚠ Ảnh base64 bị xoá — hãy dùng nút img để chèn ảnh từ thư viện" });
+      setTimeout(() => setPasteMsg(null), 5000);
+      return;
+    }
+
+    // Default: allow normal paste
   };
 
   // ── Toolbar action ────────────────────────────────────────────────────────
@@ -477,12 +528,23 @@ export default function RichEditor({ value, onChange }: Props) {
       {/* ── Editor area ── */}
       <div className={`flex-1 ${fullscreen ? "overflow-auto" : ""}`}>
         {/* Visual mode */}
+        {pasteMsg && (
+          <div className={`mx-3 mt-2 px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 ${
+            pasteMsg.type === "loading" ? "bg-blue-50 text-blue-700 border border-blue-200" :
+            pasteMsg.type === "ok"      ? "bg-green-50 text-green-700 border border-green-200" :
+                                          "bg-amber-50 text-amber-700 border border-amber-200"
+          }`}>
+            {pasteMsg.type === "loading" && <span className="animate-spin">⏳</span>}
+            {pasteMsg.text}
+          </div>
+        )}
         <div
           ref={editorRef}
           contentEditable={mode === "visual"}
           suppressContentEditableWarning
           onInput={() => onChange(editorRef.current?.innerHTML || "")}
           onKeyDown={handleKeyDown}
+          onPaste={handlePaste}
           className={`prose-editor w-full p-5 focus:outline-none text-sm leading-relaxed text-gray-900 bg-white ${
             mode === "visual" ? "block" : "hidden"
           }`}
