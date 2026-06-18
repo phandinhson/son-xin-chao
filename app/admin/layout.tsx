@@ -11,6 +11,7 @@ const navItems = [
   { href: "/admin/ai-tools", label: "Công cụ AI", icon: "🤖" },
   { href: "/admin/pricing", label: "Bảng giá", icon: "💰" },
   { href: "/admin/addons", label: "Dịch vụ bổ sung", icon: "➕" },
+  { href: "/admin/speed-cache", label: "Speed & Cache", icon: "⚡" },
   { href: "/admin/settings", label: "Cài đặt trang", icon: "⚙️" },
 ];
 
