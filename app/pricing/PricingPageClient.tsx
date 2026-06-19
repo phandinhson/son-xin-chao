@@ -259,7 +259,7 @@ export default function PricingPageClient({
                       className={`block w-full py-3.5 rounded-2xl text-center text-sm font-bold transition-all hover:scale-[1.02] hover:shadow-md ${
                         plan.is_popular
                           ? "bg-gradient-to-r from-violet-600 to-pink-600 text-white shadow-md shadow-violet-100"
-                          : "bg-slate-900 text-white hover:bg-slate-700"
+                          : "bg-blue-600 hover:bg-blue-700 text-white shadow-sm shadow-blue-100"
                       }`}
                     >
                       {plan.cta_text} →
