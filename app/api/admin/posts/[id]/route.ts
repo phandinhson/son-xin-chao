@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase";
 
 function checkAuth(req: NextRequest) {
@@ -58,6 +59,15 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     console.error("[PUT /api/admin/posts]", error.message, error.details);
     return NextResponse.json({ error: error.message, details: error.details }, { status: 500 });
   }
+
+  // Clear Next.js cache cho blog page sau khi save thành công
+  try {
+    revalidatePath(`/blog/${data.slug}`);
+    revalidatePath("/blog");
+  } catch {
+    // revalidatePath có thể throw trong một số môi trường — không block response
+  }
+
   return NextResponse.json(data);
 }
 

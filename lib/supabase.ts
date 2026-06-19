@@ -8,11 +8,19 @@ export const supabase = createClient(
 );
 
 // Admin client với service role (chỉ dùng trong API routes server-side)
+// Truyền custom fetch với cache: 'no-store' để bypass Next.js 14 Data Cache
+// (Supabase JS dùng fetch() nội bộ — nếu không set, Next.js có thể cache kết quả query)
 export const supabaseAdmin = () =>
   createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
+    {
+      auth: { autoRefreshToken: false, persistSession: false },
+      global: {
+        fetch: (url: RequestInfo | URL, options?: RequestInit) =>
+          fetch(url, { ...options, cache: "no-store" }),
+      },
+    }
   );
 
 // Types
