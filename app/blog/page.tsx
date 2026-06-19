@@ -74,16 +74,25 @@ function BlogPageContent() {
   // Read ?q= from URL on load
   const urlQuery = searchParams.get("q") || "";
 
-  useEffect(() => {
-    // Fetch cả posts và categories song song
+  const fetchData = (isInitial = false) => {
+    if (isInitial) setLoading(true);
     Promise.all([
-      fetch("/api/posts").then(r => r.json()),
-      fetch("/api/categories").then(r => r.json()),
+      fetch("/api/posts", { cache: "no-store" }).then(r => r.json()),
+      fetch("/api/categories", { cache: "no-store" }).then(r => r.json()),
     ]).then(([postsData, catsData]) => {
       setPosts(Array.isArray(postsData) ? postsData : []);
       setCategories(Array.isArray(catsData) ? catsData : []);
-      setLoading(false);
-    }).catch(() => setLoading(false));
+      if (isInitial) setLoading(false);
+    }).catch(() => { if (isInitial) setLoading(false); });
+  };
+
+  useEffect(() => {
+    fetchData(true);
+    // Re-fetch khi user quay lại tab (thêm danh mục hoặc bài viết ở tab khác)
+    const onVisible = () => { if (document.visibilityState === "visible") fetchData(); };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Use URL query if present, otherwise use inline search state

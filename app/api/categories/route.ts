@@ -9,5 +9,11 @@ export async function GET() {
     .select("*")
     .order("sort_order", { ascending: true });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json(data);
+  // Buộc không cache — danh mục có thể được thêm/sửa bất cứ lúc nào từ admin
+  return NextResponse.json(data, {
+    headers: {
+      "Cache-Control": "no-store, no-cache, must-revalidate",
+      "Pragma": "no-cache",
+    },
+  });
 }

@@ -48,7 +48,7 @@ export default function NewPost() {
 
   const fetchCategories = (selectFirst = false) => {
     setCatLoading(true);
-    fetch("/api/categories")
+    fetch("/api/categories", { cache: "no-store" })
       .then(r => r.json())
       .then(d => {
         if (Array.isArray(d) && d.length > 0) {

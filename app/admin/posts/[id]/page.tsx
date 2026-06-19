@@ -62,7 +62,7 @@ export default function PostEditor() {
 
   const fetchCategories = () => {
     setCatLoading(true);
-    return fetch("/api/categories")
+    return fetch("/api/categories", { cache: "no-store" })
       .then(r => r.json())
       .then(d => { if (Array.isArray(d) && d.length > 0) setDbCategories(d); return d; })
       .finally(() => setCatLoading(false));
