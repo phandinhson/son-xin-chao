@@ -53,29 +53,40 @@ export default function PostEditor() {
   const [loading, setLoading] = useState(!isNew);
   const [imgTab, setImgTab] = useState<"url" | "upload" | "library">("url");
   const [dbCategories, setDbCategories] = useState<DbCategory[]>([]);
+  const [catLoading, setCatLoading] = useState(false);
   const [coverUploading, setCoverUploading] = useState(false);
   const [coverUploadErr, setCoverUploadErr] = useState("");
   const [libImages, setLibImages] = useState<{name:string;url:string}[]>([]);
   const [libLoaded, setLibLoaded] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    // Fetch categories từ DB — luôn dynamic, không hardcode
-    const catPromise = fetch("/api/categories")
+  const fetchCategories = () => {
+    setCatLoading(true);
+    return fetch("/api/categories")
       .then(r => r.json())
-      .then(d => { if (Array.isArray(d) && d.length > 0) setDbCategories(d); return d; });
+      .then(d => { if (Array.isArray(d) && d.length > 0) setDbCategories(d); return d; })
+      .finally(() => setCatLoading(false));
+  };
+
+  useEffect(() => {
+    const catPromise = fetchCategories();
 
     if (!isNew) {
       Promise.all([
         catPromise,
         fetch(`/api/admin/posts/${id}`).then(r => r.json()),
       ]).then(([cats, post]) => {
-        // Nếu post.category null/undefined (cột mới thêm), dùng category đầu tiên từ DB
         const category = post.category || (Array.isArray(cats) && cats[0]?.value) || "";
         setForm({ ...post, category });
         setLoading(false);
       });
     }
+
+    // Re-fetch khi user quay lại tab (vừa thêm danh mục ở tab khác)
+    const onFocus = () => fetchCategories();
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, isNew]);
 
   const loadLibrary = () => {
@@ -366,21 +377,34 @@ export default function PostEditor() {
 
           {/* Category */}
           <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-            <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+            <div className="px-4 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
               <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">🏷️ Danh mục</h3>
+              <button
+                type="button"
+                onClick={() => fetchCategories()}
+                title="Làm mới danh sách danh mục"
+                className="text-gray-400 hover:text-blue-600 transition-colors"
+              >
+                <svg className={`w-3.5 h-3.5 ${catLoading ? "animate-spin" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </button>
             </div>
             <div className="p-3 space-y-1">
-              {dbCategories.length === 0 && (
+              {dbCategories.length === 0 && !catLoading && (
                 <p className="text-xs text-gray-400 py-2 px-1">
                   Chưa có danh mục —{" "}
                   <a href="/admin/categories" className="text-blue-600 hover:underline">Thêm danh mục</a>
                 </p>
               )}
-              {dbCategories.map((cat) => {
+              {catLoading && dbCategories.length === 0 && (
+                <p className="text-xs text-gray-400 py-2 px-1 animate-pulse">Đang tải...</p>
+              )}
+              {dbCategories.filter(cat => cat.value).map((cat) => {
                 const selected = form.category === cat.value;
                 const c = CAT_LIGHT[cat.color_key] || CAT_LIGHT.blue;
                 return (
-                  <label key={cat.value}
+                  <label key={cat.id || cat.value}
                     className={`flex items-center gap-2.5 px-3 py-2 rounded-md cursor-pointer transition-all ${
                       selected ? `${c.bg} border ${c.border}` : "hover:bg-gray-50 border border-transparent"
                     }`}>
@@ -390,7 +414,7 @@ export default function PostEditor() {
                       onChange={() => update("category", cat.value)}
                       className="text-blue-600 focus:ring-blue-500"
                     />
-                    <span className="text-base leading-none">{cat.icon}</span>
+                    <span className="text-base leading-none">{cat.icon || "📁"}</span>
                     <span className={`text-sm font-medium ${selected ? c.text : "text-gray-700"}`}>{cat.label}</span>
                     {selected && (
                       <svg className={`w-4 h-4 ml-auto flex-shrink-0 ${c.text}`} fill="currentColor" viewBox="0 0 20 20">
