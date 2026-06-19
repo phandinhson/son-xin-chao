@@ -22,14 +22,22 @@ async function getPageData() {
 export default async function OGImage() {
   const cms = await getPageData();
 
-  const name     = cms?.hero_name      ?? "Phan Đình Sơn";
-  const jobTitle = cms?.hero_job_title ?? "Chuyên gia SEO · Google Ads · Facebook Ads · Website";
-  const location = cms?.hero_location  ?? "Long Thành · Đồng Nai · Việt Nam";
-  const avatarUrl = (cms?.hero_avatar_url ?? "") as string;
+  const name     = String(cms?.hero_name      ?? "Phan Đình Sơn");
+  const jobTitle = String(cms?.hero_job_title ?? "Chuyên gia SEO · Google Ads · Facebook Ads · Website");
+  const location = String(cms?.hero_location  ?? "Long Thành · Đồng Nai · Việt Nam");
+  const avatarUrl = String(cms?.hero_avatar_url ?? "");
 
-  const statYears    = cms?.stat_years    ?? "5+";
-  const statProjects = cms?.stat_projects ?? "150+";
-  const statClients  = cms?.stat_clients  ?? "80+";
+  const statYears    = String(cms?.stat_years    ?? "5+");
+  const statProjects = String(cms?.stat_projects ?? "150+");
+  const statClients  = String(cms?.stat_clients  ?? "80+");
+
+  // Pre-compute arrays OUTSIDE JSX so Satori does not choke on inline array literals
+  const skills: string[] = ["SEO Technical", "Google Ads", "Facebook Ads", "Website"];
+  const stats: { v: string; l: string; c: string }[] = [
+    { v: statYears,    l: "Năm kinh nghiệm", c: "#2563eb" },
+    { v: statProjects, l: "Dự án",            c: "#7c3aed" },
+    { v: statClients,  l: "Khách hàng",       c: "#059669" },
+  ];
 
   // Fetch avatar and convert to base64 for ImageResponse
   let avatarSrc: string | null = null;
@@ -46,8 +54,6 @@ export default async function OGImage() {
   } else if (avatarUrl.startsWith("data:")) {
     avatarSrc = avatarUrl;
   }
-
-  const skills = ["SEO Technical", "Google Ads", "Facebook Ads", "Website"];
 
   return new ImageResponse(
     (
@@ -76,7 +82,7 @@ export default async function OGImage() {
           display: "flex",
         }} />
 
-        {/* ── LEFT PANEL ─────────────────────────────── */}
+        {/* LEFT PANEL */}
         <div style={{
           display: "flex", flexDirection: "column", alignItems: "center",
           justifyContent: "center", width: 340,
@@ -91,7 +97,6 @@ export default async function OGImage() {
             border: "5px solid white",
           }}>
             {avatarSrc ? (
-              // eslint-disable-next-line @next/next/no-img-element
               <img src={avatarSrc} alt={name}
                 style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             ) : (
@@ -106,7 +111,7 @@ export default async function OGImage() {
             borderRadius: 999, padding: "7px 16px",
           }}>
             <span style={{ fontSize: 11, fontWeight: 700, color: "#2563eb" }}>
-              📍 {location}
+              {location}
             </span>
           </div>
         </div>
@@ -118,21 +123,20 @@ export default async function OGImage() {
           display: "flex",
         }} />
 
-        {/* ── RIGHT PANEL ────────────────────────────── */}
+        {/* RIGHT PANEL */}
         <div style={{
           flex: 1, display: "flex", flexDirection: "column",
           justifyContent: "center", padding: "60px 60px 60px 50px", gap: 14,
         }}>
           {/* Greeting */}
           <div style={{ fontSize: 18, color: "#64748b", fontWeight: 500 }}>
-            Xin chào! Mình là
+            Xin chao! Minh la
           </div>
 
           {/* Name */}
           <div style={{
             fontSize: 54, fontWeight: 900, lineHeight: 1.1,
-            color: "#1e40af",
-            letterSpacing: "-1px",
+            color: "#1e40af", letterSpacing: "-1px",
           }}>
             {name}
           </div>
@@ -143,7 +147,7 @@ export default async function OGImage() {
           </div>
 
           {/* Skill tags */}
-          <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+          <div style={{ display: "flex", flexDirection: "row", gap: 8, marginTop: 4 }}>
             {skills.map((s) => (
               <div key={s} style={{
                 background: "white", border: "1px solid #e2e8f0",
@@ -157,14 +161,10 @@ export default async function OGImage() {
 
           {/* Stats */}
           <div style={{
-            display: "flex", gap: 32, marginTop: 8,
+            display: "flex", flexDirection: "row", gap: 32, marginTop: 8,
             paddingTop: 16, borderTop: "1px solid #e2e8f0",
           }}>
-            {[
-              { v: statYears,    l: "Năm kinh nghiệm", c: "#2563eb" },
-              { v: statProjects, l: "Dự án",            c: "#7c3aed" },
-              { v: statClients,  l: "Khách hàng",       c: "#059669" },
-            ].map((s) => (
+            {stats.map((s) => (
               <div key={s.l} style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 <span style={{ fontSize: 32, fontWeight: 900, color: s.c, lineHeight: 1 }}>
                   {s.v}
