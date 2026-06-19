@@ -84,6 +84,8 @@ export default function Navbar() {
   const s = useSettings();
   const logoUrl  = s.logo_url  || "";
   const logoText = s.logo_text || "Sơn Xin Chào";
+  const phone    = (s.contact_phone || "0968806360").replace(/\s/g, "");
+  const phoneDisplay = s.contact_phone || "0968 806 360";
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -269,12 +271,12 @@ export default function Navbar() {
 
         {/* ── Right: phone + CTA ── */}
         <div className="hidden md:flex items-center gap-3 flex-shrink-0">
-          <a href="tel:0968806360"
+          <a href={`tel:${phone}`}
             className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-all text-sm font-medium">
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
             </svg>
-            <span className="hidden lg:inline">0968 806 360</span>
+            <span className="hidden lg:inline">{phoneDisplay}</span>
           </a>
           <div className="w-px h-5 bg-slate-200" />
           <a href="/contact"
@@ -368,12 +370,12 @@ export default function Navbar() {
 
           {/* CTA bottom */}
           <div className="px-5 py-4 flex flex-col gap-3">
-            <a href="tel:0968806360" onClick={() => setMenuOpen(false)}
+            <a href={`tel:${phone}`} onClick={() => setMenuOpen(false)}
               className="flex items-center justify-center gap-2 py-3 border border-slate-200 rounded-xl text-slate-700 text-sm font-semibold hover:bg-slate-50 transition-colors">
               <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
               </svg>
-              0968 806 360
+              {phoneDisplay}
             </a>
             <a href="/contact" onClick={() => setMenuOpen(false)}
               className="text-center py-3 bg-gradient-to-r from-blue-600 to-violet-600 text-white text-sm font-bold rounded-xl">

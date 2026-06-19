@@ -86,13 +86,13 @@ export default function Services() {
 
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-16 animate-on-scroll">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-sm mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-600 text-sm mb-6">
             Dịch vụ
           </div>
-          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
+          <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 mb-4">
             Tôi có thể giúp gì <span className="gradient-text">cho bạn?</span>
           </h2>
-          <p className="text-gray-400 max-w-2xl mx-auto text-lg">
+          <p className="text-slate-600 max-w-2xl mx-auto text-lg">
             Ba dịch vụ cốt lõi, triển khai chuyên nghiệp — mỗi dự án đều được
             đầu tư như thể đó là doanh nghiệp của chính tôi.
           </p>
@@ -115,16 +115,16 @@ export default function Services() {
                 {service.icon}
               </div>
 
-              <h3 className="text-2xl font-bold text-white mb-1">{service.title}</h3>
+              <h3 className="text-2xl font-bold text-slate-800 mb-1">{service.title}</h3>
               <p className={`text-sm font-medium mb-4 bg-gradient-to-r ${service.color} bg-clip-text text-transparent`}>
                 {service.subtitle}
               </p>
-              <p className="text-gray-400 text-sm leading-relaxed mb-6">{service.desc}</p>
+              <p className="text-slate-600 text-sm leading-relaxed mb-6">{service.desc}</p>
 
               {/* Features */}
               <ul className="space-y-2.5 mb-8">
                 {service.features.map((f, j) => (
-                  <li key={j} className="flex items-center gap-3 text-sm text-gray-300">
+                  <li key={j} className="flex items-center gap-3 text-sm text-slate-600">
                     <span className={`w-4 h-4 rounded-full bg-gradient-to-br ${service.color} flex items-center justify-center flex-shrink-0`}>
                       <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -137,7 +137,7 @@ export default function Services() {
 
               {/* Result */}
               <div className={`p-4 rounded-xl bg-gradient-to-r ${service.color} bg-opacity-10 border border-slate-200`}>
-                <p className="text-white text-sm font-semibold text-center">🎯 {service.result}</p>
+                <p className="text-slate-800 text-sm font-semibold text-center">🎯 {service.result}</p>
               </div>
 
               {/* CTA */}
@@ -156,9 +156,9 @@ export default function Services() {
 
         {/* Bottom CTA */}
         <div className="mt-16 text-center animate-on-scroll">
-          <p className="text-gray-400 mb-6">
+          <p className="text-slate-600 mb-6">
             Không chắc dịch vụ nào phù hợp?{" "}
-            <a href="/contact" className="text-blue-400 hover:underline font-medium">
+            <a href="/contact" className="text-blue-600 hover:underline font-medium">
               Nói chuyện với tôi
             </a>{" "}
             — tôi sẽ tư vấn miễn phí.

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 type Post = {
   id: string;
@@ -70,7 +71,7 @@ export default function Blog() {
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetch("/api/posts", { cache: "no-store" })
+    fetch("/api/posts", { next: { revalidate: 300 } })
       .then(async (r) => {
         const text = await r.text();
         try {
@@ -188,8 +189,9 @@ export default function Blog() {
               >
                 <div className="relative h-64 lg:h-72 overflow-hidden">
                   {featured.cover_image ? (
-                    <img src={featured.cover_image} alt={featured.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <Image src={featured.cover_image} alt={featured.title}
+                      fill sizes="(max-width: 1024px) 100vw, 50vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
                     <CoverPlaceholder title={featured.title} />
                   )}
@@ -231,8 +233,10 @@ export default function Blog() {
                     >
                       <div className="relative h-48 overflow-hidden flex-shrink-0">
                         {post.cover_image ? (
-                          <img src={post.cover_image} alt={post.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                          <Image src={post.cover_image} alt={post.title}
+                            fill sizes="(max-width: 768px) 100vw, 33vw"
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                            loading="lazy" />
                         ) : (
                           <CoverPlaceholder title={post.title} />
                         )}

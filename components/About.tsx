@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { useSettings } from "@/components/SettingsContext";
 
 const skills = [
   { name: "SEO On-page & Technical", level: 92 },
@@ -34,15 +35,9 @@ const highlights = [
 ];
 
 export default function About() {
+  const s = useSettings();
+  const aboutDesc = s.about_description || "Với hơn 3 năm trong ngành Digital Marketing, tôi đã giúp hàng chục doanh nghiệp vừa và nhỏ tăng trưởng bền vững qua các kênh online.";
   const sectionRef = useRef<HTMLDivElement>(null);
-  const [aboutDesc, setAboutDesc] = useState("Với hơn 3 năm trong ngành Digital Marketing, tôi đã giúp hàng chục doanh nghiệp vừa và nhỏ tăng trưởng bền vững qua các kênh online.");
-
-  useEffect(() => {
-    fetch("/api/settings")
-      .then((r) => r.json())
-      .then((d) => { if (d?.about_description) setAboutDesc(d.about_description); })
-      .catch(() => {});
-  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(

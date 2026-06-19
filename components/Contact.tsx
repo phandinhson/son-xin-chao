@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { useSettings } from "@/components/SettingsContext";
 
 const faqs = [
   {
@@ -21,6 +22,14 @@ const faqs = [
 ];
 
 export default function Contact() {
+  const s = useSettings();
+  const cfg = {
+    contact_zalo:    s.contact_zalo    || "0968806360",
+    contact_facebook: s.contact_facebook || "fb.com/sonxinchao",
+    contact_email:   s.contact_email   || "son@sonxinchao.com",
+    contact_phone:   s.contact_phone   || "0968806360",
+  };
+
   const [formData, setFormData] = useState({
     name: "", phone: "", service: "", message: "",
   });
@@ -29,21 +38,6 @@ export default function Contact() {
   const [sendError, setSendError] = useState("");
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
-
-  // Fetch settings từ Supabase
-  const [cfg, setCfg] = useState({
-    contact_zalo: "0968806360",
-    contact_facebook: "fb.com/sonxinchao",
-    contact_email: "son@sonxinchao.com",
-    contact_phone: "0968806360",
-  });
-
-  useEffect(() => {
-    fetch("/api/settings")
-      .then((r) => r.json())
-      .then((d) => { if (d && !d.error) setCfg((prev) => ({ ...prev, ...d })); })
-      .catch(() => {});
-  }, []);
 
   const contactMethods = [
     {
@@ -148,8 +142,8 @@ export default function Contact() {
                   <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${method.color} flex items-center justify-center text-xl mb-3 group-hover:scale-110 transition-transform`}>
                     {method.icon}
                   </div>
-                  <div className="text-white font-semibold text-sm">{method.name}</div>
-                  <div className="text-gray-500 text-xs">{method.desc}</div>
+                  <div className="text-slate-800 font-semibold text-sm">{method.name}</div>
+                  <div className="text-slate-500 text-xs">{method.desc}</div>
                   <div className={`text-xs mt-2 font-medium bg-gradient-to-r ${method.color} bg-clip-text text-transparent`}>
                     {method.value}
                   </div>
@@ -170,15 +164,15 @@ export default function Contact() {
 
             {/* FAQ */}
             <div className="animate-on-scroll space-y-3">
-              <h3 className="text-white font-bold text-xl mb-4">Câu hỏi thường gặp</h3>
+              <h3 className="text-slate-800 font-bold text-xl mb-4">Câu hỏi thường gặp</h3>
               {faqs.map((faq, i) => (
                 <div key={i} className="rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden">
                   <button
-                    className="w-full flex items-center justify-between p-5 text-left text-white font-medium hover:bg-slate-50 transition-colors"
+                    className="w-full flex items-center justify-between p-5 text-left text-slate-800 font-medium hover:bg-white transition-colors"
                     onClick={() => setOpenFaq(openFaq === i ? null : i)}
                   >
                     <span className="text-sm">{faq.q}</span>
-                    <span className={`text-blue-400 transition-transform ${openFaq === i ? "rotate-45" : ""}`}>+</span>
+                    <span className={`text-blue-600 transition-transform ${openFaq === i ? "rotate-45" : ""}`}>+</span>
                   </button>
                   {openFaq === i && (
                     <div className="px-5 pb-5 text-slate-600 text-sm leading-relaxed">
@@ -196,29 +190,29 @@ export default function Contact() {
               {submitted ? (
                 <div className="text-center py-12">
                   <div className="text-6xl mb-4 animate-bounce">🎉</div>
-                  <h3 className="text-2xl font-bold text-white mb-3">Cảm ơn bạn!</h3>
-                  <p className="text-gray-400">
+                  <h3 className="text-2xl font-bold text-slate-800 mb-3">Cảm ơn bạn!</h3>
+                  <p className="text-slate-600">
                     Tôi đã nhận được thông tin. Sẽ liên hệ lại trong vòng{" "}
-                    <span className="text-blue-400 font-semibold">2 tiếng</span> nhé!
+                    <span className="text-blue-600 font-semibold">2 tiếng</span> nhé!
                   </p>
                   <button
                     onClick={() => { setSubmitted(false); setFormData({ name: "", phone: "", service: "", message: "" }); }}
-                    className="mt-8 px-6 py-3 border border-slate-300 text-gray-300 rounded-xl hover:bg-slate-50 transition-colors text-sm"
+                    className="mt-8 px-6 py-3 border border-slate-300 text-slate-600 rounded-xl hover:bg-white transition-colors text-sm"
                   >
                     Gửi yêu cầu khác
                   </button>
                 </div>
               ) : (
                 <>
-                  <h3 className="text-2xl font-bold text-white mb-2">Gửi yêu cầu tư vấn</h3>
-                  <p className="text-gray-400 text-sm mb-8">
+                  <h3 className="text-2xl font-bold text-slate-800 mb-2">Gửi yêu cầu tư vấn</h3>
+                  <p className="text-slate-500 text-sm mb-8">
                     Điền thông tin bên dưới — tôi sẽ liên hệ lại trong 2 tiếng.
                   </p>
 
                   <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-gray-400 text-sm mb-2">Họ và tên *</label>
+                        <label className="block text-slate-600 text-sm mb-2">Họ và tên *</label>
                         <input
                           type="text"
                           required
@@ -229,7 +223,7 @@ export default function Contact() {
                         />
                       </div>
                       <div>
-                        <label className="block text-gray-400 text-sm mb-2">Số điện thoại *</label>
+                        <label className="block text-slate-600 text-sm mb-2">Số điện thoại *</label>
                         <input
                           type="tel"
                           required
@@ -246,7 +240,7 @@ export default function Contact() {
                       <select
                         value={formData.service}
                         onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-white focus:outline-none focus:border-blue-400 focus:bg-white transition-all text-sm"
+                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-blue-400 focus:bg-white transition-all text-sm"
                       >
                         <option value="" className="bg-gray-900">Chọn dịch vụ...</option>
                         <option value="seo" className="bg-gray-900">SEO Organic</option>
@@ -281,7 +275,7 @@ export default function Contact() {
                       </p>
                     )}
 
-                    <p className="text-center text-gray-600 text-xs">
+                    <p className="text-center text-slate-500 text-xs">
                       Thông tin của bạn được bảo mật tuyệt đối.
                     </p>
                   </form>
