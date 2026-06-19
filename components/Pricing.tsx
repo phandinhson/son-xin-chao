@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { Pricing as PricingType } from "@/lib/supabase";
+import { useSettings } from "@/components/SettingsContext";
 
 const defaultPlans: PricingType[] = [
   { id: "1", name: "Starter", icon: "🌱", price: "3.500.000", unit: "đ/tháng", description: "Phù hợp doanh nghiệp mới bắt đầu xây dựng hiện diện online", features: ["SEO on-page cơ bản (5 trang)", "Nghiên cứu 10 từ khóa mục tiêu", "Báo cáo thứ hạng hàng tháng", "Tối ưu Google Business Profile", "1 bài blog SEO/tuần", "Hỗ trợ qua Zalo"], not_included: ["Quảng cáo trả phí", "Thiết kế website"], is_popular: false, cta_text: "Bắt đầu ngay", sort_order: 1 },
@@ -32,6 +33,9 @@ export default function Pricing() {
   const [plans, setPlans] = useState<PricingType[]>(defaultPlans);
   const [addons, setAddons] = useState<Addon[]>([]);
   const sectionRef = useRef<HTMLDivElement>(null);
+  const settings = useSettings();
+  const zalo = settings.contact_zalo || "0968806360";
+  const zaloUrl = `https://zalo.me/${zalo.replace(/\s/g, "")}`;
 
   useEffect(() => {
     fetch("/api/pricing")
@@ -75,8 +79,30 @@ export default function Pricing() {
                   <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
                   <p className="text-gray-400 text-sm mb-6 leading-relaxed">{plan.description}</p>
                   <div className="mb-8">
-                    {plan.price === "Liên hệ" ? (
-                      <div className="text-3xl font-bold text-white">Liên hệ</div>
+                    {plan.price.startsWith("Liên hệ") ? (
+                      <div className="space-y-2.5">
+                        <p className="text-gray-400 text-sm">Liên hệ để nhận báo giá phù hợp</p>
+                        {/* Zalo chat */}
+                        <a
+                          href={zaloUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2.5 w-full px-4 py-3 bg-[#0068ff]/15 border border-[#0068ff]/30 text-[#60aaff] font-semibold rounded-xl hover:bg-[#0068ff]/25 transition-colors text-sm"
+                        >
+                          <img src="/logo-zalo-vector.svg" alt="Zalo" className="h-5 w-auto opacity-90" />
+                          Chat qua Zalo
+                        </a>
+                        {/* Phone */}
+                        <a
+                          href={`tel:${zalo.replace(/\s/g, "")}`}
+                          className="flex items-center gap-2.5 w-full px-4 py-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl transition-colors text-sm"
+                        >
+                          <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 8V5z" />
+                          </svg>
+                          {zalo} · Hiện số
+                        </a>
+                      </div>
                     ) : (
                       <><span className="text-4xl font-bold text-white">{plan.price}</span><span className="text-gray-400 text-sm ml-1">{plan.unit}</span></>
                     )}
@@ -97,10 +123,22 @@ export default function Pricing() {
                       </li>
                     ))}
                   </ul>
-                  <Link href="/contact" className={`flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-semibold text-sm transition-all ${plan.is_popular ? `bg-gradient-to-r ${color} text-white hover:opacity-90 shadow-lg` : "border border-slate-300 text-white hover:bg-slate-50"}`}>
-                    {plan.cta_text}
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                  </Link>
+                  {plan.price.startsWith("Liên hệ") ? (
+                    <a
+                      href={zaloUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-semibold text-sm transition-all ${plan.is_popular ? `bg-gradient-to-r ${color} text-white hover:opacity-90 shadow-lg` : "border border-slate-300 text-white hover:bg-white/5"}`}
+                    >
+                      {plan.cta_text}
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                    </a>
+                  ) : (
+                    <Link href="/contact" className={`flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-semibold text-sm transition-all ${plan.is_popular ? `bg-gradient-to-r ${color} text-white hover:opacity-90 shadow-lg` : "border border-slate-300 text-white hover:bg-white/5"}`}>
+                      {plan.cta_text}
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                    </Link>
+                  )}
                 </div>
               </div>
             );
