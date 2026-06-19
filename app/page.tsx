@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { supabaseAdmin } from "@/lib/supabase";
+import { getSiteSettings } from "@/lib/get-settings";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
@@ -22,19 +22,9 @@ export const metadata: Metadata = {
   },
 };
 
-async function getSettings(): Promise<Record<string, string>> {
-  try {
-    const db = supabaseAdmin();
-    const { data } = await db.from("site_settings").select("key, value");
-    if (!data) return {};
-    return Object.fromEntries(data.map((r) => [r.key, r.value]));
-  } catch {
-    return {};
-  }
-}
-
 export default async function Home() {
-  const s = await getSettings();
+  // getSiteSettings() dùng React.cache() → share với layout.tsx, không query DB lần 2
+  const s = await getSiteSettings();
 
   // Giá trị dynamic từ admin panel, fallback về mặc định
   const phone    = s.contact_phone    || "0968806360";
