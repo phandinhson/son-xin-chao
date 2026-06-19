@@ -196,10 +196,29 @@ export default function PricingPageClient({
 
                     {/* Price */}
                     <div className="mb-7 pb-6 border-b border-slate-100">
-                      {plan.price === "Liên hệ" ? (
-                        <div>
-                          <div className="text-3xl font-bold text-slate-900">Tùy chỉnh</div>
-                          <div className="text-slate-400 text-sm mt-1">Báo giá theo nhu cầu thực tế</div>
+                      {plan.price.startsWith("Liên hệ") || plan.price === "Liên hệ" ? (
+                        <div className="space-y-2.5">
+                          <p className="text-slate-500 text-sm">Liên hệ để nhận báo giá phù hợp nhất</p>
+                          {/* Zalo chat */}
+                          <a
+                            href={zaloUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2.5 w-full px-4 py-3 bg-[#e8f4ff] border border-[#0068ff]/25 text-[#0068ff] font-semibold rounded-xl hover:bg-[#d0e8ff] transition-colors text-sm"
+                          >
+                            <img src="/logo-zalo-vector.svg" alt="Zalo" className="h-5 w-auto" />
+                            Chat qua Zalo
+                          </a>
+                          {/* Phone number */}
+                          <a
+                            href={`tel:${zalo.replace(/\s/g, "")}`}
+                            className="flex items-center gap-2.5 w-full px-4 py-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl transition-colors text-sm"
+                          >
+                            <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 8V5z" />
+                            </svg>
+                            {zalo} · Hiện số
+                          </a>
                         </div>
                       ) : (
                         <div>

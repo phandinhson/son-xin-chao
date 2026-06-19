@@ -173,9 +173,21 @@ export default function PricingAdminCombined() {
                 )}
                 <div className="text-3xl mb-3">{item.icon}</div>
                 <h3 className="text-white font-bold text-xl mb-1">{item.name}</h3>
-                <p className="text-blue-400 font-bold text-lg mb-3">
-                  {item.price} <span className="text-gray-500 text-sm font-normal">{item.unit}</span>
-                </p>
+                {item.price.startsWith("Liên hệ") ? (
+                  <div className="flex flex-col gap-1.5 mb-3">
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0068ff]/15 border border-[#0068ff]/30 rounded-lg text-[#60aaff] text-xs font-medium">
+                      <img src="/logo-zalo-vector.svg" alt="" className="h-4 w-auto opacity-80" />
+                      Chat qua Zalo
+                    </div>
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-teal-500/15 border border-teal-500/30 rounded-lg text-teal-400 text-xs font-medium">
+                      📞 Hiện số điện thoại
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-blue-400 font-bold text-lg mb-3">
+                    {item.price} <span className="text-gray-500 text-sm font-normal">{item.unit}</span>
+                  </p>
+                )}
                 <ul className="text-gray-400 text-xs space-y-1 mb-4">
                   {item.features.slice(0, 3).map((f, i) => <li key={i}>✓ {f}</li>)}
                   {item.features.length > 3 && <li className="text-gray-600">+{item.features.length - 3} tính năng...</li>}
@@ -263,6 +275,9 @@ export default function PricingAdminCombined() {
                   <label className="block text-gray-400 text-sm mb-1">Giá *</label>
                   <input value={pricingForm.price} onChange={(e) => setPricingForm({ ...pricingForm, price: e.target.value })}
                     placeholder="3.500.000 hoặc Liên hệ" className={inp} />
+                  <p className="text-gray-600 text-xs mt-1 leading-snug">
+                    💡 Nhập <button type="button" onClick={() => setPricingForm({ ...pricingForm, price: "Liên hệ" })} className="text-teal-400 underline hover:text-teal-300">Liên hệ</button> → hiển thị nút Zalo + số điện thoại thay vì số tiền
+                  </p>
                 </div>
                 <div>
                   <label className="block text-gray-400 text-sm mb-1">Đơn vị</label>
