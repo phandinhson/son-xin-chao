@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { Pricing as PricingType } from "@/lib/supabase";
 
@@ -96,10 +97,10 @@ export default function Pricing() {
                       </li>
                     ))}
                   </ul>
-                  <a href="/contact" className={`flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-semibold text-sm transition-all ${plan.is_popular ? `bg-gradient-to-r ${color} text-white hover:opacity-90 shadow-lg` : "border border-slate-300 text-white hover:bg-slate-50"}`}>
+                  <Link href="/contact" className={`flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-semibold text-sm transition-all ${plan.is_popular ? `bg-gradient-to-r ${color} text-white hover:opacity-90 shadow-lg` : "border border-slate-300 text-white hover:bg-slate-50"}`}>
                     {plan.cta_text}
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                  </a>
+                  </Link>
                 </div>
               </div>
             );

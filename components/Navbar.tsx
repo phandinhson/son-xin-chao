@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { useSettings } from "@/components/SettingsContext";
 
 /* ── Nav data ── */
@@ -65,14 +66,14 @@ function MobileAccordion({
       <div className={`overflow-hidden transition-all duration-300 ${open ? "max-h-96" : "max-h-0"}`}>
         <div className="bg-slate-50 flex flex-col">
           {items.map((item) => (
-            <a
+            <Link
               key={item.href + item.label}
               href={item.href}
               onClick={onClose}
               className="px-8 py-3.5 text-[14px] text-slate-600 hover:text-blue-600 hover:bg-blue-50 border-b border-slate-100 last:border-0 transition-colors"
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </div>
       </div>
@@ -122,7 +123,7 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-4 relative">
 
         {/* ── Logo ── */}
-        <a href="/" className="flex items-center gap-2.5 flex-shrink-0 group md:static absolute left-1/2 -translate-x-1/2 md:translate-x-0">
+        <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group md:static absolute left-1/2 -translate-x-1/2 md:translate-x-0">
           {logoUrl ? (
             <img src={logoUrl} alt="Logo" className="w-9 h-9 rounded-xl object-cover shadow group-hover:scale-105 transition-transform" />
           ) : (
@@ -137,15 +138,15 @@ export default function Navbar() {
             </div>
             <div className="text-[10px] font-medium text-slate-400 tracking-widest uppercase">SEO · Ads · Website</div>
           </div>
-        </a>
+        </Link>
 
         {/* ── Desktop nav ── */}
         <div className="hidden md:flex items-center gap-1 flex-1 justify-center" ref={dropdownRef}>
 
           {/* Về Sơn */}
-          <a href="/gioi-thieu" className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all">
+          <Link href="/gioi-thieu" className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all">
             Về Sơn
-          </a>
+          </Link>
 
           {/* SEO AI dropdown */}
           <div className="relative" onMouseEnter={() => handleMouseEnter("seoai")} onMouseLeave={handleMouseLeave}>
@@ -168,7 +169,7 @@ export default function Navbar() {
                 </div>
                 <div className="p-3">
                   {SEO_AI.map((s) => (
-                    <a key={s.label} href={s.href}
+                    <Link key={s.label} href={s.href}
                       className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors group/item"
                       onClick={() => setOpenDropdown(null)}>
                       <span className="text-lg mt-0.5">{s.icon}</span>
@@ -176,7 +177,7 @@ export default function Navbar() {
                         <div className="text-sm font-semibold text-slate-800 group-hover/item:text-violet-600 transition-colors">{s.label}</div>
                         <div className="text-xs text-slate-400 mt-0.5">{s.sub}</div>
                       </div>
-                    </a>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -203,7 +204,7 @@ export default function Navbar() {
                 {/* Grid */}
                 <div className="grid grid-cols-3 gap-0 p-4">
                   {SERVICES.map((s) => (
-                    <a key={s.label} href={s.href}
+                    <Link key={s.label} href={s.href}
                       className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors group/item"
                       onClick={() => setOpenDropdown(null)}>
                       <span className="text-xl mt-0.5 flex-shrink-0">{s.icon}</span>
@@ -211,30 +212,30 @@ export default function Navbar() {
                         <div className="text-sm font-semibold text-slate-800 group-hover/item:text-blue-600 transition-colors leading-tight">{s.label}</div>
                         <div className="text-xs text-slate-400 mt-0.5 leading-snug">{s.sub}</div>
                       </div>
-                    </a>
+                    </Link>
                   ))}
                 </div>
                 {/* Footer CTA */}
                 <div className="px-6 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
                   <span className="text-xs text-slate-400">Tư vấn miễn phí — phản hồi trong 2 giờ</span>
-                  <a href="/services" onClick={() => setOpenDropdown(null)}
+                  <Link href="/services" onClick={() => setOpenDropdown(null)}
                     className="px-4 py-1.5 bg-gradient-to-r from-red-500 to-rose-500 text-white text-xs font-bold rounded-full hover:opacity-90 transition-opacity shadow-sm">
                     Xem tất cả Dịch vụ →
-                  </a>
+                  </Link>
                 </div>
               </div>
             )}
           </div>
 
           {/* Portfolio */}
-          <a href="/#portfolio" className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all">
+          <Link href="/#portfolio" className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all">
             Portfolio
-          </a>
+          </Link>
 
           {/* Bảng giá */}
-          <a href="/#pricing" className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all">
+          <Link href="/#pricing" className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all">
             Bảng giá
-          </a>
+          </Link>
 
           {/* Kiến thức dropdown */}
           <div className="relative" onMouseEnter={() => handleMouseEnter("knowledge")} onMouseLeave={handleMouseLeave}>
@@ -253,7 +254,7 @@ export default function Navbar() {
                 </div>
                 <div className="p-3">
                   {KNOWLEDGE.map((k) => (
-                    <a key={k.label} href={k.href}
+                    <Link key={k.label} href={k.href}
                       className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors group/item"
                       onClick={() => setOpenDropdown(null)}>
                       <span className="text-lg mt-0.5">{k.icon}</span>
@@ -261,7 +262,7 @@ export default function Navbar() {
                         <div className="text-sm font-semibold text-slate-800 group-hover/item:text-blue-600 transition-colors">{k.label}</div>
                         <div className="text-xs text-slate-400 mt-0.5">{k.sub}</div>
                       </div>
-                    </a>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -279,10 +280,10 @@ export default function Navbar() {
             <span className="hidden lg:inline">{phoneDisplay}</span>
           </a>
           <div className="w-px h-5 bg-slate-200" />
-          <a href="/contact"
+          <Link href="/contact"
             className="px-5 py-2.5 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white text-sm font-bold rounded-full shadow-md shadow-red-200 hover:shadow-red-300 hover:scale-105 active:scale-95 transition-all duration-200">
             Liên hệ
-          </a>
+          </Link>
         </div>
 
         {/* ── Mobile hamburger ── */}
@@ -304,7 +305,7 @@ export default function Navbar() {
 
           {/* Header mobile menu */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-            <a href="/" className="flex items-center gap-2.5" onClick={() => setMenuOpen(false)}>
+            <Link href="/" className="flex items-center gap-2.5" onClick={() => setMenuOpen(false)}>
               {logoUrl
                 ? <img src={logoUrl} alt="Logo" className="w-8 h-8 rounded-lg object-cover" />
                 : <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm">S</div>
@@ -318,7 +319,7 @@ export default function Navbar() {
                 </div>
                 <div className="text-[10px] text-slate-400 tracking-widest uppercase mt-0.5">SEO · ADS · WEBSITE</div>
               </div>
-            </a>
+            </Link>
             <button onClick={() => setMenuOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors">
               <svg className="w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -330,10 +331,10 @@ export default function Navbar() {
           <div className="flex flex-col">
 
             {/* Về Sơn */}
-            <a href="/gioi-thieu" onClick={() => setMenuOpen(false)}
+            <Link href="/gioi-thieu" onClick={() => setMenuOpen(false)}
               className="flex items-center justify-between px-5 py-4 text-[15px] font-semibold text-slate-800 border-b border-slate-100 hover:bg-slate-50 transition-colors">
               Về Sơn
-            </a>
+            </Link>
 
             {/* Dịch vụ — accordion */}
             <MobileAccordion label="Dịch vụ" onClose={() => setMenuOpen(false)} items={[
@@ -356,16 +357,16 @@ export default function Navbar() {
             ]} />
 
             {/* Portfolio */}
-            <a href="/#portfolio" onClick={() => setMenuOpen(false)}
+            <Link href="/#portfolio" onClick={() => setMenuOpen(false)}
               className="flex items-center justify-between px-5 py-4 text-[15px] font-semibold text-slate-800 border-b border-slate-100 hover:bg-slate-50 transition-colors">
               Portfolio
-            </a>
+            </Link>
 
             {/* Bảng giá */}
-            <a href="/#pricing" onClick={() => setMenuOpen(false)}
+            <Link href="/#pricing" onClick={() => setMenuOpen(false)}
               className="flex items-center justify-between px-5 py-4 text-[15px] font-semibold text-slate-800 border-b border-slate-100 hover:bg-slate-50 transition-colors">
               Bảng giá
-            </a>
+            </Link>
           </div>
 
           {/* CTA bottom */}
@@ -377,10 +378,10 @@ export default function Navbar() {
               </svg>
               {phoneDisplay}
             </a>
-            <a href="/contact" onClick={() => setMenuOpen(false)}
+            <Link href="/contact" onClick={() => setMenuOpen(false)}
               className="text-center py-3 bg-gradient-to-r from-blue-600 to-violet-600 text-white text-sm font-bold rounded-xl">
               Liên hệ tư vấn miễn phí →
-            </a>
+            </Link>
           </div>
         </div>
       </div>

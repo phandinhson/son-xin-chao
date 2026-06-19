@@ -36,9 +36,7 @@ export default function FloatingContacts() {
       bg: "bg-[#0068FF]",
       shadow: "shadow-blue-400",
       icon: (
-        <svg className="w-6 h-6 text-white" viewBox="0 0 48 48" fill="currentColor">
-          <text x="4" y="34" fontSize="24" fontWeight="bold" fill="white">Za</text>
-        </svg>
+        <img src="/logo-zalo-vector.svg" alt="Zalo" className="h-7 w-auto brightness-0 invert" />
       ),
     },
     {

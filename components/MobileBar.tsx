@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link"; // Tối ưu SPA chuyển trang không reload
 import { useSettings } from "@/components/SettingsContext";
 
 export default function MobileBar() {
@@ -14,30 +15,34 @@ export default function MobileBar() {
     return () => clearTimeout(t);
   }, []);
 
-  const messengerUrl = facebook.includes("facebook.com")
-    ? facebook.replace("facebook.com", "m.me").replace("/profile.php?id=", "")
-    : `https://m.me/${facebook.replace(/.*fb\.com\//, "").replace(/.*facebook\.com\//, "")}`;
+  // Hàm xử lý tạo link Messenger chuẩn xác, chống lỗi chuỗi đầu vào
+  const getMessengerUrl = (fbInput: string) => {
+    if (!fbInput) return "https://m.me/";
+    const cleanPath = fbInput
+      .replace(/(https?:\/\/)?(www\.)?(facebook\.com|fb\.com)\//, "")
+      .replace("profile.php?id=", "");
+    return `https://m.me/${cleanPath}`;
+  };
+
+  const messengerUrl = getMessengerUrl(facebook);
 
   const openMenu = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    // Dispatch custom event để Navbar lắng nghe và mở menu
-    setTimeout(() => {
-      window.dispatchEvent(new CustomEvent("toggle-mobile-menu"));
-    }, 300);
+    window.dispatchEvent(new CustomEvent("toggle-mobile-menu"));
+    window.scrollTo({ top: 0, behavior: "auto" });
   };
 
   return (
     <>
-      {/* Spacer to prevent content hidden behind bar */}
+      {/* Spacer ngăn nội dung dưới chân trang bị che khuất */}
       <div className="h-20 md:hidden" />
 
       {/* Mobile sticky bar */}
       <div
-        className={`fixed bottom-0 left-0 right-0 z-50 md:hidden transition-transform duration-500 ${
+        className={`fixed bottom-0 left-0 right-0 z-50 md:hidden will-change-transform transition-transform duration-500 ${
           visible ? "translate-y-0" : "translate-y-full"
         }`}
       >
-        {/* Shadow top */}
+        {/* Đường line hiệu ứng mảnh phía trên thanh bar */}
         <div className="h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
 
         <div className="bg-white border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
@@ -64,20 +69,17 @@ export default function MobileBar() {
               className="flex flex-col items-center gap-1 py-2 px-3 active:opacity-80 transition-opacity"
             >
               <div className="w-10 h-10 rounded-full bg-[#0068FF] flex items-center justify-center shadow-md">
-                <svg className="w-5 h-5 text-white" viewBox="0 0 48 48" fill="currentColor">
-                  <text x="6" y="34" fontSize="22" fontWeight="bold" fill="white">Za</text>
-                </svg>
+                <img src="/logo-zalo-vector.svg" alt="Zalo" className="h-6 w-auto brightness-0 invert" />
               </div>
               <span className="text-[10px] font-medium text-slate-600">Zalo</span>
             </a>
 
-            {/* Call — center highlight */}
+            {/* Call — Nút gọi nổi bật ở trung tâm */}
             <a
               href={`tel:${phone}`}
               className="flex flex-col items-center gap-1 py-1 px-3 -mt-4 active:opacity-80 transition-opacity"
             >
               <div className="relative">
-                {/* Pulse rings */}
                 <div className="absolute inset-0 rounded-full bg-red-400 animate-ping opacity-40 scale-110" />
                 <div className="absolute inset-0 rounded-full bg-red-300 animate-pulse opacity-30 scale-125" />
                 <div className="w-14 h-14 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center shadow-lg shadow-red-300 relative z-10">
@@ -105,7 +107,7 @@ export default function MobileBar() {
             </a>
 
             {/* Contact */}
-            <a
+            <Link
               href="/contact"
               className="flex flex-col items-center gap-1 py-2 px-3 active:opacity-80 transition-opacity"
             >
@@ -115,10 +117,9 @@ export default function MobileBar() {
                 </svg>
               </div>
               <span className="text-[10px] font-medium text-slate-600">Liên hệ</span>
-            </a>
+            </Link>
 
           </div>
-          {/* Safe area bottom padding for iPhone */}
           <div className="h-2" />
         </div>
       </div>

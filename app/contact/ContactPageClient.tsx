@@ -127,11 +127,7 @@ export default function ContactPageClient() {
   const CONTACT_CARDS = [
     {
       icon: (
-        <svg viewBox="0 0 32 32" fill="none" className="w-6 h-6">
-          <rect width="32" height="32" rx="8" fill="#0068FF"/>
-          <path d="M16 4C9.373 4 4 9.065 4 15.307c0 3.484 1.74 6.594 4.467 8.633V28l4.1-2.254c1.095.302 2.254.466 3.433.466 6.627 0 12-5.065 12-11.306S22.627 4 16 4z" fill="white"/>
-          <path d="M17.178 18.667l-3.056-3.26-5.967 3.26 6.567-6.967 3.133 3.26 5.89-3.26-6.567 6.967z" fill="#0068FF"/>
-        </svg>
+        <img src="/logo-zalo-vector.svg" alt="Zalo" className="h-7 w-auto brightness-0 invert" />
       ),
       name: "Zalo",
       desc: "Phản hồi nhanh nhất",
@@ -251,11 +247,7 @@ export default function ContactPageClient() {
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-lg rounded-2xl hover:opacity-90 hover:scale-105 transition-all shadow-xl shadow-blue-500/25"
             >
-              <svg viewBox="0 0 32 32" fill="none" className="w-6 h-6 flex-shrink-0">
-                <rect width="32" height="32" rx="8" fill="white" fillOpacity="0.25"/>
-                <path d="M16 4C9.373 4 4 9.065 4 15.307c0 3.484 1.74 6.594 4.467 8.633V28l4.1-2.254c1.095.302 2.254.466 3.433.466 6.627 0 12-5.065 12-11.306S22.627 4 16 4z" fill="white"/>
-                <path d="M17.178 18.667l-3.056-3.26-5.967 3.26 6.567-6.967 3.133 3.26 5.89-3.26-6.567 6.967z" fill="#0068FF"/>
-              </svg>
+              <img src="/logo-zalo-vector.svg" alt="Zalo" className="h-8 w-auto brightness-0 invert flex-shrink-0" />
               Nhắn Zalo ngay
             </a>
             <a

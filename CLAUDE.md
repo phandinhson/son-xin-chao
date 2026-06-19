@@ -1,153 +1,271 @@
 # CLAUDE.md — Hướng dẫn làm việc với dự án Son Xin Chào
 
-## Tổng quan dự án
-Website portfolio cá nhân cho Phan Đình Sơn — Digital Marketing Specialist (SEO, Ads, WordPress).
-- **Brand**: Sơn Xin Chào
-- **Stack**: Next.js 14 App Router + TypeScript + Tailwind CSS + Supabase
-- **Địa chỉ local**: `localhost:3000`
-- **Admin**: `localhost:3000/admin`
-- **Thư mục project**: `/Users/ericphan/Documents/Claude/Projects/Cá nhân hoá/son-xin-chao/`
+> **Cập nhật lần cuối**: 18/06/2026  
+> Đọc file này TRƯỚC khi làm bất cứ việc gì với dự án.
 
 ---
 
-## Quy tắc khi chỉnh sửa code
+## Thông tin nhanh
 
-### Đọc file trước khi sửa
-Luôn dùng `Read` tool đọc file trước khi dùng `Edit`. Nếu file chưa được đọc trong session hiện tại, bắt buộc đọc trước.
+| Mục | Giá trị |
+|-----|---------|
+| **Brand** | Sơn Xin Chào |
+| **Chủ** | Phan Đình Sơn — SEO · Google Ads · Facebook Ads · Website |
+| **Domain** | https://www.sonxinchao.com |
+| **Stack** | Next.js 14 App Router + TypeScript + Tailwind CSS + Supabase |
+| **Local** | `localhost:3000` |
+| **Admin** | `localhost:3000/admin` (pass: `Son@2026`) |
+| **Thư mục** | `/Users/ericphan/Documents/Claude/Projects/Cá nhân hoá/son-xin-chao/` |
+| **Bash path** | `/sessions/*/mnt/Cá nhân hoá/son-xin-chao/` |
+| **Supabase** | `https://kpgtiqepktofdfyxgsbw.supabase.co` |
 
-### Phân biệt API routes
-| Loại | Path | Auth |
-|------|------|------|
-| Admin (CRUD) | `/api/admin/*` | Cookie `admin_session` |
-| Public (đọc) | `/api/settings`, `/api/posts`, `/api/portfolio`, `/api/pricing` | Không |
+---
 
-### Supabase
-- **Chỉ dùng `supabaseAdmin()`** trong API routes (server-side)
-- **Không dùng** `supabase` (client) trong API routes — sẽ bị lỗi RLS
-- URL: `https://kpgtiqepktofdfyxgsbw.supabase.co`
-- Schema SQL ở: `supabase/schema.sql`
+## ⚠️ Lưu ý sandbox quan trọng
 
-### Components fetch data
-Tất cả components (Hero, About, Contact, Pricing, Portfolio, Blog, Navbar, Footer) đều fetch từ `/api/settings` hoặc endpoint tương ứng trong `useEffect`. Luôn có fallback data khi API lỗi.
-
-### Restart server khi cần
-Sau khi tạo file mới trong `app/api/`, Next.js cần restart để nhận route:
+**Sandbox KHÔNG thể `git push`** (proxy 403). Sau mỗi session, báo user chạy:
 ```bash
-# Trong thư mục son-xin-chao
-rm -rf .next && npm run dev
+cd ~/Documents/Claude/Projects/Cá\ nhân\ hoá/son-xin-chao
+rm -f .git/HEAD.lock .git/index.lock
+git add -A && git commit -m "..." && git push origin main
 ```
+Sandbox cũng không xóa được `.git/*.lock` → workaround: `GIT_INDEX_FILE=.git/index2 git add ...`
 
 ---
 
-## Cấu trúc thư mục chính
+## Cấu trúc thư mục
 
 ```
 son-xin-chao/
 ├── app/
-│   ├── page.tsx              ← Trang chủ (gọi tất cả components)
-│   ├── globals.css           ← CSS toàn cục + .prose-custom (blog)
-│   ├── layout.tsx
-│   ├── blog/[slug]/page.tsx  ← Trang đọc bài viết
-│   ├── admin/                ← Toàn bộ trang admin
-│   └── api/
-│       ├── settings/         ← PUBLIC: site settings
-│       ├── posts/            ← PUBLIC: bài viết published
-│       ├── portfolio/        ← PUBLIC: portfolio active
-│       ├── pricing/          ← PUBLIC: bảng giá
-│       ├── contact/          ← Gửi email khi form liên hệ
-│       └── admin/            ← ADMIN: CRUD đầy đủ
+│   ├── layout.tsx                  ← Root: font BeVietnamPro, ThemeInjector, SettingsProvider, Analytics
+│   ├── page.tsx                    ← Trang chủ (Hero, About, Services, Portfolio, Pricing, Blog, Contact)
+│   ├── globals.css                 ← CSS vars (--th-*), .gradient-text, .card-hover, .animate-on-scroll
+│   ├── gioi-thieu/
+│   │   ├── page.tsx                ← CMS từ site_settings key "page_gioi_thieu", revalidate=300
+│   │   └── opengraph-image.tsx     ← OG image 1200×630 tự động (ImageResponse, runtime=nodejs)
+│   ├── contact/
+│   │   ├── page.tsx                ← Server: metadata + JSON-LD ContactPage
+│   │   └── ContactPageClient.tsx   ← Client: form, 6 contact cards, FAQ, map, giờ làm việc
+│   ├── blog/
+│   │   ├── page.tsx
+│   │   └── [slug]/page.tsx
+│   ├── dich-vu/
+│   │   ├── seo/           ├── google-ads/    ├── facebook-ads/
+│   │   ├── tiktok-ads/    ├── thiet-ke-website/
+│   │   ├── seo-local/     ├── seo-hcm/       └── audit-tu-van/
+│   ├── cong-cu-ai/page.tsx         ← Fetch DB bảng ai_tools
+│   ├── admin/                      ← Toàn bộ admin panel
+│   ├── api/                        ← Routes (xem bảng bên dưới)
+│   ├── sitemap.ts                  ← Static pages + dynamic blog posts
+│   └── robots.ts
+│
 ├── components/
-│   ├── Navbar.tsx            ← Logo động từ settings
-│   ├── Hero.tsx              ← Fetch hero_name, tagline, stats
-│   ├── About.tsx             ← Fetch about_description
-│   ├── Services.tsx          ← Static
-│   ├── Portfolio.tsx         ← Fetch /api/portfolio
-│   ├── Pricing.tsx           ← Fetch /api/pricing
-│   ├── Blog.tsx              ← Fetch /api/posts + tab filter
-│   ├── Contact.tsx           ← Form gửi email + FAQ
-│   └── Footer.tsx            ← Logo, links động
-├── lib/
-│   └── supabase.ts           ← supabase client + supabaseAdmin + Types
-├── middleware.ts             ← Bảo vệ /admin/* routes
-├── supabase/
-│   ├── schema.sql
-│   ├── seed-blog-post-1.sql
-│   └── seed-blog-post-2-3.sql
-└── .env.local                ← Credentials (không commit)
+│   ├── Navbar.tsx        ← Mega-menu, logo động
+│   ├── Hero.tsx          ├── About.tsx       ├── Services.tsx
+│   ├── Portfolio.tsx     ├── Pricing.tsx     ├── Blog.tsx
+│   ├── Contact.tsx       ← Form + FAQ dùng trên homepage
+│   ├── Footer.tsx        ├── MobileBar.tsx   ├── FloatingContacts.tsx
+│   ├── PageTracker.tsx   ← Track pageview, keepalive:true
+│   ├── SeoInjector.tsx   ← Inject schema/GA/custom JS từ admin
+│   ├── ThemeInjector.tsx ← CSS vars theme từ admin
+│   ├── SettingsContext.tsx
+│   ├── RichEditor.tsx    ← WYSIWYG, light theme
+│   └── SearchModal.tsx
+│
+├── lib/supabase.ts       ← supabaseAdmin() + Types
+├── next.config.js        ← images.remotePatterns (Supabase), WebP/AVIF, 30d cache
+├── middleware.ts         ← Bảo vệ /admin/*
+├── CLAUDE.md             ← File này
+├── MEMORY.md             ← Credentials + DB schema
+└── docs/                 ← Tài liệu chi tiết
 ```
 
 ---
 
-## Admin Panel
+## API Routes
 
-### Đăng nhập
-- URL: `/admin`
-- Password: `Son@2026` (trong `.env.local` — key `ADMIN_PASSWORD`)
+### Public
+| Route | Mô tả |
+|-------|-------|
+| `GET /api/settings` | Tất cả site_settings → `{key: value}` |
+| `GET /api/posts` | Bài viết published |
+| `GET /api/posts/[slug]` | Bài theo slug |
+| `GET /api/portfolio` | Portfolio active |
+| `GET /api/pricing` | Bảng giá + addons |
+| `GET /api/categories` | Categories blog |
+| `POST /api/contact` | Gửi email (Nodemailer + Gmail) |
+| `POST /api/track` | Track pageview |
 
-### Các trang admin
-| Trang | Chức năng |
-|-------|-----------|
-| `/admin/dashboard` | Stats tổng quan |
-| `/admin/posts` | Quản lý bài viết blog |
-| `/admin/posts/new` | Viết bài mới |
-| `/admin/portfolio` | CRUD portfolio |
-| `/admin/pricing` | CRUD bảng giá |
-| `/admin/settings` | Chỉnh logo, hero, stats, contact, about |
+### Admin (cookie `admin_session` required)
+| Route | Mô tả |
+|-------|-------|
+| `/api/admin/posts` | CRUD bài viết |
+| `/api/admin/portfolio` | CRUD portfolio |
+| `/api/admin/pricing` | CRUD bảng giá |
+| `/api/admin/addons` | CRUD add-ons |
+| `/api/admin/settings` | Update site settings |
+| `/api/admin/categories` | CRUD categories |
+| `/api/admin/ai-tools` | CRUD ai_tools |
+| `/api/admin/media` | CRUD media (Supabase Storage) |
+| `/api/admin/gioi-thieu` | Lưu CMS page_gioi_thieu |
 
-### Settings keys quan trọng (table: site_settings)
+---
+
+## Admin Pages
+
+| URL | Chức năng |
+|-----|-----------|
+| `/admin` | Login |
+| `/admin/dashboard` | Stats + analytics |
+| `/admin/posts` + `/new` + `/[id]` | Blog CRUD (WordPress-style editor) |
+| `/admin/portfolio` | Portfolio CRUD |
+| `/admin/pricing` + `/addons` | Bảng giá CRUD |
+| `/admin/settings` | SEO, theme (CSS vars), contact, hero, OG |
+| `/admin/categories` | Categories blog |
+| `/admin/ai-tools` | AI tools landing page |
+| `/admin/media` | Thư viện ảnh (Supabase Storage) |
+| `/admin/gioi-thieu` | CMS trang giới thiệu |
+| `/admin/facebook-ads` | CMS trang facebook-ads |
+| `/admin/speed-cache` | Purge Cloudflare, checklist tốc độ |
+
+---
+
+## Canonical URLs (tất cả đã đúng trong code)
+
+> ⚠️ Live site vẫn sai (chưa được push) — cần `git push origin main`
+
 ```
-hero_name, hero_tagline, hero_description
-stat_years, stat_projects, stat_satisfaction, stat_roas
-contact_phone, contact_zalo, contact_facebook, contact_email
-about_description
-logo_url, logo_text
+/                        → https://www.sonxinchao.com
+/gioi-thieu              → https://www.sonxinchao.com/gioi-thieu
+/contact                 → https://www.sonxinchao.com/contact
+/dich-vu/seo             → https://www.sonxinchao.com/dich-vu/seo
+/dich-vu/google-ads      → https://www.sonxinchao.com/dich-vu/google-ads
+/dich-vu/facebook-ads    → https://www.sonxinchao.com/dich-vu/facebook-ads
+/dich-vu/tiktok-ads      → https://www.sonxinchao.com/dich-vu/tiktok-ads
+/dich-vu/thiet-ke-website → https://www.sonxinchao.com/dich-vu/thiet-ke-website
+/dich-vu/seo-local       → https://www.sonxinchao.com/dich-vu/seo-local
+/dich-vu/seo-hcm         → https://www.sonxinchao.com/dich-vu/seo-hcm
+/dich-vu/audit-tu-van    → https://www.sonxinchao.com/dich-vu/audit-tu-van
 ```
 
 ---
 
-## Gửi email liên hệ
+## Design System
 
-### Cấu hình
+### CSS Variables
+```
+--th-bg / --th-bg-alt / --th-bg-nav
+--th-text / --th-text-2 / --th-text-3 / --th-text-4
+--th-card / --th-card-hover
+--th-border / --th-border-sm / --th-border-lg
+--th-accent / --th-accent-2
+--th-font
+```
+
+### Dùng trong JSX
+```tsx
+className="bg-[var(--th-bg)] text-[var(--th-text)] border border-[var(--th-border)]"
+```
+
+### Utility classes (globals.css)
+- `.gradient-text` — gradient xanh-tím-hồng
+- `.card-hover` — translateY(-6px) + shadow
+- `.animate-on-scroll` — fade+slide in khi scroll (cần IntersectionObserver trong useEffect)
+
+### Pattern trang mới (server component)
+```tsx
+export const revalidate = 300;
+export const metadata: Metadata = {
+  title: "...",
+  alternates: { canonical: "https://www.sonxinchao.com/SLUG" },
+  openGraph: { url: "https://www.sonxinchao.com/SLUG", type: "website" },
+};
+export default function Page() {
+  return (<><script type="application/ld+json" .../><Navbar /><main>...</main><Footer /><MobileBar /></>);
+}
+```
+
+---
+
+## Performance Rules
+
+| Rule | Chi tiết |
+|------|---------|
+| **No blur-3xl on mobile** | Dùng `hidden md:block` cho decorative blobs |
+| **next/image thay img** | Tự động WebP/AVIF + srcset đúng kích thước |
+| **LCP image → priority** | `<Image priority sizes="Xpx" />` |
+| **Below-fold → lazy** | `<Image loading="lazy" sizes="..." />` |
+| **revalidate=300** | Đủ cache, giảm Supabase cold-start 5× |
+| **Font: bỏ weight 300** | Giảm 2 file woff2 |
+| **keepalive: true** | Tracking fetch hoàn thành dù user navigate đi |
+
+### next.config.js images
+```js
+remotePatterns: [{ protocol:"https", hostname:"kpgtiqepktofdfyxgsbw.supabase.co", pathname:"/storage/v1/object/public/**" }],
+formats: ["image/avif", "image/webp"],
+minimumCacheTTL: 2592000,
+```
+
+---
+
+## OG Image (/gioi-thieu)
+
+File: `app/gioi-thieu/opengraph-image.tsx`
+- `runtime = "nodejs"`, `revalidate = 3600`, `size = {width:1200, height:630}`
+- Fetch CMS từ Supabase key `page_gioi_thieu`
+- Convert avatar URL → base64 để embed
+- **Satori không hỗ trợ `backgroundClip:"text"`** → dùng `color:"#1e40af"` solid
+
+---
+
+## CMS key "page_gioi_thieu"
+
+JSON object lưu trong `site_settings`:
+```json
+{
+  "hero_name", "hero_job_title", "hero_location", "hero_avatar_url",
+  "hero_description", "hero_video_url", "story_image_url",
+  "stat_years", "stat_projects", "stat_clients",
+  "skills": [{"category","icon","colorBar","colorIcon","items":[{"name","level"}]}],
+  "timeline": [{"year","title","desc","icon","color"}]
+}
+```
+
+---
+
+## Gửi email (Contact form)
+
 ```env
 GMAIL_USER=phandinhsonlp116@gmail.com
 GMAIL_APP_PASSWORD=pskl njch llai dwhw
 ```
-- Dùng Nodemailer + Gmail App Password
-- API: `POST /api/contact`
-- Package: `nodemailer` (cần cài: `npm install nodemailer @types/nodemailer`)
+- Package: `nodemailer` + `@types/nodemailer`
+- API: `POST /api/contact` — body: `{name, phone, email?, service?, budget?, message}`
 
 ---
 
-## Blog & SEO Content
+## Supabase Rules
 
-### Auto-tagging logic (getTag function)
-- Title chứa "seo" → tag **SEO** (màu xanh lá)
-- Title chứa "ads"/"quảng cáo" → tag **Ads** (màu xanh dương)
-- Title chứa "website"/"wordpress"/"web" → tag **Website** (màu tím)
-- Còn lại → tag **Tips** (màu cam)
+```typescript
+// ✅ Server-side (API routes, page.tsx server components)
+import { supabaseAdmin } from "@/lib/supabase";
+const db = supabaseAdmin();
+const { data } = await db.from("table").select("...");
 
-### Trang đọc bài
-- URL: `/blog/[slug]`
-- CSS cho content: class `.prose-custom` trong `globals.css`
-- Layout: content chính + sidebar (author card + share buttons)
-
-### Thêm bài viết mới
-1. Viết SQL INSERT vào `supabase/` folder
-2. Paste vào [Supabase SQL Editor](https://supabase.com/dashboard/project/kpgtiqepktofdfyxgsbw/editor/)
-3. Run → bài xuất hiện ngay trên website
-
----
-
-## Lệnh thường dùng
-
-```bash
-# Chạy dev server
-cd /Users/ericphan/Documents/Claude/Projects/Cá\ nhân\ hoá/son-xin-chao
-npm run dev
-
-# Rebuild sạch (khi tạo file mới)
-rm -rf .next && npm run dev
-
-# Cài package
-npm install nodemailer @types/nodemailer
+// ❌ Không dùng supabase client trong API routes
 ```
+
+---
+
+## Bugs đã biết & fix
+
+| Bug | Nguyên nhân | Fix |
+|-----|-------------|-----|
+| Live canonical sai | Commits chưa push | `git push origin main` |
+| `.git/*.lock` không xóa | Sandbox permissions | User xóa thủ công hoặc `GIT_INDEX_FILE` |
+| `blur-3xl` lag mobile | GPU filter:blur(96px) | `hidden md:block` |
+| ISR slow (1.8s) | revalidate=60 cache miss | Tăng lên 300s |
+| Ảnh không optimize | Thiếu remotePatterns | Thêm Supabase hostname |
+| OG image rỗng | Satori `backgroundClip:text` | Dùng `color` solid |
+| `git push` 403 | Proxy sandbox | User tự push từ terminal |

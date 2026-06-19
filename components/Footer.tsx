@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useSettings } from "@/components/SettingsContext";
 
 export default function Footer() {
@@ -68,9 +69,7 @@ export default function Footer() {
       label: "Zalo",
       href: `https://zalo.me/${zalo.replace(/\s/g, "")}`,
       icon: (
-        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V9h2v7zm4 0h-2V9h2v7z" />
-        </svg>
+        <img src="/logo-zalo-vector.svg" alt="Zalo" className="h-[18px] w-auto brightness-0 opacity-60" />
       ),
     },
     {
@@ -123,12 +122,12 @@ export default function Footer() {
                 <ul className="space-y-2.5">
                   {col.links.map((link) => (
                     <li key={link.label}>
-                      <a
+                      <Link
                         href={link.href}
                         className="text-slate-600 hover:text-blue-700 text-sm transition-colors leading-snug block"
                       >
                         {link.label}
-                      </a>
+                      </Link>
                     </li>
                   ))}
                 </ul>
@@ -215,10 +214,10 @@ export default function Footer() {
               <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-50 to-violet-50 border border-blue-100">
                 <p className="text-slate-700 text-sm font-semibold mb-1">Cần tư vấn miễn phí?</p>
                 <p className="text-slate-500 text-xs mb-3">Gửi yêu cầu ngay — phản hồi trong 2 giờ.</p>
-                <a href="/contact"
+                <Link href="/contact"
                   className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white text-xs font-bold rounded-full hover:opacity-90 transition-opacity shadow-sm">
                   Liên hệ ngay →
-                </a>
+                </Link>
               </div>
             </div>
           </div>

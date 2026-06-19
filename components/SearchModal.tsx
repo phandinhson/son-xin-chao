@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
 
 type Post = { id: string; title: string; slug: string; excerpt: string | null; created_at: string };
 
@@ -42,6 +43,7 @@ function highlight(text: string, query: string) {
 }
 
 export default function SearchModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [posts, setPosts] = useState<Post[]>([]);
   const [activeIdx, setActiveIdx] = useState(-1);
@@ -135,7 +137,7 @@ export default function SearchModal({ open, onClose }: { open: boolean; onClose:
       const el = document.querySelector(r.href);
       if (el) el.scrollIntoView({ behavior: "smooth" });
     } else {
-      window.location.href = r.href;
+      router.push(r.href);
     }
   };
 

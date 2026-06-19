@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useEffect, useRef } from "react";
 
 const services = [
@@ -141,7 +142,7 @@ export default function Services() {
               </div>
 
               {/* CTA */}
-              <a
+              <Link
                 href="/contact"
                 className={`mt-6 flex items-center justify-center gap-2 w-full py-3 rounded-2xl bg-gradient-to-r ${service.color} text-white font-semibold text-sm hover:opacity-90 transition-opacity shadow-lg ${service.glow}`}
               >
@@ -149,7 +150,7 @@ export default function Services() {
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
-              </a>
+              </Link>
             </div>
           ))}
         </div>
@@ -158,9 +159,9 @@ export default function Services() {
         <div className="mt-16 text-center animate-on-scroll">
           <p className="text-slate-600 mb-6">
             Không chắc dịch vụ nào phù hợp?{" "}
-            <a href="/contact" className="text-blue-600 hover:underline font-medium">
+            <Link href="/contact" className="text-blue-600 hover:underline font-medium">
               Nói chuyện với tôi
-            </a>{" "}
+            </Link>{" "}
             — tôi sẽ tư vấn miễn phí.
           </p>
         </div>
