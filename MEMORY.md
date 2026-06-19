@@ -1,6 +1,6 @@
 # MEMORY.md — Credentials & Database Schema
 
-> **Cập nhật lần cuối**: 18/06/2026
+> **Cập nhật lần cuối**: 19/06/2026
 
 ---
 
@@ -18,7 +18,7 @@
 | Gmail (gửi email) | phandinhsonlp116@gmail.com |
 | Gmail App Password | `pskl njch llai dwhw` |
 | Facebook | https://fb.com/sonxinchao |
-| YouTube | https://youtube.com/@sonxinchao |
+| YouTube | https://youtube.com/@hoccungson116 |
 | Zalo link | https://zalo.me/0968806360 |
 | Kinh nghiệm | 5+ năm |
 | Số dự án | 150+ |
@@ -144,7 +144,7 @@ id, page, referrer, created_at
 | Sau `17af994` | Fix canonical per-page (đúng) — chưa push lên live |
 | `4f5f681` | Font -1 variant, PageTracker keepalive, OG image /gioi-thieu |
 | `aeb45a1` | Mobile perf: no blur, next/image, revalidate 300s, image CDN |
-| Uncommitted | /contact page, #contact → /contact global replace |
+| 19/06/2026 | SPA Link navigation + logo Zalo SVG + fix placehold.co SVG |
 
 > ⚠️ User cần `git push origin main` để deploy các fix lên Vercel
 
@@ -163,3 +163,6 @@ id, page, referrer, created_at
 | OG image | `opengraph-image.tsx` file convention | Next.js auto-inject vào metadata |
 | Contact page | `/contact` riêng thay `/#contact` | SEO tốt hơn, URL rõ ràng |
 | Canonical | `alternates: { canonical: "..." }` per-page | Tránh duplicate content |
+| Internal nav | `<Link>` Next.js thay `<a>` | SPA routing, không reload trang |
+| Zalo icon | `/public/logo-zalo-vector.svg` + `brightness-0 invert` | Logo chính hãng thay SVG tự vẽ |
+| SVG từ external | `dangerouslyAllowSVG: true` trong next.config.js | placehold.co trả SVG, Next.js block mặc định |

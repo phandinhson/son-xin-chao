@@ -75,7 +75,7 @@ export default function ContactPageClient() {
     contact_zalo:     "0968806360",
     contact_facebook: "https://fb.com/sonxinchao",
     contact_email:    "son@sonxinchao.com",
-    contact_youtube:  "https://youtube.com/@sonxinchao",
+    contact_youtube:  "https://youtube.com/@hoccungson116",
   });
 
   /* Fetch settings */
@@ -99,7 +99,7 @@ export default function ContactPageClient() {
   const zaloHref    = `https://zalo.me/${cfg.contact_zalo.replace(/\s/g, "")}`;
   const phoneHref   = `tel:${cfg.contact_phone.replace(/\s/g, "")}`;
   const fbHref      = cfg.contact_facebook.startsWith("http") ? cfg.contact_facebook : `https://${cfg.contact_facebook}`;
-  const ytHref      = cfg.contact_youtube || "https://youtube.com/@sonxinchao";
+  const ytHref      = cfg.contact_youtube || "https://youtube.com/@hoccungson116";
 
   /* Submit */
   const handleSubmit = async (e: React.FormEvent) => {
@@ -191,7 +191,7 @@ export default function ContactPageClient() {
       ),
       name: "YouTube",
       desc: "Xem video chia sẻ",
-      value: "@sonxinchao",
+      value: "@hoccungson116",
       href: ytHref,
       badge: null,
       color: "from-red-500 to-rose-500",
@@ -508,7 +508,7 @@ export default function ContactPageClient() {
                   {[
                     { icon: "💬", label: "Zalo", sub: "Nhắn nhanh nhất", href: zaloHref, color: "text-blue-500" },
                     { icon: "📘", label: "Facebook", sub: "fb.com/sonxinchao", href: fbHref, color: "text-blue-700" },
-                    { icon: "🎥", label: "YouTube", sub: "@sonxinchao", href: ytHref, color: "text-red-500" },
+                    { icon: "🎥", label: "YouTube", sub: "@hoccungson116", href: ytHref, color: "text-red-500" },
                     { icon: "📧", label: "Email", sub: cfg.contact_email, href: `mailto:${cfg.contact_email}`, color: "text-violet-500" },
                   ].map((link) => (
                     <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer"

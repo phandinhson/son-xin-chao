@@ -1,6 +1,6 @@
 # CLAUDE.md — Hướng dẫn làm việc với dự án Son Xin Chào
 
-> **Cập nhật lần cuối**: 18/06/2026  
+> **Cập nhật lần cuối**: 19/06/2026  
 > Đọc file này TRƯỚC khi làm bất cứ việc gì với dự án.
 
 ---
@@ -202,7 +202,13 @@ export default function Page() {
 
 ### next.config.js images
 ```js
-remotePatterns: [{ protocol:"https", hostname:"kpgtiqepktofdfyxgsbw.supabase.co", pathname:"/storage/v1/object/public/**" }],
+remotePatterns: [
+  { protocol:"https", hostname:"kpgtiqepktofdfyxgsbw.supabase.co", pathname:"/storage/v1/object/public/**" },
+  { protocol:"https", hostname:"placehold.co" },   // placeholder blog cover
+],
+dangerouslyAllowSVG: true,          // placehold.co trả SVG
+contentDispositionType: "attachment",
+contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
 formats: ["image/avif", "image/webp"],
 minimumCacheTTL: 2592000,
 ```
@@ -258,6 +264,23 @@ const { data } = await db.from("table").select("...");
 
 ---
 
+## Quy tắc icon & logo
+
+### Logo Zalo
+- File: `/public/logo-zalo-vector.svg` (SVG đen, fill="#000000", landscape 768×468)
+- **Dùng trên nền màu (xanh/gradient):** `<img src="/logo-zalo-vector.svg" className="h-7 w-auto brightness-0 invert" />`
+  - `brightness-0` → đen thuần, `invert` → trắng
+- **Dùng trên nền sáng (footer):** `<img src="/logo-zalo-vector.svg" className="h-[18px] w-auto brightness-0 opacity-60" />`
+  - `brightness-0 opacity-60` → xám nhạt
+- Kích thước theo vị trí: floating nút `h-7`, mobile bar `h-6`, card icon `h-7`, CTA button `h-8`, footer `h-[18px]`
+
+### Quy tắc navigation nội bộ
+- **Luôn dùng `<Link href="...">` từ `next/link`** cho link nội bộ (`/`, `/blog`, `/#section`, v.v.)
+- **Giữ `<a href="...">` cho:** `tel:`, `mailto:`, `target="_blank"` (social), external HTTPS
+- Lý do: `<a>` gây hard reload, `<Link>` SPA không reload
+
+---
+
 ## Bugs đã biết & fix
 
 | Bug | Nguyên nhân | Fix |
@@ -269,3 +292,6 @@ const { data } = await db.from("table").select("...");
 | Ảnh không optimize | Thiếu remotePatterns | Thêm Supabase hostname |
 | OG image rỗng | Satori `backgroundClip:text` | Dùng `color` solid |
 | `git push` 403 | Proxy sandbox | User tự push từ terminal |
+| placehold.co SVG bị block | next/image chặn SVG mặc định | `dangerouslyAllowSVG: true` trong next.config.js |
+| Text white trên bg sáng | Dark theme remnant khi đổi theme | Thay `text-white/gray-300/gray-400` → `text-slate-800/slate-600` |
+| Duplicate API call `/api/settings` | Mỗi component tự fetch | Dùng `useSettings()` từ SettingsContext |
