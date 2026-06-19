@@ -12,8 +12,7 @@ const navItems = [
   { href: "/admin/facebook-ads", label: "Facebook Ads", icon: "📣" },
   { href: "/admin/portfolio", label: "Portfolio", icon: "🗂️" },
   { href: "/admin/ai-tools", label: "Công cụ AI", icon: "🤖" },
-  { href: "/admin/pricing", label: "Bảng giá", icon: "💰" },
-  { href: "/admin/addons", label: "Dịch vụ bổ sung", icon: "➕" },
+  { href: "/admin/pricing", label: "Bảng giá & Add-on", icon: "💰" },
   { href: "/admin/speed-cache", label: "Speed & Cache", icon: "⚡" },
   { href: "/admin/settings", label: "Cài đặt trang", icon: "⚙️" },
 ];
