@@ -74,7 +74,7 @@ export default function PostEditor() {
     if (!isNew) {
       Promise.all([
         catPromise,
-        fetch(`/api/admin/posts/${id}`).then(r => r.json()),
+        fetch(`/api/admin/posts/${id}`, { cache: "no-store" }).then(r => r.json()),
       ]).then(([cats, post]) => {
         const category = post.category || (Array.isArray(cats) && cats[0]?.value) || "";
         setForm({ ...post, category });
@@ -132,19 +132,21 @@ export default function PostEditor() {
       body: JSON.stringify(payload),
     });
     if (res.ok) {
+      const data = await res.json();
       setMessage({ text: "✅ Đã lưu thành công!", ok: true });
       if (isNew) {
-        const data = await res.json();
         router.replace(`/admin/posts/${data.id}`);
       } else {
-        // Cập nhật status local
         if (status) setForm(prev => ({ ...prev, status }));
       }
     } else {
-      setMessage({ text: "❌ Lỗi khi lưu. Vui lòng thử lại.", ok: false });
+      const errData = await res.json().catch(() => ({}));
+      const errMsg = errData?.error || "Lỗi không xác định";
+      setMessage({ text: `❌ Lưu thất bại: ${errMsg}`, ok: false });
+      console.error("[handleSave]", errData);
     }
     setSaving(false);
-    setTimeout(() => setMessage(null), 3000);
+    setTimeout(() => setMessage(null), 6000);
   };
 
   if (loading) {

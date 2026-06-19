@@ -223,7 +223,7 @@ function BlogPageContent() {
               <p className="text-slate-500 text-sm mb-5">Tìm thấy <strong className="text-slate-800">{filtered.length}</strong> bài viết</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {filtered.map((post) => {
-                  const tag = getTag(post);
+                  const tag = getTag(post, categories);
                   // Highlight matching text
                   const highlight = (text: string) => {
                     const idx = text.toLowerCase().indexOf(urlQuery.toLowerCase());
@@ -354,21 +354,23 @@ function BlogPageContent() {
             {/* Featured + sidebar */}
             <div className="grid lg:grid-cols-5 gap-5 mb-10">
               {/* Big featured */}
-              {featured && (
+              {featured && (() => {
+                const featuredTag = getTag(featured, categories);
+                return (
                 <Link href={`/blog/${featured.slug}`}
                   className="lg:col-span-3 group relative block rounded-2xl overflow-hidden bg-white shadow-md hover:shadow-xl transition-all duration-300">
                   <div className="relative h-56 lg:h-72 overflow-hidden bg-gradient-to-br from-blue-500 to-violet-600">
                     {featured.cover_image
                       ? <img src={featured.cover_image} alt={featured.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       : <div className="w-full h-full flex items-center justify-center text-7xl opacity-30">
-                          {getTag(featured, categories).label === "SEO" ? "🔍" : getTag(featured, categories).label === "Ads" ? "📊" : getTag(featured, categories).label === "Website" ? "💻" : "💡"}
+                          {featuredTag.icon || "💡"}
                         </div>
                     }
                     {/* Overlay gradient */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-5">
-                      <span className={`inline-block px-2.5 py-0.5 text-xs font-bold rounded-full border mb-2 ${getTag(featured, categories).color}`}>
-                        {getTag(featured, categories).label}
+                      <span className={`inline-block px-2.5 py-0.5 text-xs font-bold rounded-full border mb-2 ${featuredTag.color}`}>
+                        {featuredTag.label}
                       </span>
                       <h2 className="text-white font-bold text-lg leading-snug line-clamp-2 group-hover:text-blue-200 transition-colors">
                         {featured.title}
@@ -385,7 +387,8 @@ function BlogPageContent() {
                     </div>
                   )}
                 </Link>
-              )}
+                );
+              })()}
 
               {/* Side list */}
               {sideList.length > 0 && (
@@ -397,13 +400,13 @@ function BlogPageContent() {
                         {post.cover_image
                           ? <img src={post.cover_image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                           : <div className="w-full h-full flex items-center justify-center text-2xl opacity-50">
-                              {getTag(post).label === "SEO" ? "🔍" : getTag(post).label === "Ads" ? "📊" : getTag(post).label === "Website" ? "💻" : "💡"}
+                              {getTag(post, categories).icon || "💡"}
                             </div>
                         }
                       </div>
                       <div className="flex-1 min-w-0">
-                        <span className={`inline-block text-[10px] font-bold px-1.5 py-0.5 rounded border mb-1 ${getTag(post).color}`}>
-                          {getTag(post).label}
+                        <span className={`inline-block text-[10px] font-bold px-1.5 py-0.5 rounded border mb-1 ${getTag(post, categories).color}`}>
+                          {getTag(post, categories).label}
                         </span>
                         <h3 className="text-slate-800 text-sm font-semibold leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors">
                           {post.title}
@@ -422,7 +425,7 @@ function BlogPageContent() {
                 <h2 className="text-lg font-extrabold text-slate-900 uppercase tracking-wide mb-5">Bài viết mới nhất</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                   {rest.map((post) => {
-                    const tag = getTag(post);
+                    const tag = getTag(post, categories);
                     return (
                       <Link key={post.id} href={`/blog/${post.slug}`}
                         className="group flex flex-col rounded-2xl overflow-hidden bg-white border border-slate-200 hover:border-blue-300 hover:shadow-lg transition-all shadow-sm">

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
@@ -16,7 +16,10 @@ type Post = {
   cover_image: string | null;
   created_at: string;
   updated_at: string;
+  category: string | null;
 };
+
+type DbCategory = { id: string; label: string; value: string; icon: string; color_key: string };
 
 type TocItem = { level: 2 | 3; text: string; id: string };
 
@@ -47,13 +50,30 @@ function buildTocAndInjectIds(html: string): { toc: TocItem[]; html: string } {
   return { toc, html: result };
 }
 
-function getTag(title: string) {
-  const t = title.toLowerCase();
-  if (t.includes("seo")) return { label: "SEO", color: "bg-green-100 text-green-700 border-green-200", icon: "🔍", breadcrumb: "SEO" };
-  if (t.includes("facebook") || t.includes("tiktok")) return { label: "Facebook Ads", color: "bg-indigo-100 text-indigo-700 border-indigo-200", icon: "📣", breadcrumb: "Facebook Ads" };
-  if (t.includes("ads") || t.includes("quảng cáo")) return { label: "Google Ads", color: "bg-blue-100 text-blue-700 border-blue-200", icon: "📊", breadcrumb: "Google Ads" };
-  if (t.includes("website") || t.includes("wordpress")) return { label: "Website", color: "bg-violet-100 text-violet-700 border-violet-200", icon: "💻", breadcrumb: "Website" };
-  return { label: "Tips", color: "bg-orange-100 text-orange-700 border-orange-200", icon: "💡", breadcrumb: "Kiến thức" };
+const COLOR_MAP: Record<string, string> = {
+  blue:    "bg-blue-100 text-blue-700 border-blue-200",
+  violet:  "bg-violet-100 text-violet-700 border-violet-200",
+  emerald: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  green:   "bg-green-100 text-green-700 border-green-200",
+  orange:  "bg-orange-100 text-orange-700 border-orange-200",
+  red:     "bg-red-100 text-red-700 border-red-200",
+  indigo:  "bg-indigo-100 text-indigo-700 border-indigo-200",
+  pink:    "bg-pink-100 text-pink-700 border-pink-200",
+};
+
+function getCategoryTag(categoryValue: string | null, dbCategories: DbCategory[]) {
+  // Tìm đúng category từ DB
+  const cat = dbCategories.find(c => c.value === categoryValue);
+  if (cat) {
+    return {
+      label:      cat.label,
+      icon:       cat.icon || "📌",
+      color:      COLOR_MAP[cat.color_key] || "bg-slate-100 text-slate-700 border-slate-200",
+      breadcrumb: cat.label,
+    };
+  }
+  // Fallback nếu chưa load xong hoặc category không tồn tại
+  return { label: "Kiến thức", color: "bg-orange-100 text-orange-700 border-orange-200", icon: "💡", breadcrumb: "Kiến thức" };
 }
 
 function formatDate(iso: string) {
@@ -157,17 +177,20 @@ export default function BlogPostPage() {
   const [toc, setToc] = useState<TocItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [dbCategories, setDbCategories] = useState<DbCategory[]>([]);
 
   useEffect(() => {
     if (!slug) return;
-    fetch(`/api/posts/${slug}`)
-      .then((r) => {
-        if (!r.ok) { setNotFound(true); setLoading(false); return null; }
-        return r.json();
-      })
-      .then((d: Post | null) => {
-        if (d) {
-          let rawHtml = d.content || "";
+    // Fetch post + categories cùng lúc
+    Promise.all([
+      fetch(`/api/posts/${slug}`, { cache: "no-store" }),
+      fetch("/api/categories", { cache: "no-store" }),
+    ]).then(async ([postRes, catRes]) => {
+      if (!postRes.ok) { setNotFound(true); setLoading(false); return; }
+      const [d, cats] = await Promise.all([postRes.json(), catRes.json()]);
+      if (Array.isArray(cats)) setDbCategories(cats);
+      if (d) {
+        let rawHtml = d.content || "";
           // Strip cover image from content if it appears there too (avoid duplicate)
           if (d.cover_image && rawHtml) {
             // Use simple string matching — more reliable than regex for URLs
@@ -230,157 +253,12 @@ export default function BlogPostPage() {
     );
   }
 
-  const tag = getTag(post.title);
+  const tag = getCategoryTag(post.category ?? null, dbCategories);
   const mins = readingTime(post.content);
 
   return (
     <div className="min-h-screen bg-white">
-      {/* ── Custom article styles ── */}
-      <style>{`
-        .blog-content h2 {
-          font-size: 1.5rem;
-          font-weight: 800;
-          color: #1e293b;
-          margin-top: 2.5rem;
-          margin-bottom: 1rem;
-          padding: 0.75rem 1rem 0.75rem 1.25rem;
-          border-left: 4px solid #2563eb;
-          background: linear-gradient(to right, #eff6ff, #f8fafc);
-          border-radius: 0 10px 10px 0;
-          line-height: 1.4;
-          scroll-margin-top: 90px;
-        }
-        .blog-content h2:first-child { margin-top: 0; }
-
-        .blog-content h3 {
-          font-size: 1.2rem;
-          font-weight: 700;
-          color: #1d4ed8;
-          margin-top: 2rem;
-          margin-bottom: 0.75rem;
-          padding-left: 0.75rem;
-          border-left: 3px solid #93c5fd;
-          line-height: 1.45;
-          scroll-margin-top: 90px;
-        }
-
-        .blog-content h4 {
-          font-size: 1.05rem;
-          font-weight: 700;
-          color: #334155;
-          margin-top: 1.5rem;
-          margin-bottom: 0.5rem;
-          scroll-margin-top: 90px;
-        }
-
-        .blog-content p {
-          font-size: 15px;
-          line-height: 1.85;
-          color: #475569;
-          margin-bottom: 1.1rem;
-        }
-
-        .blog-content ul, .blog-content ol {
-          padding-left: 1.5rem;
-          margin-bottom: 1.1rem;
-        }
-        .blog-content ul { list-style: none; padding-left: 0; }
-        .blog-content ul li {
-          position: relative;
-          padding-left: 1.5rem;
-          margin-bottom: 0.5rem;
-          font-size: 15px;
-          color: #475569;
-          line-height: 1.75;
-        }
-        .blog-content ul li::before {
-          content: '';
-          position: absolute;
-          left: 0;
-          top: 0.65em;
-          width: 7px; height: 7px;
-          border-radius: 50%;
-          background: #2563eb;
-        }
-        .blog-content ol li {
-          margin-bottom: 0.5rem;
-          font-size: 15px;
-          color: #475569;
-          line-height: 1.75;
-        }
-
-        .blog-content strong { color: #1e293b; font-weight: 700; }
-        .blog-content a { color: #2563eb; font-weight: 500; text-decoration: none; }
-        .blog-content a:hover { text-decoration: underline; }
-
-        .blog-content img {
-          border-radius: 12px;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-          margin: 1.5rem auto;
-          max-width: 100%;
-        }
-
-        .blog-content blockquote {
-          border-left: 4px solid #2563eb;
-          background: #eff6ff;
-          border-radius: 0 12px 12px 0;
-          padding: 1rem 1.25rem;
-          margin: 1.5rem 0;
-          color: #1e40af;
-          font-weight: 600;
-          font-style: normal;
-        }
-        .blog-content blockquote p { color: #1e40af; margin: 0; }
-
-        .blog-content code {
-          background: #eff6ff;
-          color: #2563eb;
-          padding: 2px 7px;
-          border-radius: 5px;
-          font-size: 13px;
-        }
-        .blog-content pre {
-          background: #0f172a;
-          border-radius: 12px;
-          padding: 1.25rem;
-          overflow-x: auto;
-          margin: 1.5rem 0;
-        }
-        .blog-content pre code {
-          background: transparent;
-          color: #e2e8f0;
-          padding: 0;
-          font-size: 13px;
-        }
-
-        .blog-content table {
-          width: 100%;
-          border-collapse: collapse;
-          margin: 1.5rem 0;
-          font-size: 14px;
-        }
-        .blog-content th {
-          background: #f1f5f9;
-          color: #334155;
-          font-weight: 700;
-          padding: 0.75rem 1rem;
-          border: 1px solid #e2e8f0;
-          text-align: left;
-        }
-        .blog-content td {
-          padding: 0.65rem 1rem;
-          border: 1px solid #e2e8f0;
-          color: #475569;
-        }
-        .blog-content tr:nth-child(even) td { background: #f8fafc; }
-
-        .blog-content hr {
-          border: none;
-          border-top: 2px solid #f1f5f9;
-          margin: 2rem 0;
-        }
-      `}</style>
-
+      {/* blog-content styles → globals.css */}
       <Navbar />
 
       <div className="pt-16">
