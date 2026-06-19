@@ -33,7 +33,7 @@ export default function NewPost() {
   const router = useRouter();
   const [form, setForm] = useState({
     title: "", slug: "", excerpt: "", content: "",
-    cover_image: "", status: "draft" as "draft" | "published", category: "seo", focus_keyword: "",
+    cover_image: "", status: "draft" as "draft" | "published", category: "", focus_keyword: "",
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -46,7 +46,15 @@ export default function NewPost() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    fetch("/api/categories").then(r => r.json()).then(d => { if (Array.isArray(d)) setDbCategories(d); });
+    fetch("/api/categories")
+      .then(r => r.json())
+      .then(d => {
+        if (Array.isArray(d) && d.length > 0) {
+          setDbCategories(d);
+          // Auto-chọn category đầu tiên từ DB nếu chưa chọn
+          setForm(prev => ({ ...prev, category: prev.category || d[0].value }));
+        }
+      });
   }, []);
 
   const loadLibrary = () => {

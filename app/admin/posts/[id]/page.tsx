@@ -60,11 +60,21 @@ export default function PostEditor() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    fetch("/api/categories").then(r => r.json()).then(d => { if (Array.isArray(d)) setDbCategories(d); });
+    // Fetch categories từ DB — luôn dynamic, không hardcode
+    const catPromise = fetch("/api/categories")
+      .then(r => r.json())
+      .then(d => { if (Array.isArray(d) && d.length > 0) setDbCategories(d); return d; });
+
     if (!isNew) {
-      fetch(`/api/admin/posts/${id}`)
-        .then((r) => r.json())
-        .then((d) => { setForm(d); setLoading(false); });
+      Promise.all([
+        catPromise,
+        fetch(`/api/admin/posts/${id}`).then(r => r.json()),
+      ]).then(([cats, post]) => {
+        // Nếu post.category null/undefined (cột mới thêm), dùng category đầu tiên từ DB
+        const category = post.category || (Array.isArray(cats) && cats[0]?.value) || "";
+        setForm({ ...post, category });
+        setLoading(false);
+      });
     }
   }, [id, isNew]);
 
