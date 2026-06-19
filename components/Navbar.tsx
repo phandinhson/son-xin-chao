@@ -123,7 +123,8 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-4 relative">
 
         {/* ── Logo ── */}
-        <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group md:static absolute left-1/2 -translate-x-1/2 md:translate-x-0">
+        {/* prefetch={false} — logo luôn visible, tránh prefetch homepage RSC 60KB khi mới vào trang */}
+        <Link href="/" prefetch={false} className="flex items-center gap-2.5 flex-shrink-0 group md:static absolute left-1/2 -translate-x-1/2 md:translate-x-0">
           {logoUrl ? (
             <img src={logoUrl} alt="Logo" className="w-9 h-9 rounded-xl object-cover shadow group-hover:scale-105 transition-transform" />
           ) : (

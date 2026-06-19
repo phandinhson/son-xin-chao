@@ -106,9 +106,10 @@ export default function MobileBar() {
               <span className="text-[10px] font-medium text-slate-600">Messenger</span>
             </a>
 
-            {/* Contact */}
+            {/* Contact — prefetch={false} vì link luôn visible trên mobile, tránh prefetch /contact RSC 60KB */}
             <Link
               href="/contact"
+              prefetch={false}
               className="flex flex-col items-center gap-1 py-2 px-3 active:opacity-80 transition-opacity"
             >
               <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center shadow-md">
