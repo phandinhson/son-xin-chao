@@ -144,13 +144,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="vi" suppressHydrationWarning className={beVietnam.variable}>
-      <head>
-        {/* Theme CSS inject vào <head> — tránh FOUC, browser apply trước khi render body */}
+      <body className="antialiased" suppressHydrationWarning>
+        {/* Theme CSS — Next.js quản lý <head> tự động, đặt style ở đây là đúng với App Router */}
         {themeCSS && (
           <style id="site-theme" dangerouslySetInnerHTML={{ __html: themeCSS }} />
         )}
-      </head>
-      <body className="antialiased" suppressHydrationWarning>
         <SettingsProvider value={s}>
           <SeoInjector />
           <ThemeInjector />
