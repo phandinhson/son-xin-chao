@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { supabaseAdmin } from "@/lib/supabase";
 
-export const revalidate = 300; // ISR: cache 5 phút — giảm Supabase cold-start trên mobile
+// ISR 1 giờ — /gioi-thieu thay đổi rất ít → trang gần như luôn được serve từ CDN cache
+export const revalidate = 3600;
 
 /* ─── Fetch CMS content ─────────────────────────────────── */
 async function getPageData() {
@@ -12,7 +14,8 @@ async function getPageData() {
     // Timeout after 3s so a slow Supabase never hangs the page
     const { data } = await Promise.race([
       db.from("site_settings").select("value").eq("key", "page_gioi_thieu").single(),
-      new Promise<{ data: null }>((resolve) => setTimeout(() => resolve({ data: null }), 3000)),
+      // Timeout 800ms — ISR warm thì không bao giờ chạm; cold start > 800ms → dùng fallback
+      new Promise<{ data: null }>((resolve) => setTimeout(() => resolve({ data: null }), 800)),
     ]);
     if (data?.value) return JSON.parse(data.value);
   } catch { /* fallback to defaults below */ }
@@ -369,11 +372,11 @@ export default async function GioiThieuPage() {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <a href="/contact"
+                <Link href="/contact"
                   className="px-7 py-3.5 font-bold text-white rounded-full text-sm hover:opacity-90 hover:scale-105 active:scale-95 transition-all shadow-lg"
                   style={{ background: "linear-gradient(135deg,#3b82f6,#8b5cf6)", boxShadow: "0 8px 24px rgba(99,102,241,0.35)" }}>
                   Tư vấn miễn phí →
-                </a>
+                </Link>
                 <a href={`tel:${D.hero_phone}`}
                   className="px-7 py-3.5 font-bold rounded-full text-sm text-slate-700 hover:bg-slate-100 transition-all"
                   style={{ border: "1.5px solid #e2e8f0" }}>
@@ -601,10 +604,17 @@ export default async function GioiThieuPage() {
                 <div key={v.title}
                   className="rounded-2xl overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all"
                   style={{ background: v.bg, border: `1.5px solid ${v.border}` }}>
-                  {/* Value image if set */}
+                  {/* Value image if set — next/image tự chuyển WebP + lazy load */}
                   {v.image_url && (
-                    <div className="w-full h-40 overflow-hidden">
-                      <img src={v.image_url} alt={v.title} className="w-full h-full object-cover" />
+                    <div className="w-full h-40 overflow-hidden relative">
+                      <Image
+                        src={v.image_url}
+                        alt={v.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        loading="lazy"
+                      />
                     </div>
                   )}
                   <div className="p-6">
@@ -651,19 +661,18 @@ export default async function GioiThieuPage() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {SERVICES.map((s) => (
-                <a key={s.title} href={s.href}
+                <Link key={s.title} href={s.href}
                   className="group bg-white rounded-2xl p-6 border border-slate-100 hover:shadow-lg hover:-translate-y-1 transition-all text-center"
                 >
                   <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3 transition-transform group-hover:scale-110"
                     style={{ background: s.bg }}>
                     {s.icon}
                   </div>
-                  <h3 className="font-bold text-slate-800 text-sm group-hover:transition-colors"
-                    style={{ }} >{s.title}</h3>
+                  <h3 className="font-bold text-slate-800 text-sm">{s.title}</h3>
                   <p className="text-xs mt-1.5 font-semibold" style={{ color: s.color }}>
                     Xem chi tiết →
                   </p>
-                </a>
+                </Link>
               ))}
             </div>
           </div>
@@ -674,8 +683,8 @@ export default async function GioiThieuPage() {
         ══════════════════════════════════════ */}
         <section className="py-24 relative overflow-hidden"
           style={{ background: "linear-gradient(135deg,#3b82f6 0%,#8b5cf6 50%,#ec4899 100%)" }}>
-          {/* Subtle pattern */}
-          <div className="absolute inset-0 opacity-10"
+          {/* Decorative — chỉ hiện desktop, ẩn mobile để giảm GPU repaint */}
+          <div className="hidden md:block absolute inset-0 opacity-10"
             style={{
               backgroundImage: "radial-gradient(circle,rgba(255,255,255,0.8) 1px,transparent 1px)",
               backgroundSize: "32px 32px",
@@ -692,11 +701,11 @@ export default async function GioiThieuPage() {
               và lộ trình cụ thể cho doanh nghiệp của bạn.
             </p>
             <div className="flex flex-wrap justify-center gap-4 mb-8">
-              <a href="/contact"
+              <Link href="/contact"
                 className="px-8 py-4 font-bold rounded-full text-sm transition-all hover:scale-105 active:scale-95 shadow-xl"
                 style={{ background: "white", color: "#3b82f6" }}>
                 Đặt lịch tư vấn miễn phí →
-              </a>
+              </Link>
               <a href={`tel:${D.hero_phone}`}
                 className="px-8 py-4 font-bold rounded-full text-sm text-white hover:bg-white/15 transition-all"
                 style={{ border: "2px solid rgba(255,255,255,0.5)" }}>

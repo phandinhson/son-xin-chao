@@ -12,8 +12,9 @@ import { Analytics } from "@vercel/analytics/react";
 import { getSiteSettings } from "@/lib/get-settings";
 
 // Self-hosted font via Next.js — no blocking Google Fonts request
+// 3 weights thay vì 5 → tiết kiệm ~40% font bytes (~120KB) trên mobile
 const beVietnam = Be_Vietnam_Pro({
-  weight: ["400", "500", "600", "700", "800"], // bỏ "300" — tiết kiệm 2 font file
+  weight: ["400", "600", "700"],
   subsets: ["latin", "vietnamese"],
   variable: "--font-be-vietnam",
   display: "swap",
