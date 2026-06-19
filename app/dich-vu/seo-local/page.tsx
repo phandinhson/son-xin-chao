@@ -88,7 +88,7 @@ export default function SeoLocalPage() {
               <a href="/contact" className="px-8 py-3.5 bg-yellow-400 hover:bg-yellow-300 text-emerald-900 font-bold rounded-full text-base transition-all hover:scale-105 shadow-lg">
                 Tư vấn miễn phí →
               </a>
-              <a href="/#pricing" className="px-8 py-3.5 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-semibold rounded-full text-base transition-all">
+              <a href="/pricing" className="px-8 py-3.5 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-semibold rounded-full text-base transition-all">
                 Xem bảng giá
               </a>
             </div>

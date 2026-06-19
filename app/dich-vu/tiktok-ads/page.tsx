@@ -140,7 +140,7 @@ export default function TikTokAdsPage() {
                 Tư vấn miễn phí ngay
                 <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
               </a>
-              <a href="/#pricing"
+              <a href="/pricing"
                 className="flex items-center justify-center gap-2 px-8 py-4 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white font-semibold rounded-2xl transition-all text-base">
                 Xem bảng giá
               </a>

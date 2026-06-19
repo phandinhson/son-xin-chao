@@ -17,7 +17,7 @@ export default function Footer() {
       links: [
         { label: "Giới thiệu", href: "#about" },
         { label: "Portfolio", href: "#portfolio" },
-        { label: "Bảng giá", href: "#pricing" },
+        { label: "Bảng giá", href: "/pricing" },
         { label: "Blog & Kiến thức", href: "/blog" },
         { label: "Liên hệ tư vấn", href: "/contact" },
       ],

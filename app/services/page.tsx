@@ -274,7 +274,7 @@ export default function ServicesPage() {
               className="px-8 py-3.5 bg-white text-blue-600 font-bold rounded-full hover:shadow-lg hover:scale-105 transition-all text-sm">
               Liên hệ tư vấn →
             </a>
-            <a href="/#pricing"
+            <a href="/pricing"
               className="px-8 py-3.5 bg-white/15 border border-white/30 text-white font-bold rounded-full hover:bg-white/25 transition-all text-sm">
               Xem bảng giá
             </a>

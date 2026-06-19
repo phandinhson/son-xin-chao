@@ -102,7 +102,7 @@ export default function GoogleAdsPage() {
                 className="px-8 py-3.5 bg-yellow-400 hover:bg-yellow-300 text-green-900 font-bold rounded-full text-base transition-all hover:scale-105 shadow-lg">
                 💬 Tư vấn miễn phí ngay
               </a>
-              <a href="/#pricing"
+              <a href="/pricing"
                 className="px-8 py-3.5 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-semibold rounded-full text-base transition-all">
                 Xem bảng giá
               </a>
@@ -261,7 +261,7 @@ export default function GoogleAdsPage() {
               <a href="/dich-vu/seo" className="px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-medium hover:bg-blue-100 transition-colors">🔍 Dịch vụ SEO Tổng Thể</a>
               <a href="/dich-vu/thiet-ke-website" className="px-4 py-2 bg-purple-50 text-purple-700 rounded-full text-sm font-medium hover:bg-purple-100 transition-colors">💻 Thiết kế Website</a>
               <a href="/blog" className="px-4 py-2 bg-slate-100 text-slate-600 rounded-full text-sm font-medium hover:bg-slate-200 transition-colors">📖 Blog kiến thức Ads</a>
-              <a href="/#pricing" className="px-4 py-2 bg-slate-100 text-slate-600 rounded-full text-sm font-medium hover:bg-slate-200 transition-colors">💰 Bảng giá dịch vụ</a>
+              <a href="/pricing" className="px-4 py-2 bg-slate-100 text-slate-600 rounded-full text-sm font-medium hover:bg-slate-200 transition-colors">💰 Bảng giá dịch vụ</a>
             </div>
           </div>
         </section>

@@ -159,7 +159,7 @@ export default function SeoHcmPage() {
                 💬 Tư vấn miễn phí qua Zalo →
               </a>
               <a
-                href="/#pricing"
+                href="/pricing"
                 className="px-8 py-3.5 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-semibold rounded-full text-base transition-all"
               >
                 Xem bảng giá

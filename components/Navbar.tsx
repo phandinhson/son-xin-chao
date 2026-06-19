@@ -33,7 +33,7 @@ const KNOWLEDGE = [
 const navLinks = [
   { href: "#about", label: "Về Sơn", dropdown: null },
   { href: "#portfolio", label: "Portfolio", dropdown: null },
-  { href: "#pricing", label: "Bảng giá", dropdown: null },
+  { href: "/pricing", label: "Bảng giá", dropdown: null },
 ];
 
 /* ── Mobile Accordion Component ── */
@@ -233,7 +233,7 @@ export default function Navbar() {
           </Link>
 
           {/* Bảng giá */}
-          <Link href="/#pricing" className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all">
+          <Link href="/pricing" className="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-all">
             Bảng giá
           </Link>
 
@@ -363,7 +363,7 @@ export default function Navbar() {
             </Link>
 
             {/* Bảng giá */}
-            <Link href="/#pricing" onClick={() => setMenuOpen(false)}
+            <Link href="/pricing" onClick={() => setMenuOpen(false)}
               className="flex items-center justify-between px-5 py-4 text-[15px] font-semibold text-slate-800 border-b border-slate-100 hover:bg-slate-50 transition-colors">
               Bảng giá
             </Link>

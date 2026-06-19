@@ -18,7 +18,7 @@ const SECTIONS: Result[] = [
   { id: "s1", type: "section", label: "Giới thiệu về Sơn", desc: "Kinh nghiệm, kỹ năng & chứng chỉ", href: "#about", icon: "👤", tag: "Trang chủ" },
   { id: "s2", type: "section", label: "Dịch vụ SEO & Ads", desc: "SEO Organic, Google Ads, Facebook Ads", href: "#services", icon: "🚀", tag: "Trang chủ" },
   { id: "s3", type: "section", label: "Portfolio — Kết quả thực tế", desc: "Các dự án đã triển khai", href: "#portfolio", icon: "📊", tag: "Trang chủ" },
-  { id: "s4", type: "section", label: "Bảng giá dịch vụ", desc: "Báo giá SEO, Ads, Website", href: "#pricing", icon: "💰", tag: "Trang chủ" },
+  { id: "s4", type: "section", label: "Bảng giá dịch vụ", desc: "Báo giá SEO, Ads, Website", href: "/pricing", icon: "💰", tag: "Trang chủ" },
   { id: "s5", type: "section", label: "Liên hệ tư vấn", desc: "Gửi yêu cầu, nhận tư vấn miễn phí", href: "/contact", icon: "✉️", tag: "Trang chủ" },
   { id: "s6", type: "section", label: "Tất cả bài viết Blog", desc: "SEO, Ads, Website, Tips", href: "/blog", icon: "📝", tag: "Blog" },
 ];
