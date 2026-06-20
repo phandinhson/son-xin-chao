@@ -257,10 +257,24 @@ body {
   text-align: center;
 }
 .blog-content figcaption {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.55rem;
+  padding: 0.3rem 0.85rem;
   font-size: 13px;
   color: #64748b;
-  margin-top: 0.4rem;
   font-style: italic;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  line-height: 1.5;
+}
+.blog-content figcaption::before {
+  content: "📷";
+  font-style: normal;
+  font-size: 11px;
+  flex-shrink: 0;
 }
 
 .blog-content blockquote {
@@ -895,46 +909,6 @@ ol.step-list li em::before {
   font-weight: 600;
 }
 
-/* ── Image Placeholder (trước khi chèn ảnh thật) ── */
-.blog-content .img-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  padding: 1.75rem 1.5rem;
-  margin: 1.25rem 0;
-  border: 2px dashed #cbd5e1;
-  border-radius: 12px;
-  background: #f8fafc;
-  text-align: center;
-}
-
-.blog-content .ph-icon {
-  font-size: 1.875rem;
-  line-height: 1;
-}
-
-.blog-content .ph-label {
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: #475569;
-}
-
-.blog-content .ph-file {
-  font-size: 0.75rem;
-  color: #94a3b8;
-  font-family: 'Fira Code', 'Courier New', monospace;
-  background: #e2e8f0;
-  padding: 0.15rem 0.5rem;
-  border-radius: 4px;
-}
-
-.blog-content .ph-alt {
-  font-size: 0.75rem;
-  color: #94a3b8;
-  font-style: italic;
-}
 
 /* ── Responsive mobile ── */
 @media (max-width: 640px) {

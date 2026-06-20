@@ -119,23 +119,30 @@ function optimizeContentImages(html: string): string {
     const isFirst = imgIndex === 0;
     imgIndex++;
 
-    // Xóa loading/decoding cũ nếu có
+    // Xóa loading/decoding/style cũ
     let newAttrs = attrs
       .replace(/\s+loading="[^"]*"/gi, "")
       .replace(/\s+decoding="[^"]*"/gi, "")
       .replace(/\s+style="[^"]*"/gi, "");
 
-    // Thêm style responsive cho mobile
-    const hasStyle = /style=/i.test(attrs);
-    if (!hasStyle) {
-      newAttrs += ' style="max-width:100%;height:auto;border-radius:8px"';
-    }
+    // Style responsive mobile
+    newAttrs += ' style="max-width:100%;height:auto;border-radius:8px"';
 
     const loadAttr = isFirst
       ? ' loading="eager" fetchpriority="high"'
       : ' loading="lazy" decoding="async"';
 
-    return `<img${newAttrs}${loadAttr}>`;
+    // Lấy alt text để dùng làm caption
+    const altMatch = attrs.match(/alt="([^"]*)"/i) || attrs.match(/alt='([^']*)'/i);
+    const altText = altMatch ? altMatch[1].trim() : "";
+
+    const imgTag = `<img${newAttrs}${loadAttr}>`;
+
+    // Wrap trong <figure> + thêm <figcaption> nếu có alt text
+    if (altText) {
+      return `<figure>${imgTag}<figcaption>${altText}</figcaption></figure>`;
+    }
+    return `<figure>${imgTag}</figure>`;
   });
 }
 

@@ -227,22 +227,92 @@ type Props = {
   onChange: (val: string) => void;
 };
 
-const TOOLS = [
-  { label: "b",         tag: "strong",     title: "In đậm (Ctrl+B)" },
-  { label: "i",         tag: "em",         title: "In nghiêng (Ctrl+I)" },
-  { label: "link",      tag: "a",          title: "Chèn liên kết (Ctrl+K)" },
-  { label: "b-quote",   tag: "blockquote", title: "Trích dẫn" },
-  { label: "del",       tag: "del",        title: "Gạch ngang" },
-  { label: "ins",       tag: "ins",        title: "Gạch chân" },
-  { label: "img",       tag: "img",        title: "Chèn ảnh" },
-  { label: "ul",        tag: "ul",         title: "Danh sách không số" },
-  { label: "ol",        tag: "ol",         title: "Danh sách có số" },
-  { label: "li",        tag: "li",         title: "Mục danh sách" },
-  { label: "code",      tag: "code",       title: "Code inline" },
-  { label: "h2",        tag: "h2",         title: "Tiêu đề H2" },
-  { label: "h3",        tag: "h3",         title: "Tiêu đề H3" },
-  { label: "more",      tag: "more",       title: "Ngắt 'Đọc thêm'" },
-  { label: "đóng thẻ", tag: "close",      title: "Đóng thẻ HTML cuối cùng" },
+// ── SVG icon helpers ─────────────────────────────────────────────────────
+const Ico = ({ d, vb = "0 0 24 24" }: { d: string; vb?: string }) => (
+  <svg width="15" height="15" viewBox={vb} fill="currentColor" aria-hidden="true"><path d={d} /></svg>
+);
+
+// ── Grouped toolbar config ───────────────────────────────────────────────
+type ToolItem = { tag: string; title: string; icon: React.ReactNode };
+const TOOL_GROUPS: ToolItem[][] = [
+  // ── Định dạng chữ
+  [
+    {
+      tag: "strong", title: "In đậm (Ctrl+B)",
+      icon: <Ico d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3V6.5zm3.5 9H10V13h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z" />,
+    },
+    {
+      tag: "em", title: "In nghiêng (Ctrl+I)",
+      icon: <Ico d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4h-8z" />,
+    },
+    {
+      tag: "ins", title: "Gạch chân",
+      icon: <Ico d="M12 17c3.31 0 6-2.69 6-6V3h-2.5v8c0 1.93-1.57 3.5-3.5 3.5S8.5 12.93 8.5 11V3H6v8c0 3.31 2.69 6 6 6zm-7 2v2h14v-2H5z" />,
+    },
+    {
+      tag: "del", title: "Gạch ngang",
+      icon: <Ico d="M6.85 7.08C6.85 4.37 9.45 3 12.24 3c1.64 0 3 .49 3.9 1.28.77.65 1.46 1.73 1.46 3.24h-2.44c0-.43-.15-.99-.49-1.39-.41-.51-1.09-.76-1.9-.76-1.66 0-2.44.79-2.44 1.86 0 .48.25.88.74 1.21.38.25.77.48 1.41.7H7.39c-.21-.36-.54-.89-.54-1.06zM21 12v-2H3v2h9.62c1.15.45 1.96.75 1.96 1.97 0 1-.81 1.67-2.28 1.67-1.54 0-2.93-.68-2.93-2.51H7.01c0 1.24.56 2.15 1.38 2.74.82.6 1.96.99 3.4.99 1.48 0 2.79-.38 3.66-1.1.87-.72 1.17-1.55 1.17-2.55 0-.6-.14-1.12-.38-1.57H21v-.64z" />,
+    },
+  ],
+  // ── Tiêu đề
+  [
+    {
+      tag: "h2", title: "Tiêu đề H2",
+      icon: <span className="font-extrabold text-[11px] leading-none tracking-tight">H<sub className="text-[8px]">2</sub></span>,
+    },
+    {
+      tag: "h3", title: "Tiêu đề H3",
+      icon: <span className="font-extrabold text-[11px] leading-none tracking-tight">H<sub className="text-[8px]">3</sub></span>,
+    },
+  ],
+  // ── Chèn
+  [
+    {
+      tag: "a", title: "Chèn liên kết (Ctrl+K)",
+      icon: <Ico d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z" />,
+    },
+    {
+      tag: "img", title: "Chèn ảnh",
+      icon: <Ico d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />,
+    },
+  ],
+  // ── Khối
+  [
+    {
+      tag: "blockquote", title: "Trích dẫn (Blockquote)",
+      icon: <Ico d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z" />,
+    },
+    {
+      tag: "code", title: "Code inline",
+      icon: <Ico d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z" />,
+    },
+  ],
+  // ── Danh sách
+  [
+    {
+      tag: "ul", title: "Danh sách không số",
+      icon: <Ico d="M4 10.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zm0-6c-.83 0-1.5.67-1.5 1.5S3.17 7.5 4 7.5 5.5 6.83 5.5 6 4.83 4.5 4 4.5zm0 12c-.83 0-1.5.68-1.5 1.5s.68 1.5 1.5 1.5 1.5-.68 1.5-1.5-.67-1.5-1.5-1.5zM7 19h14v-2H7v2zm0-6h14v-2H7v2zm0-8v2h14V5H7z" />,
+    },
+    {
+      tag: "ol", title: "Danh sách có số",
+      icon: <Ico d="M2 17h2v.5H3v1h1v.5H2v1h3v-4H2v1zm1-9h1V4H2v1h1v3zm-1 3h1.8L2 13.1v.9h3v-1H3.2L5 10.9V10H2v1zm5-6v2h14V5H7zm0 14h14v-2H7v2zm0-6h14v-2H7v2z" />,
+    },
+    {
+      tag: "li", title: "Thêm mục (li)",
+      icon: <span className="font-mono text-[10px] font-bold leading-none">li</span>,
+    },
+  ],
+  // ── Nâng cao
+  [
+    {
+      tag: "more", title: "Ngắt 'Đọc thêm'",
+      icon: <Ico d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />,
+    },
+    {
+      tag: "close", title: "Đóng thẻ HTML cuối cùng",
+      icon: <span className="font-mono text-[9px] font-bold leading-none">&lt;/▌&gt;</span>,
+    },
+  ],
 ];
 
 // ── Link Popover ────────────────────────────────────────────────────────────
@@ -640,23 +710,43 @@ export default function RichEditor({ value, onChange }: Props) {
       </div>
 
       {/* ── Toolbar ── */}
-      <div className="flex flex-wrap items-center gap-1 px-3 py-2 bg-gray-50 border-b border-gray-200 flex-shrink-0">
-        {TOOLS.map((t) => (
-          <button key={t.tag} onClick={() => handleTool(t.tag)} title={t.title}
-            className={`px-2.5 py-1 text-xs rounded border transition-all font-mono ${
-              t.tag === "strong"
-                ? "bg-white border-gray-300 text-gray-900 hover:bg-gray-100 font-bold"
-                : t.tag === "em"
-                ? "bg-white border-gray-300 text-gray-700 hover:bg-gray-100 italic"
-                : "bg-white border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-            }`}>
-            {t.label}
-          </button>
+      <div className="flex flex-wrap items-center gap-0.5 px-2.5 py-2 bg-gray-50 border-b border-gray-200 flex-shrink-0">
+        {TOOL_GROUPS.map((group, gi) => (
+          <span key={gi} className="contents">
+            {/* Separator giữa nhóm */}
+            {gi > 0 && (
+              <span className="inline-block w-px h-6 bg-gray-300 mx-1 flex-shrink-0 self-center" />
+            )}
+            {group.map((t) => (
+              <button
+                key={t.tag}
+                onMouseDown={e => { e.preventDefault(); handleTool(t.tag); }}
+                title={t.title}
+                className="flex items-center justify-center w-8 h-8 rounded text-gray-500
+                  hover:bg-white hover:text-gray-900 hover:shadow-sm
+                  hover:border-gray-300 border border-transparent
+                  active:scale-95 transition-all duration-75 flex-shrink-0"
+              >
+                {t.icon}
+              </button>
+            ))}
+          </span>
         ))}
-        <div className="ml-auto flex items-center gap-3 text-xs text-gray-400">
-          <span>Ctrl+B: đậm</span>
-          <span>Ctrl+I: nghiêng</span>
-          <span>Ctrl+K: link</span>
+
+        {/* Phím tắt — phía phải */}
+        <div className="ml-auto flex items-center gap-1.5 flex-shrink-0">
+          {[
+            { key: "B", label: "đậm" },
+            { key: "I", label: "nghiêng" },
+            { key: "K", label: "link" },
+          ].map(({ key, label }) => (
+            <span key={key} className="hidden sm:inline-flex items-center gap-1 text-[10px] text-gray-400">
+              <kbd className="px-1.5 py-0.5 bg-white border border-gray-200 rounded shadow-sm font-mono">
+                ⌃{key}
+              </kbd>
+              <span>{label}</span>
+            </span>
+          ))}
         </div>
       </div>
 
