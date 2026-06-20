@@ -245,11 +245,103 @@ const TOOLS = [
   { label: "đóng thẻ", tag: "close",      title: "Đóng thẻ HTML cuối cùng" },
 ];
 
+// ── Link Popover ────────────────────────────────────────────────────────────
+function LinkPopover({
+  href, top, left,
+  onSave, onOpen, onUnlink, onClose,
+}: {
+  href: string; top: number; left: number;
+  onSave: (url: string) => void;
+  onOpen: (url: string) => void;
+  onUnlink: () => void;
+  onClose: () => void;
+}) {
+  const [val, setVal] = useState(href);
+  const popRef = useRef<HTMLDivElement>(null);
+
+  // Đóng khi click ra ngoài
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (popRef.current && !popRef.current.contains(e.target as Node)) onClose();
+    };
+    // Delay nhỏ để tránh đóng ngay lập tức do click mở
+    const t = setTimeout(() => document.addEventListener("mousedown", handler), 50);
+    return () => { clearTimeout(t); document.removeEventListener("mousedown", handler); };
+  }, [onClose]);
+
+  // Đóng khi nhấn Escape
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  // Tính toán vị trí: tránh tràn ra ngoài màn hình phải
+  const style: React.CSSProperties = {
+    position: "fixed",
+    top: top + 6,
+    zIndex: 9999,
+    left: Math.min(left, window.innerWidth - 360),
+  };
+
+  return (
+    <div ref={popRef} style={style}
+      className="bg-white border border-gray-200 rounded-xl shadow-2xl p-3 w-[340px] flex flex-col gap-2.5">
+      {/* Triangle arrow */}
+      <div className="absolute -top-2 left-4 w-3 h-2 overflow-hidden">
+        <div className="w-3 h-3 bg-white border-t border-l border-gray-200 rotate-45 translate-y-1" />
+      </div>
+
+      {/* URL input */}
+      <div className="flex items-center gap-2">
+        <span className="text-gray-400 text-sm flex-shrink-0">🔗</span>
+        <input
+          value={val}
+          onChange={e => setVal(e.target.value)}
+          onKeyDown={e => {
+            if (e.key === "Enter") { e.preventDefault(); onSave(val); }
+            if (e.key === "Escape") onClose();
+          }}
+          placeholder="https://..."
+          className="flex-1 text-sm text-blue-600 border border-gray-200 rounded-lg px-2.5 py-1.5
+            focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent
+            placeholder-gray-300 truncate"
+        />
+      </div>
+
+      {/* Action buttons */}
+      <div className="flex gap-2">
+        <button
+          onMouseDown={e => { e.preventDefault(); onOpen(val); }}
+          className="flex-1 px-2 py-1.5 text-xs text-blue-600 border border-blue-200 bg-blue-50
+            rounded-lg hover:bg-blue-100 transition-all font-medium whitespace-nowrap">
+          ↗ Mở link
+        </button>
+        <button
+          onMouseDown={e => { e.preventDefault(); onSave(val); }}
+          className="flex-1 px-2 py-1.5 text-xs text-white bg-blue-600
+            rounded-lg hover:bg-blue-700 transition-all font-semibold whitespace-nowrap">
+          ✓ Cập nhật
+        </button>
+        <button
+          onMouseDown={e => { e.preventDefault(); onUnlink(); }}
+          className="flex-1 px-2 py-1.5 text-xs text-red-600 border border-red-200 bg-red-50
+            rounded-lg hover:bg-red-100 transition-all font-medium whitespace-nowrap">
+          ✕ Xoá link
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function RichEditor({ value, onChange }: Props) {
   const [mode, setMode] = useState<"visual" | "code">("visual");
   const [fullscreen, setFullscreen] = useState(false);
   const [showImgModal, setShowImgModal] = useState(false);
   const [pasteMsg, setPasteMsg] = useState<{ type: "loading" | "ok" | "err"; text: string } | null>(null);
+  const [linkPopover, setLinkPopover] = useState<{
+    href: string; top: number; left: number; el: HTMLAnchorElement;
+  } | null>(null);
   const editorRef   = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const prevMode    = useRef<"visual" | "code">("visual");
@@ -450,9 +542,52 @@ export default function RichEditor({ value, onChange }: Props) {
     }
   };
 
+  // ── Link popover: click vào <a> trong visual mode ───────────────────────
+  const handleEditorClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const anchor = (e.target as HTMLElement).closest("a") as HTMLAnchorElement | null;
+    if (anchor) {
+      const rect = anchor.getBoundingClientRect();
+      setLinkPopover({
+        href:  anchor.getAttribute("href") || "",
+        top:   rect.bottom,
+        left:  rect.left,
+        el:    anchor,
+      });
+    }
+  }, []);
+
+  const handleLinkSave = useCallback((url: string) => {
+    if (!linkPopover) return;
+    linkPopover.el.setAttribute("href", url);
+    if (!linkPopover.el.getAttribute("target")) {
+      linkPopover.el.setAttribute("target", "_blank");
+      linkPopover.el.setAttribute("rel", "noopener");
+    }
+    onChange(editorRef.current?.innerHTML || "");
+    setLinkPopover(null);
+  }, [linkPopover, onChange]);
+
+  const handleLinkOpen = useCallback((url: string) => {
+    if (url) window.open(url.startsWith("http") ? url : "https://" + url, "_blank", "noopener");
+  }, []);
+
+  const handleLinkUnlink = useCallback(() => {
+    if (!linkPopover) return;
+    const el = linkPopover.el;
+    const parent = el.parentNode;
+    if (!parent) return;
+    // Giữ lại text/children, chỉ xoá thẻ <a>
+    const frag = document.createDocumentFragment();
+    while (el.firstChild) frag.appendChild(el.firstChild);
+    parent.replaceChild(frag, el);
+    onChange(editorRef.current?.innerHTML || "");
+    setLinkPopover(null);
+  }, [linkPopover, onChange]);
+
   // ── Mode switch ───────────────────────────────────────────────────────────
   const goCode = () => {
     if (editorRef.current) onChange(editorRef.current.innerHTML);
+    setLinkPopover(null);
     setMode("code");
   };
   const goVisual = () => setMode("visual");
@@ -545,6 +680,7 @@ export default function RichEditor({ value, onChange }: Props) {
           onInput={() => onChange(editorRef.current?.innerHTML || "")}
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
+          onClick={handleEditorClick}
           className={`prose-editor w-full p-5 focus:outline-none text-sm leading-relaxed text-gray-900 bg-white ${
             mode === "visual" ? "block" : "hidden"
           }`}
@@ -586,6 +722,19 @@ export default function RichEditor({ value, onChange }: Props) {
       <ImageModal
         onInsert={handleInsertImage}
         onClose={() => setShowImgModal(false)}
+      />
+    )}
+
+    {/* ── Link Popover ── */}
+    {linkPopover && mode === "visual" && (
+      <LinkPopover
+        href={linkPopover.href}
+        top={linkPopover.top}
+        left={linkPopover.left}
+        onSave={handleLinkSave}
+        onOpen={handleLinkOpen}
+        onUnlink={handleLinkUnlink}
+        onClose={() => setLinkPopover(null)}
       />
     )}
     </>
