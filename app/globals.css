@@ -958,3 +958,230 @@ ol.step-list li em::before {
     gap: 0.3rem;
   }
 }
+
+/* ============================================
+   Feature Card — liệt kê tính năng trực quan
+   Dùng trong .blog-content
+   ============================================ */
+.blog-content .feature-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 0.85rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.blog-content .feature-card:hover {
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.10);
+  transform: translateY(-2px);
+}
+
+.blog-content .feature-card .fc-icon {
+  font-size: 1.75rem;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.blog-content .feature-card .fc-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.blog-content .feature-card .fc-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.3rem;
+  line-height: 1.4;
+}
+
+.blog-content .feature-card .fc-desc {
+  font-size: 0.875rem;
+  color: #475569;
+  line-height: 1.7;
+}
+
+/* ============================================
+   Step Card — hướng dẫn từng bước
+   Dùng trong .blog-content
+   ============================================ */
+.blog-content .step-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: #f8faff;
+  border: 1px solid #dbeafe;
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 0.85rem;
+  transition: background 0.15s;
+}
+
+.blog-content .step-card:hover {
+  background: #eff6ff;
+}
+
+.blog-content .step-card .sc-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  min-width: 2.25rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.blog-content .step-card .sc-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.blog-content .step-card .sc-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin-bottom: 0.3rem;
+  line-height: 1.4;
+}
+
+.blog-content .step-card .sc-desc {
+  font-size: 0.875rem;
+  color: #475569;
+  line-height: 1.7;
+}
+
+/* ============================================
+   VS Grid — so sánh 2 công cụ / giải pháp
+   Dùng trong .blog-content
+   ============================================ */
+.blog-content .vs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.blog-content .vs-card {
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid #e2e8f0;
+}
+
+.blog-content .vs-card.chatgpt {
+  background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+  border-color: #bbf7d0;
+}
+
+.blog-content .vs-card.claude {
+  background: linear-gradient(135deg, #eff6ff, #eef2ff);
+  border-color: #bfdbfe;
+}
+
+.blog-content .vs-card .vs-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: #0f172a;
+}
+
+.blog-content .vs-card ul {
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+.blog-content .vs-card ul li {
+  font-size: 0.875rem;
+  color: #334155;
+  line-height: 1.65;
+  margin-bottom: 0.4rem;
+  text-align: left;
+}
+
+.blog-content .vs-card ul li::before {
+  background: #10b981;
+}
+
+.blog-content .vs-card.claude ul li::before {
+  background: #3b82f6;
+}
+
+/* ── Article Excerpt ── */
+.blog-content .article-excerpt {
+  border-left: 4px solid #2563eb;
+  background: linear-gradient(to right, #eff6ff, #f8fafc);
+  border-radius: 0 12px 12px 0;
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 2rem;
+  font-size: 1.0625rem;
+  font-weight: 500;
+  color: #1e40af;
+  line-height: 1.8;
+}
+
+/* ── Bài viết liên quan ── */
+.related-posts {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid #f1f5f9;
+}
+
+.related-posts h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 1rem;
+}
+
+.related-posts ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.related-posts ul li::before {
+  display: none;
+}
+
+.related-posts ul li a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  color: #2563eb;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.related-posts ul li a:hover {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  text-decoration: none;
+}
+
+/* ── Responsive VS Grid ── */
+@media (max-width: 640px) {
+  .blog-content .vs-grid {
+    grid-template-columns: 1fr;
+  }
+}

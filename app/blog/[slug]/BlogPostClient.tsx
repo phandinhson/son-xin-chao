@@ -5,7 +5,6 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import MobileBar from "@/components/MobileBar";
 import FloatingContacts from "@/components/FloatingContacts";
 
 /* ── Lightbox ── */
@@ -621,7 +620,6 @@ export default function BlogPostClient({ initialPost }: { initialPost?: Post | n
       </div>
 
       <Footer />
-      <MobileBar />
       <FloatingContacts />
 
       {/* Lightbox — hiển thị khi click ảnh */}
