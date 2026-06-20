@@ -37,7 +37,7 @@ export default function FloatingContacts() {
       bg: "bg-[#0068FF]",
       shadow: "shadow-blue-400",
       icon: (
-        <Image src="/logo-zalo-vector.svg" alt="Zalo" width={28} height={28} className="h-7 w-auto brightness-0 invert" unoptimized />
+        <Image src="/logo-zalo-vector.svg" alt="Zalo" width={28} height={28} style={{ width: "auto", height: "1.75rem" }} className="brightness-0 invert" unoptimized />
       ),
     },
     {
