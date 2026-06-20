@@ -71,7 +71,7 @@ const jsonLd = {
     sameAs: [
       "https://fb.com/sonxinchao",
       "https://zalo.me/0968806360",
-      "https://youtube.com/@hoccungson116",
+      "https://www.youtube.com/@hoccungson116",
     ],
   },
 };

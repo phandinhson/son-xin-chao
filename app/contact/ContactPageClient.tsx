@@ -75,7 +75,7 @@ export default function ContactPageClient() {
     contact_zalo:     "0968806360",
     contact_facebook: "https://fb.com/sonxinchao",
     contact_email:    "son@sonxinchao.com",
-    contact_youtube:  "https://youtube.com/@hoccungson116",
+    contact_youtube:  "https://www.youtube.com/@hoccungson116",
   });
 
   /* Fetch settings */
@@ -99,7 +99,7 @@ export default function ContactPageClient() {
   const zaloHref    = `https://zalo.me/${cfg.contact_zalo.replace(/\s/g, "")}`;
   const phoneHref   = `tel:${cfg.contact_phone.replace(/\s/g, "")}`;
   const fbHref      = cfg.contact_facebook.startsWith("http") ? cfg.contact_facebook : `https://${cfg.contact_facebook}`;
-  const ytHref      = cfg.contact_youtube || "https://youtube.com/@hoccungson116";
+  const ytHref      = cfg.contact_youtube || "https://www.youtube.com/@hoccungson116";
 
   /* Submit */
   const handleSubmit = async (e: React.FormEvent) => {

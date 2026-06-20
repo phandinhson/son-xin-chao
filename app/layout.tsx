@@ -8,6 +8,8 @@ import SeoInjector from "@/components/SeoInjector";
 import ThemeInjector from "@/components/ThemeInjector";
 import PageTracker from "@/components/PageTracker";
 import { SettingsProvider } from "@/components/SettingsContext";
+import { CartProvider } from "@/components/CartContext";
+import CartDrawer from "@/components/CartDrawer";
 import { Analytics } from "@vercel/analytics/react";
 import { getSiteSettings } from "@/lib/get-settings";
 
@@ -151,10 +153,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <style id="site-theme" dangerouslySetInnerHTML={{ __html: themeCSS }} />
         )}
         <SettingsProvider value={s}>
-          <SeoInjector />
-          <ThemeInjector />
-          <PageTracker />
-          {children}
+          <CartProvider>
+            <SeoInjector />
+            <ThemeInjector />
+            <PageTracker />
+            {children}
+            <CartDrawer />
+          </CartProvider>
         </SettingsProvider>
         <Analytics />
       </body>
