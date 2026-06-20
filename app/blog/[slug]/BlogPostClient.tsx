@@ -299,12 +299,12 @@ function TableOfContents({ items }: { items: TocItem[] }) {
 }
 
 /* ── Main Page ── */
-export default function BlogPostPage() {
+export default function BlogPostClient({ initialPost }: { initialPost?: Post | null }) {
   const { slug } = useParams<{ slug: string }>();
-  const [post, setPost] = useState<Post | null>(null);
+  const [post, setPost] = useState<Post | null>(initialPost ?? null);
   const [processedContent, setProcessedContent] = useState("");
   const [toc, setToc] = useState<TocItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialPost);
   const [notFound, setNotFound] = useState(false);
   const [dbCategories, setDbCategories] = useState<DbCategory[]>([]);
   const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
@@ -312,7 +312,35 @@ export default function BlogPostPage() {
 
   useEffect(() => {
     if (!slug) return;
-    // Fetch post + categories cùng lúc
+
+    if (initialPost) {
+      // Đã có post từ server — process content ngay, chỉ fetch categories
+      let rawHtml = initialPost.content || "";
+      if (initialPost.cover_image && rawHtml) {
+        const src = initialPost.cover_image;
+        for (const needle of [`src="${src}"`, `src='${src}'`]) {
+          const srcIdx = rawHtml.indexOf(needle);
+          if (srcIdx === -1) continue;
+          const tagStart = rawHtml.lastIndexOf("<img", srcIdx);
+          if (tagStart === -1) continue;
+          const tagEnd = rawHtml.indexOf(">", srcIdx);
+          if (tagEnd === -1) continue;
+          rawHtml = rawHtml.substring(0, tagStart) + rawHtml.substring(tagEnd + 1);
+        }
+      }
+      const { toc: t, html } = buildTocAndInjectIds(rawHtml);
+      setToc(t);
+      setProcessedContent(html);
+      setLoading(false);
+
+      fetch("/api/categories", { cache: "no-store" })
+        .then(r => r.json())
+        .then(cats => { if (Array.isArray(cats)) setDbCategories(cats); })
+        .catch(() => {});
+      return;
+    }
+
+    // Fetch post + categories cùng lúc (fallback khi không có initialPost)
     Promise.all([
       fetch(`/api/posts/${slug}`, { cache: "no-store" }),
       fetch("/api/categories", { cache: "no-store" }),

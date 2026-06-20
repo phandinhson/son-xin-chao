@@ -205,7 +205,7 @@ export default async function BlogPostPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
-      <BlogPostClient />
+      <BlogPostClient initialPost={post} />
     </>
   );
 }
