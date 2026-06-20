@@ -6,6 +6,17 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+
+  experimental: {
+    // Chạy webpack trong worker riêng — tăng tốc compile ~30%
+    webpackBuildWorker: true,
+    // Build server traces song song — giảm thời gian "Collecting build traces"
+    parallelServerBuildTraces: true,
+    // Compile server components song song
+    parallelServerCompiles: true,
+    // Tree-shake các thư viện lớn — giảm bundle size
+    optimizePackageImports: ["@supabase/supabase-js", "lucide-react"],
+  },
   images: {
     // Cho phép next/image optimize ảnh từ Supabase Storage
     remotePatterns: [
