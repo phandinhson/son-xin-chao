@@ -377,6 +377,98 @@ export default function PostEditor() {
             </div>
           </div>
 
+          {/* Google Search Preview */}
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+            <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+              <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide">🔍 Xem trước trên Google</h3>
+            </div>
+            <div className="p-4">
+              {/* Desktop preview */}
+              <p className="text-[11px] text-gray-400 font-medium mb-2 uppercase tracking-wide">Desktop</p>
+              <div className="border border-gray-100 rounded-lg p-4 bg-white mb-4 font-sans">
+                {/* Site name + favicon */}
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-4 h-4 rounded-full bg-blue-600 flex items-center justify-center text-white text-[8px] font-bold flex-shrink-0">S</div>
+                  <div>
+                    <div className="text-xs text-gray-700 leading-none">Sơn Xin Chào</div>
+                    <div className="text-[11px] text-gray-400 leading-none mt-0.5">
+                      www.sonxinchao.com &rsaquo; blog &rsaquo; {form.slug || "duong-dan-bai-viet"}
+                    </div>
+                  </div>
+                </div>
+                {/* Title */}
+                <div className="text-[#1a0dab] text-lg font-normal leading-snug hover:underline cursor-pointer line-clamp-1 mt-1">
+                  {form.title
+                    ? (form.title.length > 60
+                        ? form.title.slice(0, 57) + "..."
+                        : form.title)
+                    : <span className="text-gray-300">Tiêu đề bài viết...</span>
+                  }
+                </div>
+                {/* Description */}
+                <div className="text-sm text-gray-600 leading-snug mt-0.5 line-clamp-2">
+                  {form.excerpt
+                    ? (form.excerpt.length > 160
+                        ? form.excerpt.slice(0, 157) + "..."
+                        : form.excerpt)
+                    : <span className="text-gray-300">Mô tả ngắn sẽ hiển thị ở đây...</span>
+                  }
+                </div>
+              </div>
+
+              {/* Mobile preview */}
+              <p className="text-[11px] text-gray-400 font-medium mb-2 uppercase tracking-wide">Mobile</p>
+              <div className="border border-gray-100 rounded-xl p-3 bg-white max-w-[360px] font-sans">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <div className="w-3.5 h-3.5 rounded-full bg-blue-600 flex items-center justify-center text-white text-[7px] font-bold flex-shrink-0">S</div>
+                  <div className="text-[10px] text-gray-500 truncate">sonxinchao.com</div>
+                </div>
+                <div className="text-[#1a0dab] text-base font-normal leading-snug line-clamp-2">
+                  {form.title || <span className="text-gray-300">Tiêu đề bài viết...</span>}
+                </div>
+                <div className="text-xs text-gray-600 leading-snug mt-0.5 line-clamp-2">
+                  {form.excerpt || <span className="text-gray-300">Mô tả ngắn...</span>}
+                </div>
+              </div>
+
+              {/* SEO hints */}
+              <div className="mt-3 space-y-1">
+                {/* Title length */}
+                {form.title && (
+                  <div className={`flex items-center gap-1.5 text-xs ${form.title.length > 60 ? "text-red-500" : form.title.length >= 45 ? "text-green-600" : "text-amber-500"}`}>
+                    {form.title.length > 60 ? "⚠" : form.title.length >= 45 ? "✓" : "○"}
+                    Tiêu đề: {form.title.length}/60 ký tự
+                    {form.title.length > 60 && " — quá dài, Google sẽ cắt bớt"}
+                    {form.title.length < 45 && " — nên từ 45–60 ký tự"}
+                  </div>
+                )}
+                {/* Excerpt length */}
+                {form.excerpt && (
+                  <div className={`flex items-center gap-1.5 text-xs ${form.excerpt.length > 160 ? "text-red-500" : form.excerpt.length >= 120 ? "text-green-600" : "text-amber-500"}`}>
+                    {form.excerpt.length > 160 ? "⚠" : form.excerpt.length >= 120 ? "✓" : "○"}
+                    Mô tả: {form.excerpt.length}/160 ký tự
+                    {form.excerpt.length > 160 && " — quá dài, Google sẽ cắt bớt"}
+                    {form.excerpt.length < 120 && " — nên từ 120–160 ký tự"}
+                  </div>
+                )}
+                {/* Keyword in title */}
+                {form.focus_keyword && form.title && (
+                  <div className={`flex items-center gap-1.5 text-xs ${form.title.toLowerCase().includes(form.focus_keyword.toLowerCase()) ? "text-green-600" : "text-red-500"}`}>
+                    {form.title.toLowerCase().includes(form.focus_keyword.toLowerCase()) ? "✓" : "⚠"}
+                    Từ khóa chính trong tiêu đề
+                  </div>
+                )}
+                {/* Keyword in excerpt */}
+                {form.focus_keyword && form.excerpt && (
+                  <div className={`flex items-center gap-1.5 text-xs ${form.excerpt.toLowerCase().includes(form.focus_keyword.toLowerCase()) ? "text-green-600" : "text-amber-500"}`}>
+                    {form.excerpt.toLowerCase().includes(form.focus_keyword.toLowerCase()) ? "✓" : "○"}
+                    Từ khóa chính trong mô tả
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* Category */}
           <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
             <div className="px-4 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
