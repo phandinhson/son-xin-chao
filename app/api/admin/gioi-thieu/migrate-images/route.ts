@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+import { checkAuth } from "@/lib/adminAuth";
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase";
@@ -6,9 +7,6 @@ import { supabaseAdmin } from "@/lib/supabase";
 const PAGE_KEY  = "page_gioi_thieu";
 const BUCKET    = "images";
 
-function checkAuth(req: NextRequest) {
-  return req.cookies.get("admin_session")?.value === process.env.ADMIN_SECRET;
-}
 
 /** Upload base64 string → Supabase Storage → return public URL */
 async function uploadBase64(
@@ -34,7 +32,7 @@ async function uploadBase64(
 }
 
 export async function POST(req: NextRequest) {
-  if (!checkAuth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await checkAuth(req))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const db = supabaseAdmin();
 

@@ -1,10 +1,8 @@
 export const dynamic = "force-dynamic";
+import { checkAuth } from "@/lib/adminAuth";
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 
-function checkAuth(req: NextRequest) {
-  return req.cookies.get("admin_session")?.value === process.env.ADMIN_SECRET;
-}
 
 type ImageMeta = {
   title?: string;
@@ -18,7 +16,7 @@ type ImageMeta = {
 
 // GET — lấy meta của 1 file hoặc tất cả (từ Supabase DB)
 export async function GET(req: NextRequest) {
-  if (!checkAuth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await checkAuth(req))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const filename = req.nextUrl.searchParams.get("filename");
   const sb = supabaseAdmin();
@@ -55,7 +53,7 @@ export async function GET(req: NextRequest) {
 
 // PUT — lưu meta cho 1 file (upsert vào Supabase DB)
 export async function PUT(req: NextRequest) {
-  if (!checkAuth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await checkAuth(req))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   let body: { filename?: string } & ImageMeta;
   try {
@@ -85,7 +83,7 @@ export async function PUT(req: NextRequest) {
 
 // DELETE — xóa meta của 1 file (từ Supabase DB)
 export async function DELETE(req: NextRequest) {
-  if (!checkAuth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await checkAuth(req))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   let body: { filename?: string };
   try {

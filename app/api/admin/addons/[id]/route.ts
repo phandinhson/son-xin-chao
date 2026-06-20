@@ -1,18 +1,14 @@
 export const dynamic = "force-dynamic";
-import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { checkAuth } from "@/lib/adminAuth";
+import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 
-function checkAuth() {
-  const session = cookies().get("admin_session")?.value;
-  return session === process.env.ADMIN_SECRET;
-}
 
 export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  if (!checkAuth()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await checkAuth(req))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await request.json();
   const db = supabaseAdmin();
   const { data, error } = await db
@@ -36,7 +32,7 @@ export async function DELETE(
   _request: Request,
   { params }: { params: { id: string } }
 ) {
-  if (!checkAuth()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await checkAuth(req))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const db = supabaseAdmin();
   const { error } = await db.from("addons").delete().eq("id", params.id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

@@ -80,11 +80,14 @@ type TocItem = { level: 2 | 3; text: string; id: string };
 function slugify(text: string) {
   return text
     .toLowerCase()
+    // ̀-ͯ = toàn bộ combining diacritical marks — bao gồm dấu tiếng Việt
     .normalize("NFD").replace(/[̀-ͯ]/g, "")
-    .replace(/đ/g, "d")
+    // đ/Đ không phân rã bởi NFD nên phải xử lý riêng
+    .replace(/[đĐ]/g, "d")
     .replace(/[^a-z0-9\s-]/g, "")
     .trim()
     .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")          // gộp nhiều dash liên tiếp
     .slice(0, 60);
 }
 
@@ -98,7 +101,9 @@ function buildTocAndInjectIds(html: string): { toc: TocItem[]; html: string } {
     counts[base] = (counts[base] || 0) + 1;
     const id = counts[base] > 1 ? `${base}-${counts[base]}` : base;
     toc.push({ level, text, id });
-    return `<${tag}${attrs} id="${id}">${inner}</${tag}>`;
+    // Xoá id cũ nếu có (tránh duplicate id — trình duyệt giữ cái đầu tiên, không phải cái mình inject)
+    const cleanAttrs = attrs.replace(/\s+id="[^"]*"/gi, "").replace(/\s+id='[^']*'/gi, "");
+    return `<${tag}${cleanAttrs} id="${id}">${inner}</${tag}>`;
   });
   return { toc, html: result };
 }
@@ -137,14 +142,28 @@ function readingTime(content: string) {
 }
 
 /* ── TOC Component ── */
+type TocGroup = { h2: TocItem; h3s: TocItem[] };
+
 function TableOfContents({ items }: { items: TocItem[] }) {
   const [open, setOpen] = useState(true);
   const [active, setActive] = useState<string>("");
+  const [expandedH2s, setExpandedH2s] = useState<Set<string>>(new Set());
 
+  // Nhóm h3 vào h2 cha gần nhất
+  const groups: TocGroup[] = [];
+  for (const item of items) {
+    if (item.level === 2) {
+      groups.push({ h2: item, h3s: [] });
+    } else if (groups.length > 0) {
+      groups[groups.length - 1].h3s.push(item);
+    }
+  }
+
+  // Scroll spy — cập nhật heading đang active
   useEffect(() => {
     const handler = () => {
       const headings = items.map(i => document.getElementById(i.id)).filter(Boolean) as HTMLElement[];
-      const scrollY = window.scrollY + 100;
+      const scrollY = window.scrollY + 110;
       let current = "";
       for (const el of headings) {
         if (el.offsetTop <= scrollY) current = el.id;
@@ -152,8 +171,21 @@ function TableOfContents({ items }: { items: TocItem[] }) {
       setActive(current);
     };
     window.addEventListener("scroll", handler, { passive: true });
+    handler(); // chạy ngay khi mount
     return () => window.removeEventListener("scroll", handler);
   }, [items]);
+
+  // Auto-expand h2 nào chứa heading đang active
+  useEffect(() => {
+    if (!active) return;
+    for (const { h2, h3s } of groups) {
+      if (h2.id === active || h3s.some(h => h.id === active)) {
+        setExpandedH2s(prev => prev.has(h2.id) ? prev : new Set([...prev, h2.id]));
+        break;
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active]);
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
@@ -163,11 +195,19 @@ function TableOfContents({ items }: { items: TocItem[] }) {
     }
   };
 
+  const toggleH2 = (id: string) => {
+    setExpandedH2s(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
   if (items.length === 0) return null;
 
   return (
     <div className="rounded-xl border border-slate-200 overflow-hidden mb-8 bg-white">
-      {/* Header */}
+      {/* Header — bật/tắt toàn bộ TOC */}
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between px-5 py-3.5 bg-white hover:bg-slate-50 transition-colors border-b border-slate-100"
@@ -186,36 +226,72 @@ function TableOfContents({ items }: { items: TocItem[] }) {
         </svg>
       </button>
 
-      {/* Items */}
+      {/* Danh sách — accordion h2 → h3 */}
       {open && (
-        <ul className="px-5 py-3 space-y-0">
-          {items.map((item) => (
-            <li key={item.id}>
-              <button
-                onClick={() => scrollTo(item.id)}
-                className={`w-full text-left flex items-start gap-2 py-1.5 transition-colors
-                  ${item.level === 3 ? "pl-5" : ""}
-                  ${active === item.id
-                    ? item.level === 2 ? "text-blue-600" : "text-blue-500"
-                    : item.level === 2
-                      ? "text-slate-800 hover:text-blue-600"
-                      : "text-slate-400 hover:text-slate-600"
-                  }`}
-              >
-                {item.level === 3 && (
-                  <svg
-                    className={`flex-shrink-0 w-3 h-3 mt-1.5 ${active === item.id ? "text-blue-400" : "text-slate-300"}`}
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
+        <ul className="px-4 py-2.5 space-y-0.5">
+          {groups.map(({ h2, h3s }) => {
+            const isExpanded = expandedH2s.has(h2.id);
+            const isH2Active = active === h2.id;
+            const hasH3Active = h3s.some(h => h.id === active);
+            const hasChildren = h3s.length > 0;
+
+            return (
+              <li key={h2.id}>
+                {/* H2 row */}
+                <div className="flex items-center gap-1 group">
+                  {/* Nút mở/đóng h3 — chỉ hiện khi có con */}
+                  <button
+                    onClick={() => hasChildren && toggleH2(h2.id)}
+                    className={`flex-shrink-0 w-5 h-5 flex items-center justify-center rounded transition-colors
+                      ${hasChildren ? "hover:bg-slate-100 cursor-pointer" : "cursor-default"}`}
+                    tabIndex={hasChildren ? 0 : -1}
+                    aria-label={isExpanded ? "Thu gọn" : "Mở rộng"}
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
+                    {hasChildren && (
+                      <svg
+                        className={`w-2.5 h-2.5 text-slate-400 transition-transform duration-150 ${isExpanded ? "rotate-90" : ""}`}
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
+                    )}
+                  </button>
+
+                  {/* H2 text — click để scroll */}
+                  <button
+                    onClick={() => scrollTo(h2.id)}
+                    className={`flex-1 text-left py-1.5 text-sm font-semibold leading-snug transition-colors
+                      ${isH2Active || hasH3Active
+                        ? "text-blue-600"
+                        : "text-slate-800 hover:text-blue-600"
+                      }`}
+                  >
+                    {h2.text}
+                  </button>
+                </div>
+
+                {/* H3 list — accordion */}
+                {hasChildren && isExpanded && (
+                  <ul className="ml-6 mt-0.5 mb-1.5 pl-3 border-l-2 border-slate-100 space-y-0">
+                    {h3s.map(h3 => (
+                      <li key={h3.id}>
+                        <button
+                          onClick={() => scrollTo(h3.id)}
+                          className={`w-full text-left py-1 text-xs leading-snug transition-colors
+                            ${active === h3.id
+                              ? "text-blue-500 font-semibold"
+                              : "text-slate-500 hover:text-blue-500"
+                            }`}
+                        >
+                          {h3.text}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
                 )}
-                <span className={`leading-snug text-sm ${item.level === 2 ? "font-semibold" : "font-normal"}`}>
-                  {item.text}
-                </span>
-              </button>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

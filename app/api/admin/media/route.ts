@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+import { checkAuth } from "@/lib/adminAuth";
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 
@@ -6,10 +7,6 @@ const BUCKET = "images";
 const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif", "image/svg+xml"];
 const MAX_SIZE_MB = 5;
 
-function checkAuth(req: NextRequest) {
-  const session = req.cookies.get("admin_session")?.value;
-  return session === process.env.ADMIN_SECRET;
-}
 
 function formatSize(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
@@ -23,7 +20,7 @@ function getPublicUrl(filename: string) {
 
 // GET — list all images from Supabase Storage
 export async function GET(req: NextRequest) {
-  if (!checkAuth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await checkAuth(req))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const sb = supabaseAdmin();
   const { data, error } = await sb.storage.from(BUCKET).list("", {
@@ -49,7 +46,7 @@ export async function GET(req: NextRequest) {
 
 // POST — upload image(s) to Supabase Storage
 export async function POST(req: NextRequest) {
-  if (!checkAuth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await checkAuth(req))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   let formData: FormData;
   try {
@@ -111,7 +108,7 @@ export async function POST(req: NextRequest) {
 
 // DELETE — remove image from Supabase Storage
 export async function DELETE(req: NextRequest) {
-  if (!checkAuth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await checkAuth(req))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   let body: { filename?: string };
   try {

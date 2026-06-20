@@ -1,14 +1,12 @@
 export const dynamic = "force-dynamic";
+import { checkAuth } from "@/lib/adminAuth";
 import { NextRequest, NextResponse } from "next/server";
 
-function checkAuth(req: NextRequest) {
-  return req.cookies.get("admin_session")?.value === process.env.ADMIN_SECRET;
-}
 
 // POST /api/admin/speed-cache
 // body: { action: "purge_all" | "purge_pages", urls?: string[] }
 export async function POST(req: NextRequest) {
-  if (!checkAuth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await checkAuth(req))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
   const { action, urls } = body;

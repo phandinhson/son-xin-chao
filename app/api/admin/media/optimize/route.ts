@@ -1,16 +1,14 @@
 export const dynamic = "force-dynamic";
+import { checkAuth } from "@/lib/adminAuth";
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 
 const BUCKET = "images";
 
-function checkAuth(req: NextRequest) {
-  return req.cookies.get("admin_session")?.value === process.env.ADMIN_SECRET;
-}
 
 // POST — nhận file đã nén từ Canvas API phía client, ghi đè lên Supabase Storage
 export async function POST(req: NextRequest) {
-  if (!checkAuth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await checkAuth(req))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   let formData: FormData;
   try { formData = await req.formData(); }

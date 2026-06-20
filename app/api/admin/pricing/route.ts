@@ -1,13 +1,11 @@
 export const dynamic = "force-dynamic";
+import { checkAuth } from "@/lib/adminAuth";
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 
-function checkAuth(req: NextRequest) {
-  return req.cookies.get("admin_session")?.value === process.env.ADMIN_SECRET;
-}
 
 export async function GET(req: NextRequest) {
-  if (!checkAuth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await checkAuth(req))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const db = supabaseAdmin();
   const { data, error } = await db.from("pricing").select("*").order("sort_order");
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -15,7 +13,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  if (!checkAuth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await checkAuth(req))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await req.json();
   const db = supabaseAdmin();
   const { data, error } = await db.from("pricing").insert([body]).select().single();
