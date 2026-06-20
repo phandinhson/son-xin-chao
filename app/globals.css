@@ -745,3 +745,216 @@ ol.step-list li em::before {
 .phone-card a:hover {
   background: #dc2626;
 }
+
+/* ============================================
+   Tool Card — Blog bài viết Top Tools AI
+   Dùng trong bài viết có .tool-card
+   ============================================ */
+
+/* ── Tool Card container ── */
+.blog-content .tool-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #2563eb;
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.22s ease, transform 0.22s ease;
+}
+
+.blog-content .tool-card:hover {
+  box-shadow: 0 8px 28px rgba(37, 99, 235, 0.13);
+  transform: translateY(-2px);
+}
+
+/* Top 3 — border màu đặc biệt */
+.blog-content .tool-card:nth-child(1) { border-left-color: #f59e0b; }
+.blog-content .tool-card:nth-child(2) { border-left-color: #10b981; }
+.blog-content .tool-card:nth-child(3) { border-left-color: #3b82f6; }
+
+/* ── Tool Header (số + tên + badge) ── */
+.blog-content .tool-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.85rem;
+}
+
+/* ── Số thứ tự hình tròn ── */
+.blog-content .tool-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.875rem;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* Top 3 — số màu khác nhau */
+.blog-content .tool-card:nth-child(1) .tool-num {
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+}
+.blog-content .tool-card:nth-child(2) .tool-num {
+  background: linear-gradient(135deg, #10b981, #2563eb);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35);
+}
+
+/* ── Tên tool ── */
+.blog-content .tool-name {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #0f172a;
+  line-height: 1.4;
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+/* ── Badge (freemium / paid) ── */
+.blog-content .tool-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.blog-content .tool-tag.freemium {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #6ee7b7;
+}
+
+.blog-content .tool-tag.paid {
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #93c5fd;
+}
+
+/* ── Đoạn mô tả trong card — không justify ── */
+.blog-content .tool-card > p,
+.blog-content .tool-card p {
+  font-size: 0.9375rem;
+  color: #475569;
+  line-height: 1.75;
+  margin: 0 0 0.875rem;
+  text-align: left;
+}
+
+.blog-content .tool-card p a {
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid #bfdbfe;
+  transition: color 0.15s, border-color 0.15s;
+}
+.blog-content .tool-card p a:hover {
+  color: #1d4ed8;
+  border-bottom-color: #2563eb;
+}
+
+/* ── Tool Meta (giá, điểm mạnh, website) ── */
+.blog-content .tool-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.25rem;
+  padding: 0.65rem 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #f1f5f9;
+  font-size: 0.84rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+.blog-content .tool-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+}
+
+.blog-content .tool-meta strong {
+  color: #334155;
+  font-weight: 600;
+}
+
+/* ── Image Placeholder (trước khi chèn ảnh thật) ── */
+.blog-content .img-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 1.75rem 1.5rem;
+  margin: 1.25rem 0;
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  background: #f8fafc;
+  text-align: center;
+}
+
+.blog-content .ph-icon {
+  font-size: 1.875rem;
+  line-height: 1;
+}
+
+.blog-content .ph-label {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #475569;
+}
+
+.blog-content .ph-file {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  background: #e2e8f0;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
+.blog-content .ph-alt {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* ── Responsive mobile ── */
+@media (max-width: 640px) {
+  .blog-content .tool-card {
+    padding: 1rem 1.1rem;
+  }
+  .blog-content .tool-header {
+    gap: 0.5rem;
+  }
+  .blog-content .tool-name {
+    font-size: 0.95rem;
+  }
+  .blog-content .tool-num {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    font-size: 0.8rem;
+  }
+  .blog-content .tool-meta {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+}
