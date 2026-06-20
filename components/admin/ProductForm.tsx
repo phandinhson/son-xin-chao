@@ -59,7 +59,7 @@ export default function ProductForm({ initial, mode }: Props) {
     description:       initial?.description || "",
     price:             initial?.price?.toString() || "",
     sale_price:        initial?.sale_price?.toString() || "",
-    category:          initial?.category || CATEGORIES[0],
+    category:          initial?.category || FALLBACK_CATEGORIES[0],
     tags:              initial?.tags || "",
     images:            initial?.images || "",
     status:            initial?.status || "draft",

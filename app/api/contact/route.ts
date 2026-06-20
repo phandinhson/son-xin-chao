@@ -1,12 +1,27 @@
 export const dynamic = "force-dynamic";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  // Rate limit: tối đa 5 request/phút mỗi IP
+  const ip = getClientIp(request.headers);
+  if (!checkRateLimit(ip, 5, 60_000)) {
+    return NextResponse.json(
+      { error: "Bạn gửi quá nhiều yêu cầu. Vui lòng thử lại sau 1 phút." },
+      { status: 429 }
+    );
+  }
+
   const { name, phone, service, message } = await request.json();
 
   if (!name || !phone) {
     return NextResponse.json({ error: "Thiếu thông tin" }, { status: 400 });
+  }
+
+  // Validate độ dài để tránh spam nội dung khổng lồ
+  if (name.length > 100 || phone.length > 20 || (message && message.length > 2000)) {
+    return NextResponse.json({ error: "Dữ liệu không hợp lệ" }, { status: 400 });
   }
 
   const serviceMap: Record<string, string> = {

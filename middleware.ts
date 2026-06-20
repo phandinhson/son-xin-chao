@@ -1,17 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdminToken } from "@/lib/auth";
 
-// Các route chỉ admin mới được vào
+// Các route chỉ admin mới được vào (editor không có quyền)
 const ADMIN_ONLY_ROUTES = [
   "/admin/analytics",
   "/admin/portfolio",
   "/admin/pricing",
   "/admin/addons",
-  "/admin/ai-tools",
+  "/admin/hoc-ai",
   "/admin/speed-cache",
   "/admin/settings",
   "/admin/gioi-thieu",
   "/admin/users",
+  "/admin/navigation",
 ];
 
 export async function middleware(request: NextRequest) {
