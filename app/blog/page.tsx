@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useRef, Suspense } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -238,9 +239,9 @@ function BlogPageContent() {
                     <Link key={post.id} href={`/blog/${post.slug}`}
                       className="group flex gap-4 bg-white rounded-2xl border border-slate-200 hover:border-blue-300 hover:shadow-lg transition-all p-4">
                       {/* Thumbnail */}
-                      <div className="w-36 h-28 flex-shrink-0 rounded-xl overflow-hidden bg-gradient-to-br from-blue-100 to-violet-100">
+                      <div className="relative w-36 h-28 flex-shrink-0 rounded-xl overflow-hidden bg-gradient-to-br from-blue-100 to-violet-100">
                         {post.cover_image
-                          ? <img src={post.cover_image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                          ? <Image src={post.cover_image} alt={post.title} fill className="object-cover group-hover:scale-105 transition-transform" unoptimized sizes="144px" />
                           : <div className="w-full h-full flex items-center justify-center text-3xl opacity-40">
                               {tag.label === "SEO" ? "🔍" : tag.label === "Ads" ? "📊" : tag.label === "Website" ? "💻" : "💡"}
                             </div>
@@ -361,7 +362,7 @@ function BlogPageContent() {
                   className="lg:col-span-3 group relative block rounded-2xl overflow-hidden bg-white shadow-md hover:shadow-xl transition-all duration-300">
                   <div className="relative h-56 lg:h-72 overflow-hidden bg-gradient-to-br from-blue-500 to-violet-600">
                     {featured.cover_image
-                      ? <img src={featured.cover_image} alt={featured.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      ? <Image src={featured.cover_image} alt={featured.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized sizes="(max-width: 1024px) 100vw, 60vw" />
                       : <div className="w-full h-full flex items-center justify-center text-7xl opacity-30">
                           {featuredTag.icon || "💡"}
                         </div>
@@ -396,9 +397,9 @@ function BlogPageContent() {
                   {sideList.map((post) => (
                     <Link key={post.id} href={`/blog/${post.slug}`}
                       className="group flex gap-3 bg-white rounded-xl border border-slate-200 hover:border-blue-300 hover:shadow-md p-3 transition-all">
-                      <div className="w-20 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gradient-to-br from-blue-100 to-violet-100">
+                      <div className="relative w-20 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gradient-to-br from-blue-100 to-violet-100">
                         {post.cover_image
-                          ? <img src={post.cover_image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                          ? <Image src={post.cover_image} alt={post.title} fill className="object-cover group-hover:scale-105 transition-transform" unoptimized sizes="80px" />
                           : <div className="w-full h-full flex items-center justify-center text-2xl opacity-50">
                               {getTag(post, categories).icon || "💡"}
                             </div>
@@ -431,7 +432,7 @@ function BlogPageContent() {
                         className="group flex flex-col rounded-2xl overflow-hidden bg-white border border-slate-200 hover:border-blue-300 hover:shadow-lg transition-all shadow-sm">
                         <div className="relative h-44 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200">
                           {post.cover_image
-                            ? <img src={post.cover_image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            ? <Image src={post.cover_image} alt={post.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized sizes="(max-width: 768px) 100vw, 33vw" />
                             : <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${
                                 tag.label === "SEO" ? "from-blue-50 to-cyan-100" :
                                 tag.label === "Ads" ? "from-violet-50 to-purple-100" :

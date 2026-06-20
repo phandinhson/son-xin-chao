@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 import { useCart, formatVND } from "./CartContext";
 
 type CheckoutState = "cart" | "form" | "success";
@@ -89,7 +90,7 @@ export default function CartDrawer() {
                   {items.map(item => (
                     <div key={item.id} className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">
                       {item.image && (
-                        <img src={item.image} alt={item.name} className="w-16 h-16 object-cover rounded-lg flex-shrink-0" />
+                        <Image src={item.image} alt={item.name} width={64} height={64} className="w-16 h-16 object-cover rounded-lg flex-shrink-0" unoptimized />
                       )}
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-gray-900 line-clamp-2">{item.name}</p>

@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   if (!(await checkAuth(req))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const body = await request.json();
+  const body = await req.json();
   const db = supabaseAdmin();
   const { data, error } = await db
     .from("addons")

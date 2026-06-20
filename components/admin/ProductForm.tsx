@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const FALLBACK_CATEGORIES = ["Dịch vụ SEO", "Chạy quảng cáo", "Thiết kế website", "Tư vấn", "Khác"];
 
@@ -173,7 +174,7 @@ export default function ProductForm({ initial, mode }: Props) {
               <div className="mt-3 flex flex-wrap gap-2">
                 {form.images.split("\n").filter(s => s.trim()).map((url, i) => (
                   <div key={i} className="w-20 h-20 rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
-                    <img src={url.trim()} alt="" className="w-full h-full object-cover" onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                    <Image src={url.trim()} alt="" width={80} height={80} className="w-full h-full object-cover" unoptimized onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                   </div>
                 ))}
               </div>

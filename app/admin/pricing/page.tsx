@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import type { Pricing } from "@/lib/supabase";
 
 // ─── Pricing constants ───────────────────────────────────────
@@ -176,7 +177,7 @@ export default function PricingAdminCombined() {
                 {item.price.startsWith("Liên hệ") ? (
                   <div className="flex flex-col gap-1.5 mb-3">
                     <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0068ff]/15 border border-[#0068ff]/30 rounded-lg text-[#60aaff] text-xs font-medium">
-                      <img src="/logo-zalo-vector.svg" alt="" className="h-4 w-auto opacity-80" />
+                      <Image src="/logo-zalo-vector.svg" alt="Zalo" width={16} height={16} className="h-4 w-auto opacity-80" unoptimized />
                       Chat qua Zalo
                     </div>
                     <div className="flex items-center gap-1.5 px-3 py-1.5 bg-teal-500/15 border border-teal-500/30 rounded-lg text-teal-400 text-xs font-medium">

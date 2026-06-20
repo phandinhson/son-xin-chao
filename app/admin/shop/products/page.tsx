@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 type Product = {
   id: string;
@@ -166,7 +167,7 @@ export default function AdminProductsPage() {
                   {/* Image */}
                   <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                     {product.images?.[0] ? (
-                      <img src={product.images[0]} alt="" className="w-full h-full object-cover" />
+                      <Image src={product.images[0]} alt="" width={48} height={48} className="w-full h-full object-cover" unoptimized />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-300 text-xl">📦</div>
                     )}

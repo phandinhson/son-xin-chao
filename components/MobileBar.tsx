@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link"; // Tối ưu SPA chuyển trang không reload
+import Image from "next/image";
 import { useSettings } from "@/components/SettingsContext";
 
 export default function MobileBar() {
@@ -69,7 +70,7 @@ export default function MobileBar() {
               className="flex flex-col items-center gap-1 py-2 px-3 active:opacity-80 transition-opacity"
             >
               <div className="w-10 h-10 rounded-full bg-[#0068FF] flex items-center justify-center shadow-md">
-                <img src="/logo-zalo-vector.svg" alt="Zalo" className="h-6 w-auto brightness-0 invert" />
+                <Image src="/logo-zalo-vector.svg" alt="Zalo" width={24} height={24} className="h-6 w-auto brightness-0 invert" unoptimized />
               </div>
               <span className="text-[10px] font-medium text-slate-600">Zalo</span>
             </a>

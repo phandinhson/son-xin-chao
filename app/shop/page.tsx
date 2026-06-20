@@ -126,6 +126,7 @@ export default function ShopPage() {
   const [loading,    setLoading]    = useState(true);
   const [category,   setCategory]   = useState("Tất cả");
   const [search,     setSearch]     = useState("");
+  const [inputVal,   setInputVal]   = useState("");
   const { totalQty, totalPrice, openCart } = useCart();
 
   // Fetch categories từ DB (đồng bộ với admin)

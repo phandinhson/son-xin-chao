@@ -13,7 +13,7 @@ function objToB64url(obj: object): string {
   const json = JSON.stringify(obj);
   const bytes = new TextEncoder().encode(json);
   let binary = "";
-  for (const b of bytes) binary += String.fromCharCode(b);
+  Array.from(bytes).forEach(b => { binary += String.fromCharCode(b); });
   return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
 }
 
@@ -51,7 +51,7 @@ async function hmacSign(data: string, secret: string): Promise<string> {
     ["sign"]
   );
   const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(data));
-  return b64url(String.fromCharCode(...new Uint8Array(sig)));
+  return b64url(String.fromCharCode(...Array.from(new Uint8Array(sig))));
 }
 
 // ── JWT ───────────────────────────────────────────────────────────────────────

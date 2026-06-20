@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCart, formatVND } from "@/components/CartContext";
+import Image from "next/image";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 
@@ -129,7 +130,7 @@ export default function ProductDetailPage() {
                         i === mainImg ? "border-blue-500 shadow-sm" : "border-gray-200 hover:border-gray-300"
                       }`}
                     >
-                      <img src={img} alt="" className="w-full h-full object-contain p-1" />
+                      <Image src={img} alt="" width={56} height={56} className="w-full h-full object-contain p-1" unoptimized />
                     </button>
                   ))}
                 </div>

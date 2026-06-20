@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import type { Pricing as PricingType } from "@/lib/supabase";
 import { useSettings } from "@/components/SettingsContext";
@@ -93,7 +94,7 @@ export default function Pricing({ initialPlans, initialAddons }: { initialPlans?
                           rel="noopener noreferrer"
                           className="flex items-center gap-2.5 w-full px-4 py-3 bg-[#0068ff]/15 border border-[#0068ff]/30 text-[#60aaff] font-semibold rounded-xl hover:bg-[#0068ff]/25 transition-colors text-sm"
                         >
-                          <img src="/logo-zalo-vector.svg" alt="Zalo" className="h-5 w-auto opacity-90" />
+                          <Image src="/logo-zalo-vector.svg" alt="Zalo" width={20} height={20} className="h-5 w-auto opacity-90" unoptimized />
                           Chat qua Zalo
                         </a>
                         {/* Phone */}

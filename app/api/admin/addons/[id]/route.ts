@@ -3,12 +3,11 @@ import { checkAuth } from "@/lib/adminAuth";
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 
-
 export async function PUT(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  if (!(await checkAuth(req))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await checkAuth(request))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await request.json();
   const db = supabaseAdmin();
   const { data, error } = await db
@@ -29,10 +28,10 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  if (!(await checkAuth(req))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!(await checkAuth(request))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const db = supabaseAdmin();
   const { error } = await db.from("addons").delete().eq("id", params.id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

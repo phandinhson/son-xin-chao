@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { useSettings } from "@/components/SettingsContext";
 
 export default function FloatingContacts() {
@@ -36,7 +37,7 @@ export default function FloatingContacts() {
       bg: "bg-[#0068FF]",
       shadow: "shadow-blue-400",
       icon: (
-        <img src="/logo-zalo-vector.svg" alt="Zalo" className="h-7 w-auto brightness-0 invert" />
+        <Image src="/logo-zalo-vector.svg" alt="Zalo" width={28} height={28} className="h-7 w-auto brightness-0 invert" unoptimized />
       ),
     },
     {

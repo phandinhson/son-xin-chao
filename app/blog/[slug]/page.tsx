@@ -90,7 +90,7 @@ export default async function BlogPostPage({ params }: Props) {
   /* Fetch đủ field để build schema */
   const { data: post } = await supabase
     .from("posts")
-    .select("title, excerpt, cover_image, content, created_at, updated_at, category")
+    .select("id, slug, title, excerpt, cover_image, content, created_at, updated_at, category")
     .eq("slug", params.slug)
     .eq("status", "published")
     .single();

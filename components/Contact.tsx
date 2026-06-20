@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { useSettings } from "@/components/SettingsContext";
 
 const faqs = [
@@ -41,7 +42,7 @@ export default function Contact() {
 
   const contactMethods = [
     {
-      icon: <img src="/logo-zalo-vector.svg" alt="Zalo" className="h-7 w-auto brightness-0 invert" />, name: "Zalo", desc: "Phản hồi nhanh nhất",
+      icon: <Image src="/logo-zalo-vector.svg" alt="Zalo" width={28} height={28} className="h-7 w-auto brightness-0 invert" unoptimized />, name: "Zalo", desc: "Phản hồi nhanh nhất",
       value: cfg.contact_zalo,
       href: `https://zalo.me/${cfg.contact_zalo.replace(/\s/g, "")}`,
       color: "from-blue-500 to-cyan-500", badge: "Nhanh nhất",
@@ -158,7 +159,7 @@ export default function Contact() {
               rel="noopener noreferrer"
               className="animate-on-scroll flex items-center justify-center gap-3 w-full py-5 bg-gradient-to-r from-blue-600 to-violet-600 text-white font-bold text-lg rounded-2xl hover:opacity-90 hover:scale-[1.02] transition-all shadow-xl shadow-blue-500/30"
             >
-              <img src="/logo-zalo-vector.svg" alt="Zalo" className="h-8 w-auto brightness-0 invert" />
+              <Image src="/logo-zalo-vector.svg" alt="Zalo" width={32} height={32} className="h-8 w-auto brightness-0 invert" unoptimized />
               Nhắn Zalo ngay — Miễn phí tư vấn
             </a>
 

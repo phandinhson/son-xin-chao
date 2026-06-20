@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useSettings } from "@/components/SettingsContext";
 
 export default function Footer() {
@@ -69,7 +70,7 @@ export default function Footer() {
       label: "Zalo",
       href: `https://zalo.me/${zalo.replace(/\s/g, "")}`,
       icon: (
-        <img src="/logo-zalo-vector.svg" alt="Zalo" className="h-[18px] w-auto brightness-0 opacity-60" />
+        <Image src="/logo-zalo-vector.svg" alt="Zalo" width={18} height={18} className="h-[18px] w-auto brightness-0 opacity-60" unoptimized />
       ),
     },
     {
@@ -146,7 +147,7 @@ export default function Footer() {
               {/* Logo */}
               <div className="flex items-center gap-3 mb-4">
                 {logoUrl ? (
-                  <img src={logoUrl} alt="Logo" className="w-11 h-11 rounded-xl object-cover shadow" />
+                  <Image src={logoUrl} alt="Logo" width={44} height={44} className="w-11 h-11 rounded-xl object-cover shadow" unoptimized />
                 ) : (
                   <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center text-white font-bold text-base shadow-md">
                     S

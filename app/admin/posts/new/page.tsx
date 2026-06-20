@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import RichEditor from "@/components/RichEditor";
 
 type DbCategory = { id: string; label: string; value: string; icon: string; color_key: string };
@@ -447,7 +448,7 @@ export default function NewPost() {
                             form.cover_image === img.url ? "border-blue-500 ring-1 ring-blue-300" : "border-transparent hover:border-blue-300"
                           }`}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={img.url} alt={img.name} className="w-full aspect-square object-cover" loading="lazy" />
+                          <Image src={img.url} alt={img.name} width={120} height={120} className="w-full aspect-square object-cover" unoptimized />
                           {form.cover_image === img.url && (
                             <div className="absolute inset-0 bg-blue-600/20 flex items-center justify-center">
                               <span className="w-5 h-5 bg-blue-600 rounded-full text-white text-xs flex items-center justify-center">✓</span>
@@ -466,8 +467,7 @@ export default function NewPost() {
 
               {form.cover_image && (
                 <div className="relative rounded-lg overflow-hidden border border-gray-200 group">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={form.cover_image} alt="Preview" className="w-full h-36 object-cover"
+                  <Image src={form.cover_image} alt="Preview" width={600} height={144} className="w-full h-36 object-cover" unoptimized
                     onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
                     <button onClick={() => { update("cover_image", ""); if (fileInputRef.current) fileInputRef.current.value = ""; }}

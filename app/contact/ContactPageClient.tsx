@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 
 /* ─── Types ─────────────────────────────────────────────── */
 interface ContactInfo {
@@ -127,7 +128,7 @@ export default function ContactPageClient() {
   const CONTACT_CARDS = [
     {
       icon: (
-        <img src="/logo-zalo-vector.svg" alt="Zalo" className="h-7 w-auto brightness-0 invert" />
+        <Image src="/logo-zalo-vector.svg" alt="Zalo" width={28} height={28} className="h-7 w-auto brightness-0 invert" unoptimized />
       ),
       name: "Zalo",
       desc: "Phản hồi nhanh nhất",
@@ -247,7 +248,7 @@ export default function ContactPageClient() {
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-lg rounded-2xl hover:opacity-90 hover:scale-105 transition-all shadow-xl shadow-blue-500/25"
             >
-              <img src="/logo-zalo-vector.svg" alt="Zalo" className="h-8 w-auto brightness-0 invert flex-shrink-0" />
+              <Image src="/logo-zalo-vector.svg" alt="Zalo" width={32} height={32} className="h-8 w-auto brightness-0 invert flex-shrink-0" unoptimized />
               Nhắn Zalo ngay
             </a>
             <a

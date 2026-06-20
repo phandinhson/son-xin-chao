@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useSettings } from "@/components/SettingsContext";
 
 /* ──────────────────────────────────────────────
@@ -236,7 +237,7 @@ export default function Navbar() {
         {/* ── Logo ── */}
         <Link href="/" prefetch={false} className="flex items-center gap-2 flex-shrink-0 group">
           {logoUrl ? (
-            <img src={logoUrl} alt="Logo" className="w-8 h-8 rounded-lg object-cover shadow group-hover:scale-105 transition-transform" />
+            <Image src={logoUrl} alt="Logo" width={32} height={32} className="w-8 h-8 rounded-lg object-cover shadow group-hover:scale-105 transition-transform" unoptimized />
           ) : (
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm shadow-md group-hover:scale-105 transition-transform">S</div>
           )}
@@ -334,7 +335,7 @@ export default function Navbar() {
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
             <Link href="/" className="flex items-center gap-2" onClick={() => setMenuOpen(false)}>
               {logoUrl
-                ? <img src={logoUrl} alt="Logo" className="w-8 h-8 rounded-lg object-cover" />
+                ? <Image src={logoUrl} alt="Logo" width={32} height={32} className="w-8 h-8 rounded-lg object-cover" unoptimized />
                 : <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm">S</div>
               }
               <div>

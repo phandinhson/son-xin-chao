@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import type { Pricing } from "@/lib/supabase";
 
 type Addon = { id: string; name: string; icon: string; price: string; unit: string; sort_order: number; active: boolean };
@@ -112,7 +113,7 @@ export default function PricingPageClient({
               rel="noopener noreferrer"
               className="flex items-center gap-2.5 px-7 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-2xl transition-all hover:shadow-lg hover:shadow-blue-200 hover:scale-[1.02]"
             >
-              <img src="/logo-zalo-vector.svg" alt="Zalo" className="h-5 w-auto brightness-0 invert" />
+              <Image src="/logo-zalo-vector.svg" alt="Zalo" width={20} height={20} className="h-5 w-auto brightness-0 invert" unoptimized />
               Tư vấn miễn phí qua Zalo
             </a>
             <a href="#plans" className="px-7 py-3.5 border border-slate-200 text-slate-700 font-semibold rounded-2xl hover:border-blue-300 hover:text-blue-600 transition-all">
@@ -206,7 +207,7 @@ export default function PricingPageClient({
                             rel="noopener noreferrer"
                             className="flex items-center gap-2.5 w-full px-4 py-3 bg-[#e8f4ff] border border-[#0068ff]/25 text-[#0068ff] font-semibold rounded-xl hover:bg-[#d0e8ff] transition-colors text-sm"
                           >
-                            <img src="/logo-zalo-vector.svg" alt="Zalo" className="h-5 w-auto" />
+                            <Image src="/logo-zalo-vector.svg" alt="Zalo" width={20} height={20} className="h-5 w-auto" unoptimized />
                             Chat qua Zalo
                           </a>
                           {/* Phone number */}
@@ -440,7 +441,7 @@ export default function PricingPageClient({
               rel="noopener noreferrer"
               className="flex items-center gap-3 px-8 py-4 bg-white text-blue-700 font-bold text-base rounded-2xl hover:bg-blue-50 transition-all hover:shadow-xl hover:scale-[1.02]"
             >
-              <img src="/logo-zalo-vector.svg" alt="Zalo" className="h-6 w-auto" />
+              <Image src="/logo-zalo-vector.svg" alt="Zalo" width={24} height={24} className="h-6 w-auto" unoptimized />
               Tư vấn miễn phí qua Zalo
             </a>
             <Link

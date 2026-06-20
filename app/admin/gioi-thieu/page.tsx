@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 /* ─── Types ──────────────────────────────────────────── */
 interface EduItem   { school: string; major: string; year: string; desc: string; icon: string }
@@ -157,7 +158,7 @@ function ImageUpload({
         {/* Preview */}
         {value ? (
           <div className="relative mb-3 rounded-2xl overflow-hidden border border-white/10 bg-white/5 group">
-            <img src={value} alt="preview" className="w-full max-h-52 object-cover" />
+            <Image src={value} alt="preview" width={600} height={208} className="w-full max-h-52 object-cover" unoptimized />
             {/* Cảnh báo nếu vẫn còn base64 cũ */}
             {isBase64 && (
               <div className="absolute top-2 left-2 px-2 py-1 rounded-lg bg-orange-500/90 text-white text-xs font-semibold">

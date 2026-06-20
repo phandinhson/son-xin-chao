@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 type OrderItem = {
   id: string;
@@ -205,7 +206,7 @@ export default function AdminOrdersPage() {
                             {order.items.map((item, i) => (
                               <div key={i} className="flex items-center gap-2">
                                 {item.image && (
-                                  <img src={item.image} alt="" className="w-8 h-8 rounded object-cover flex-shrink-0" />
+                                  <Image src={item.image} alt="" width={32} height={32} className="w-8 h-8 rounded object-cover flex-shrink-0" unoptimized />
                                 )}
                                 <div className="flex-1 min-w-0">
                                   <p className="text-xs font-medium text-gray-800 truncate">{item.name}</p>

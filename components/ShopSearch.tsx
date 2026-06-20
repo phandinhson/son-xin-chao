@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { formatVND } from "@/components/CartContext";
 
 type Product = {
@@ -196,7 +197,7 @@ export default function ShopSearch({ onSearch, onCategorySelect, placeholder = "
                             {/* Thumbnail */}
                             <div className="w-11 h-11 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden border border-gray-200">
                               {image
-                                ? <img src={image} alt="" className="w-full h-full object-contain p-0.5" />
+                                ? <Image src={image} alt="" width={44} height={44} className="w-full h-full object-contain p-0.5" unoptimized />
                                 : <div className="w-full h-full flex items-center justify-center text-lg">📦</div>
                               }
                             </div>

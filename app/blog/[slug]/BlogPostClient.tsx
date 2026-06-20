@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
@@ -527,7 +528,7 @@ export default function BlogPostClient({ initialPost }: { initialPost?: Post | n
                   className="mb-8 rounded-2xl overflow-hidden shadow-md cursor-zoom-in"
                   onClick={() => setLightbox({ src: post.cover_image!, alt: post.title })}
                 >
-                  <img src={post.cover_image} alt={post.title} className="w-full object-cover" />
+                  <Image src={post.cover_image} alt={post.title} width={1200} height={630} className="w-full object-cover" unoptimized priority />
                 </div>
               )}
 

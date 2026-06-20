@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, useCallback } from "react";
+import Image from "next/image";
 
 type ImageFile = {
   name: string;
@@ -366,9 +367,8 @@ export default function MediaPage() {
               <div key={img.name} onClick={() => openModal(img)}
                 className="group relative bg-gray-800 rounded-2xl overflow-hidden border border-white/5 hover:border-blue-500/50 cursor-pointer transition-all hover:scale-[1.02] hover:shadow-xl hover:shadow-black/40">
                 <div className="w-full aspect-square bg-gray-700/30 overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={img.url} alt={m?.alt || img.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                  <Image src={img.url} alt={m?.alt || img.name} fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300" unoptimized sizes="200px" />
                 </div>
                 <div className="p-2">
                   <p className="text-white text-xs font-medium truncate">{m?.title || img.name}</p>
@@ -412,8 +412,7 @@ export default function MediaPage() {
                 return (
                   <tr key={img.name} className={`border-b border-white/5 hover:bg-white/3 transition-colors ${i % 2 === 0 ? "" : "bg-white/[0.02]"}`}>
                     <td className="px-5 py-3">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={img.url} alt={m?.alt || img.name} className="w-12 h-12 object-cover rounded-lg bg-gray-700" />
+                      <Image src={img.url} alt={m?.alt || img.name} width={48} height={48} className="w-12 h-12 object-cover rounded-lg bg-gray-700" unoptimized />
                     </td>
                     <td className="px-5 py-3">
                       <span className="text-white font-medium">{m?.title || img.name}</span>
@@ -471,9 +470,8 @@ export default function MediaPage() {
               {modalTab === "preview" && (
                 <div className="p-5">
                   <div className="bg-gray-800/50 rounded-xl flex items-center justify-center min-h-[260px] mb-4">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={selected.url} alt={allMeta[selected.name]?.alt || selected.name}
-                      className="max-h-[360px] max-w-full object-contain rounded-lg" />
+                    <Image src={selected.url} alt={allMeta[selected.name]?.alt || selected.name}
+                      width={800} height={360} className="max-h-[360px] max-w-full object-contain rounded-lg" unoptimized />
                   </div>
                   <p className="text-gray-400 text-sm mb-3">{selected.sizeLabel} · .{selected.ext.toUpperCase()} · {relTime(selected.uploadedAt)}</p>
                   {/* URL copy */}
@@ -516,8 +514,7 @@ export default function MediaPage() {
                     <>
                       {/* Preview */}
                       <div className="bg-gray-800/40 rounded-xl p-3 flex items-center justify-center min-h-[180px]">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={selected.url} alt={selected.name} className="max-h-[180px] max-w-full object-contain rounded-lg" />
+                        <Image src={selected.url} alt={selected.name} width={800} height={180} className="max-h-[180px] max-w-full object-contain rounded-lg" unoptimized />
                       </div>
 
                       {/* Size info */}
@@ -653,8 +650,7 @@ export default function MediaPage() {
                     <div ref={focalRef} onClick={handleFocalClick}
                       className="relative rounded-xl overflow-hidden cursor-crosshair bg-gray-800 border border-white/10 select-none"
                       style={{ maxHeight: 220 }}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={selected.url} alt={selected.name} className="w-full object-contain max-h-[220px]" draggable={false} />
+                      <Image src={selected.url} alt={selected.name} width={800} height={220} className="w-full object-contain max-h-[220px]" unoptimized draggable={false} />
                       {/* Focal crosshair */}
                       {metaForm.focalX !== undefined && metaForm.focalY !== undefined && (
                         <div className="absolute pointer-events-none" style={{ left: `${metaForm.focalX}%`, top: `${metaForm.focalY}%`, transform: "translate(-50%,-50%)" }}>
