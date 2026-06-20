@@ -10,16 +10,20 @@ const defaultProjects: PortfolioType[] = [
   { id: "3", category: "Website", title: "Website Bất Động Sản", industry: "Bất động sản", result: "10 ngày ra mắt, 95 PageSpeed", detail: "WordPress + Elementor chuẩn SEO", tags: ["WordPress", "SEO", "Tốc độ cao"], color: "from-emerald-600 to-teal-500", icon: "💻", metric_before: "45", metric_after: "95", metric_unit: "PageSpeed", sort_order: 3, active: true, created_at: "" },
 ];
 
-export default function Portfolio() {
+export default function Portfolio({ initialItems }: { initialItems?: PortfolioType[] }) {
   const [activeCategory, setActiveCategory] = useState("Tất cả");
-  const [projects, setProjects] = useState<PortfolioType[]>(defaultProjects);
+  const [projects, setProjects] = useState<PortfolioType[]>(
+    initialItems && initialItems.length > 0 ? initialItems : defaultProjects
+  );
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (initialItems && initialItems.length > 0) return;
     fetch("/api/portfolio")
       .then((r) => r.json())
       .then((data) => { if (Array.isArray(data) && data.length > 0) setProjects(data); })
       .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

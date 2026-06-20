@@ -9,15 +9,13 @@ export default function PageTracker() {
     // Không track trang admin
     if (pathname.startsWith("/admin")) return;
 
-    fetch("/api/track", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        page: pathname,
-        referrer: document.referrer || "",
-      }),
-      keepalive: true, // đảm bảo request hoàn thành dù user navigate đi
-    }).catch(() => {});
+    // sendBeacon — hoàn toàn non-blocking, không ảnh hưởng render
+    const payload = JSON.stringify({ page: pathname, referrer: document.referrer || "" });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon("/api/track", new Blob([payload], { type: "application/json" }));
+    } else {
+      fetch("/api/track", { method: "POST", headers: { "Content-Type": "application/json" }, body: payload, keepalive: true }).catch(() => {});
+    }
   }, [pathname]);
 
   return null;

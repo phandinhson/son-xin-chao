@@ -101,11 +101,42 @@ function buildTocAndInjectIds(html: string): { toc: TocItem[]; html: string } {
     counts[base] = (counts[base] || 0) + 1;
     const id = counts[base] > 1 ? `${base}-${counts[base]}` : base;
     toc.push({ level, text, id });
-    // Xoá id cũ nếu có (tránh duplicate id — trình duyệt giữ cái đầu tiên, không phải cái mình inject)
     const cleanAttrs = attrs.replace(/\s+id="[^"]*"/gi, "").replace(/\s+id='[^']*'/gi, "");
     return `<${tag}${cleanAttrs} id="${id}">${inner}</${tag}>`;
   });
   return { toc, html: result };
+}
+
+/* ── Tối ưu ảnh trong bài viết cho mobile ──
+   - Ảnh đầu tiên: eager (above the fold)
+   - Các ảnh còn lại: lazy + decoding=async (tiết kiệm bandwidth mobile)
+   - Thêm style="max-width:100%;height:auto" tránh overflow trên màn nhỏ
+   - Wrap trong div để căn giữa và có caption nếu có alt
+──────────────────────────────────────────── */
+function optimizeContentImages(html: string): string {
+  let imgIndex = 0;
+  return html.replace(/<img([^>]*?)(\s*\/?>)/gi, (_match, attrs) => {
+    const isFirst = imgIndex === 0;
+    imgIndex++;
+
+    // Xóa loading/decoding cũ nếu có
+    let newAttrs = attrs
+      .replace(/\s+loading="[^"]*"/gi, "")
+      .replace(/\s+decoding="[^"]*"/gi, "")
+      .replace(/\s+style="[^"]*"/gi, "");
+
+    // Thêm style responsive cho mobile
+    const hasStyle = /style=/i.test(attrs);
+    if (!hasStyle) {
+      newAttrs += ' style="max-width:100%;height:auto;border-radius:8px"';
+    }
+
+    const loadAttr = isFirst
+      ? ' loading="eager" fetchpriority="high"'
+      : ' loading="lazy" decoding="async"';
+
+    return `<img${newAttrs}${loadAttr}>`;
+  });
 }
 
 const COLOR_MAP: Record<string, string> = {
@@ -330,7 +361,7 @@ export default function BlogPostClient({ initialPost }: { initialPost?: Post | n
       }
       const { toc: t, html } = buildTocAndInjectIds(rawHtml);
       setToc(t);
-      setProcessedContent(html);
+      setProcessedContent(optimizeContentImages(html));
       setLoading(false);
 
       fetch("/api/categories", { cache: "no-store" })
@@ -372,7 +403,7 @@ export default function BlogPostClient({ initialPost }: { initialPost?: Post | n
           }
           const { toc: t, html } = buildTocAndInjectIds(rawHtml);
           setToc(t);
-          setProcessedContent(html);
+          setProcessedContent(optimizeContentImages(html));
           setPost(d);
           setLoading(false);
         }

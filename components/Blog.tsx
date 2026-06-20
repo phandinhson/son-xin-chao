@@ -63,14 +63,15 @@ function CoverPlaceholder({ title }: { title: string }) {
   );
 }
 
-export default function Blog() {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function Blog({ initialPosts }: { initialPosts?: Post[] }) {
+  const [posts, setPosts] = useState<Post[]>(initialPosts ?? []);
+  const [loading, setLoading] = useState(!initialPosts);
   const [activeCategory, setActiveCategory] = useState<Category>("Tất cả");
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  // Fetch dữ liệu từ API sạch sẽ
+  // Chỉ fetch nếu không có initialPosts từ server
   useEffect(() => {
+    if (initialPosts) return;
     fetch("/api/posts")
       .then(async (r) => {
         if (!r.ok) throw new Error();
@@ -79,6 +80,7 @@ export default function Blog() {
       })
       .catch(() => setPosts([]))
       .finally(() => setLoading(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Lắng nghe hiệu ứng cuộn mượt mà

@@ -29,15 +29,18 @@ function formatAddonPrice(price: string, unit: string) {
   return `${price} ${unit}`;
 }
 
-export default function Pricing() {
-  const [plans, setPlans] = useState<PricingType[]>(defaultPlans);
-  const [addons, setAddons] = useState<Addon[]>([]);
+export default function Pricing({ initialPlans, initialAddons }: { initialPlans?: PricingType[]; initialAddons?: Addon[] }) {
+  const [plans, setPlans] = useState<PricingType[]>(
+    initialPlans && initialPlans.length > 0 ? initialPlans : defaultPlans
+  );
+  const [addons, setAddons] = useState<Addon[]>(initialAddons ?? []);
   const sectionRef = useRef<HTMLDivElement>(null);
   const settings = useSettings();
   const zalo = settings.contact_zalo || "0968806360";
   const zaloUrl = `https://zalo.me/${zalo.replace(/\s/g, "")}`;
 
   useEffect(() => {
+    if (initialPlans && initialPlans.length > 0) return;
     fetch("/api/pricing")
       .then((r) => r.json())
       .then((data) => { if (Array.isArray(data) && data.length > 0) setPlans(data); })
@@ -46,6 +49,7 @@ export default function Pricing() {
       .then((r) => r.json())
       .then((data) => { if (Array.isArray(data) && data.length > 0) setAddons(data); })
       .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

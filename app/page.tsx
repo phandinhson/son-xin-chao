@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getSiteSettings } from "@/lib/get-settings";
+import { supabaseAdmin } from "@/lib/supabase";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
@@ -25,6 +26,19 @@ export const metadata: Metadata = {
 export default async function Home() {
   // getSiteSettings() dùng React.cache() → share với layout.tsx, không query DB lần 2
   const s = await getSiteSettings();
+
+  // Fetch tất cả data homepage song song — 1 lần duy nhất từ server
+  const db = supabaseAdmin();
+  const [postsRes, portfolioRes, pricingRes, addonsRes] = await Promise.all([
+    db.from("posts").select("id, title, slug, excerpt, cover_image, created_at, category").eq("status", "published").order("created_at", { ascending: false }),
+    db.from("portfolio").select("*").eq("active", true).order("sort_order"),
+    db.from("pricing").select("*").order("sort_order"),
+    db.from("addons").select("*").eq("active", true).order("sort_order", { ascending: true }),
+  ]);
+  const initialPosts     = postsRes.data     || [];
+  const initialPortfolio = portfolioRes.data || [];
+  const initialPricing   = pricingRes.data   || [];
+  const initialAddons    = addonsRes.data    || [];
 
   // Giá trị dynamic từ admin panel, fallback về mặc định
   const phone    = s.contact_phone    || "0968806360";
@@ -107,9 +121,9 @@ export default async function Home() {
       <Hero />
       <About />
       <Services />
-      <Portfolio />
-      <Pricing />
-      <Blog />
+      <Portfolio initialItems={initialPortfolio} />
+      <Pricing initialPlans={initialPricing} initialAddons={initialAddons} />
+      <Blog initialPosts={initialPosts} />
       <Contact />
       <Footer />
       <MobileBar />

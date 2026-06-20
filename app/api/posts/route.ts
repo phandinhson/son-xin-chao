@@ -1,4 +1,3 @@
-export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 
@@ -12,8 +11,8 @@ export async function GET() {
   if (error) return NextResponse.json({ error: error.message, code: error.code }, { status: 500 });
   return NextResponse.json(data || [], {
     headers: {
-      "Cache-Control": "no-store, no-cache, must-revalidate",
-      "Pragma": "no-cache",
+      // Cache 60s ở Vercel Edge, serve stale 5 phút trong khi revalidate ngầm
+      "Cache-Control": "s-maxage=60, stale-while-revalidate=300",
     },
   });
 }
