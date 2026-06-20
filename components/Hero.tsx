@@ -1,9 +1,8 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import { useSettings } from "@/components/SettingsContext";
 
-type Settings = Record<string, string>;
-
-const defaultSettings: Settings = {
+const defaultSettings = {
   hero_name: "Sơn",
   hero_tagline: "Digital Marketing Specialist",
   hero_description: "Tôi giúp doanh nghiệp tăng traffic hữu cơ, tối ưu quảng cáo và xây dựng website chuyên nghiệp — mang lại kết quả thực tế, đo lường được.",
@@ -15,14 +14,9 @@ const defaultSettings: Settings = {
 
 export default function Hero() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [s, setS] = useState<Settings>(defaultSettings);
-
-  useEffect(() => {
-    fetch("/api/settings")
-      .then((r) => r.json())
-      .then((data) => { if (data && !data.error) setS({ ...defaultSettings, ...data }); })
-      .catch(() => {});
-  }, []);
+  // Dùng SettingsContext thay vì fetch("/api/settings") — tiết kiệm 57.6 kB + 1 round-trip mạng
+  const settings = useSettings();
+  const s = { ...defaultSettings, ...settings };
 
   useEffect(() => {
     const canvas = canvasRef.current;

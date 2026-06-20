@@ -70,6 +70,7 @@ function MobileAccordion({
               key={item.href + item.label}
               href={item.href}
               onClick={onClose}
+              prefetch={false}
               className="px-8 py-3.5 text-[14px] text-slate-600 hover:text-blue-600 hover:bg-blue-50 border-b border-slate-100 last:border-0 transition-colors"
             >
               {item.label}

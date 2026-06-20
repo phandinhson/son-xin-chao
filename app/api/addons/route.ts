@@ -10,5 +10,7 @@ export async function GET() {
     .eq("active", true)
     .order("sort_order", { ascending: true });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json(data || []);
+  return NextResponse.json(data || [], {
+    headers: { "Cache-Control": "s-maxage=300, stale-while-revalidate=600" },
+  });
 }

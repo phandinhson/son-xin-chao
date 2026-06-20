@@ -245,6 +245,12 @@ body {
   margin: 1.75rem auto;
   max-width: 100%;
   height: auto;
+  cursor: zoom-in;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.blog-content img:hover {
+  transform: scale(1.01);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.16);
 }
 .blog-content figure {
   margin: 1.75rem 0;

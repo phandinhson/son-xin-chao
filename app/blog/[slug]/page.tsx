@@ -1,11 +1,64 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import MobileBar from "@/components/MobileBar";
 import FloatingContacts from "@/components/FloatingContacts";
+
+/* ── Lightbox ── */
+function Lightbox({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [onClose]);
+
+  return (
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/85 backdrop-blur-sm animate-in fade-in duration-200 cursor-zoom-out"
+    >
+      {/* Close button */}
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10"
+        aria-label="Đóng"
+      >
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      {/* Image */}
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative max-w-[92vw] max-h-[92vh] animate-in zoom-in-90 duration-200 cursor-default"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={src}
+          alt={alt}
+          className="max-w-[92vw] max-h-[92vh] w-auto h-auto rounded-xl shadow-2xl object-contain"
+          draggable={false}
+        />
+        {alt && (
+          <p className="text-center text-white/70 text-sm mt-3 px-4">{alt}</p>
+        )}
+      </div>
+
+      {/* Hint */}
+      <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/40 text-xs select-none">
+        Nhấn Esc hoặc click bên ngoài để đóng
+      </p>
+    </div>
+  );
+}
 
 type Post = {
   id: string;
@@ -178,6 +231,8 @@ export default function BlogPostPage() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [dbCategories, setDbCategories] = useState<DbCategory[]>([]);
+  const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
+  const closeLightbox = useCallback(() => setLightbox(null), []);
 
   useEffect(() => {
     if (!slug) return;
@@ -220,6 +275,16 @@ export default function BlogPostPage() {
       })
       .catch(() => { setNotFound(true); setLoading(false); });
   }, [slug]);
+
+  // Lightbox handler dùng event delegation — bắt click từ bất kỳ img nào trong article
+  // Không cần useEffect vì React onClick bubble lên từ img dù nested sâu bao nhiêu
+  const handleArticleClick = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    const target = e.target as HTMLElement;
+    if (target.tagName === "IMG") {
+      const img = target as HTMLImageElement;
+      if (img.src) setLightbox({ src: img.src, alt: img.alt || "" });
+    }
+  }, []);
 
   if (loading) {
     return (
@@ -321,17 +386,21 @@ export default function BlogPostPage() {
               {/* ── TABLE OF CONTENTS ── */}
               <TableOfContents items={toc} />
 
-              {/* Cover image */}
+              {/* Cover image — click để phóng to */}
               {post.cover_image && (
-                <div className="mb-8 rounded-2xl overflow-hidden shadow-md">
+                <div
+                  className="mb-8 rounded-2xl overflow-hidden shadow-md cursor-zoom-in"
+                  onClick={() => setLightbox({ src: post.cover_image!, alt: post.title })}
+                >
                   <img src={post.cover_image} alt={post.title} className="w-full object-cover" />
                 </div>
               )}
 
-              {/* Article body */}
+              {/* Article body — event delegation: click bất kỳ img nào (dù nested sâu) → lightbox */}
               <article
                 className="blog-content max-w-none"
                 dangerouslySetInnerHTML={{ __html: processedContent }}
+                onClick={handleArticleClick}
               />
 
               {/* Tags & Share */}
@@ -418,6 +487,9 @@ export default function BlogPostPage() {
       <Footer />
       <MobileBar />
       <FloatingContacts />
+
+      {/* Lightbox — hiển thị khi click ảnh */}
+      {lightbox && <Lightbox src={lightbox.src} alt={lightbox.alt} onClose={closeLightbox} />}
     </div>
   );
 }
