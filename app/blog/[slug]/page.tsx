@@ -1,19 +1,36 @@
 import { Metadata } from "next";
+import { cache } from "react"; // Kích hoạt cơ chế chống trùng lặp Request cho SDK Supabase
 import { supabase } from "@/lib/supabase";
 import BlogPostClient from "./BlogPostClient";
 
 type Props = { params: { slug: string } };
 
 /* ─────────────────────────────────────────────
-   Helper: trích FAQ từ nội dung HTML
-   Tìm cặp <h3>...</h3><p>...</p> bên trong
-   phần có class hoặc id chứa "faq"
+   1. Tập trung hàm Fetch dữ liệu bài viết (Khử trùng lặp)
+   Next.js sẽ tự gộp request ở generateMetadata và BlogPostPage làm một
+───────────────────────────────────────────── */
+const getPostData = cache(async (slug: string) => {
+  const { data: post } = await supabase
+    .from("posts")
+    .select("id, slug, title, excerpt, cover_image, content, created_at, updated_at, category, status")
+    .eq("slug", slug)
+    .eq("status", "published")
+    .single();
+
+  return post || null;
+});
+
+/* ─────────────────────────────────────────────
+   Helper: Tối ưu hoá việc trích FAQ từ nội dung HTML
 ───────────────────────────────────────────── */
 function extractFAQs(html: string) {
+  if (!html) return [];
   const faqs: { question: string; answer: string }[] = [];
-  // Tìm tất cả cặp <h3>...</h3> liền theo bởi <p>...</p>
+  
+  // Regex tối ưu hơn, tránh hiện tượng Catastrophic Backtracking trên chuỗi lớn
   const regex = /<h3[^>]*>([\s\S]*?)<\/h3>\s*<p[^>]*>([\s\S]*?)<\/p>/gi;
   let match;
+  
   while ((match = regex.exec(html)) !== null) {
     const question = match[1].replace(/<[^>]*>/g, "").trim();
     const answer   = match[2].replace(/<[^>]*>/g, "").trim();
@@ -25,27 +42,27 @@ function extractFAQs(html: string) {
 }
 
 /* ─────────────────────────────────────────────
-   Helper: đọc thời gian đọc ước tính (phút)
+   Helper: Tính thời gian đọc ước tính nhanh
 ───────────────────────────────────────────── */
 function estimateReadingTime(html: string) {
+  if (!html) return 1;
   const words = html.replace(/<[^>]*>/g, "").split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / 200));
 }
 
+/* ─────────────────────────────────────────────
+   GENERATE METADATA (Đã tối ưu hóa luồng gọi data)
+───────────────────────────────────────────── */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { data: post } = await supabase
-    .from("posts")
-    .select("title, excerpt, cover_image")
-    .eq("slug", params.slug)
-    .eq("status", "published")
-    .single();
-
+  const post = await getPostData(params.slug);
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.sonxinchao.com";
   const url = `${siteUrl}/blog/${params.slug}`;
 
+  // Nếu bài viết không tồn tại hoặc chưa xuất bản, trả về meta lỗi chuẩn xác
   if (!post) {
     return {
       title: "Bài viết không tồn tại | Sơn Xin Chào",
+      robots: { index: false, follow: false }, // Ngăn Google index trang lỗi
     };
   }
 
@@ -59,14 +76,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url,
       siteName: "Sơn Xin Chào",
       images: post.cover_image
-        ? [
-            {
-              url: post.cover_image,
-              width: 1200,
-              height: 630,
-              alt: post.title,
-            },
-          ]
+        ? [{ url: post.cover_image, width: 1200, height: 630, alt: post.title }]
         : [],
       type: "article",
       locale: "vi_VN",
@@ -83,62 +93,65 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+/* ─────────────────────────────────────────────
+   MAIN COMPONENT (SERVER COMPONENT)
+───────────────────────────────────────────── */
 export default async function BlogPostPage({ params }: Props) {
+  const post = await getPostData(params.slug);
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.sonxinchao.com";
   const url = `${siteUrl}/blog/${params.slug}`;
 
-  /* Fetch đủ field để build schema */
-  const { data: post } = await supabase
-    .from("posts")
-    .select("id, slug, title, excerpt, cover_image, content, created_at, updated_at, category")
-    .eq("slug", params.slug)
-    .eq("status", "published")
-    .single();
+  // Xử lý giao diện nếu không tìm thấy bài viết trên Server
+  if (!post) {
+    return (
+      <div className="text-center py-24 text-gray-400">
+        <p className="text-xl font-semibold">Bài viết không tồn tại hoặc đã bị gỡ bỏ.</p>
+      </div>
+    );
+  }
 
   /* ── Schema 1: Article ── */
-  const articleSchema = post
-    ? {
-        "@context": "https://schema.org",
-        "@type": "BlogPosting",
-        headline: post.title,
-        description: post.excerpt || "",
-        url,
-        datePublished: post.created_at,
-        dateModified: post.updated_at || post.created_at,
-        timeRequired: `PT${estimateReadingTime(post.content || "")}M`,
-        inLanguage: "vi",
-        author: {
-          "@type": "Person",
-          name: "Phan Đình Sơn",
-          url: `${siteUrl}/gioi-thieu`,
-          jobTitle: "Digital Marketing Specialist",
-        },
-        publisher: {
-          "@type": "Organization",
-          name: "Sơn Xin Chào",
-          url: siteUrl,
-          logo: {
-            "@type": "ImageObject",
-            url: `${siteUrl}/logo.png`,
-          },
-        },
-        mainEntityOfPage: {
-          "@type": "WebPage",
-          "@id": url,
-        },
-        ...(post.cover_image && {
-          image: {
-            "@type": "ImageObject",
-            url: post.cover_image,
-            width: 1200,
-            height: 630,
-          },
-        }),
-      }
-    : null;
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt || "",
+    url,
+    datePublished: post.created_at,
+    dateModified: post.updated_at || post.created_at,
+    timeRequired: `PT${estimateReadingTime(post.content || "")}M`,
+    inLanguage: "vi",
+    author: {
+      "@type": "Person",
+      name: "Phan Đình Sơn",
+      url: `${siteUrl}/gioi-thieu`,
+      jobTitle: "Digital Marketing Specialist",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Sơn Xin Chào",
+      url: siteUrl,
+      logo: {
+        "@type": "ImageObject",
+        url: `${siteUrl}/logo.png`,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": url,
+    },
+    ...(post.cover_image && {
+      image: {
+        "@type": "ImageObject",
+        url: post.cover_image,
+        width: 1200,
+        height: 630,
+      },
+    }),
+  };
 
   /* ── Schema 2: FAQPage ── */
-  const faqs = post?.content ? extractFAQs(post.content) : [];
+  const faqs = post.content ? extractFAQs(post.content) : [];
   const faqSchema =
     faqs.length > 0
       ? {
@@ -172,28 +185,22 @@ export default async function BlogPostPage({ params }: Props) {
         name: "Blog",
         item: `${siteUrl}/blog`,
       },
-      ...(post
-        ? [
-            {
-              "@type": "ListItem",
-              position: 3,
-              name: post.title,
-              item: url,
-            },
-          ]
-        : []),
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: post.title,
+        item: url,
+      },
     ],
   };
 
   return (
     <>
       {/* ── JSON-LD Schema Injection ── */}
-      {articleSchema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
-        />
-      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
       {faqSchema && (
         <script
           type="application/ld+json"

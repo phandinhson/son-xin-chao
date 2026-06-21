@@ -1,8 +1,9 @@
 "use client";
-import { useEffect, useState, useRef, Suspense, useCallback } from "react";
+import { useState, useRef, Suspense, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
+import useSWR from "swr"; // Giải pháp tối ưu hóa Request số 1 của Next.js Client-side
 import Navbar from "@/components/Navbar";
 import SearchStrip from "@/components/SearchStrip";
 import Footer from "@/components/Footer";
@@ -34,6 +35,12 @@ function formatDate(iso: string) {
   });
 }
 
+// Hàm Fetcher chuẩn của SWR
+const fetcher = (url: string) => fetch(url).then(r => {
+  if (!r.ok) throw new Error("Network response was not ok");
+  return r.json();
+});
+
 // ── Category Section ─────────────────────────────────────────────────────────
 function CategorySection({
   cat, posts, onViewMore,
@@ -47,9 +54,8 @@ function CategorySection({
   const grid     = posts.slice(1, 5);
 
   return (
-    <section className="mb-10">
-      {/* Section header */}
-      <div className="flex items-center justify-between mb-4">
+    <section className="mb-10 animate-in fade-in duration-300">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className="text-lg">{cat.icon}</span>
           <h2 className="text-sm font-extrabold text-gray-700 uppercase tracking-widest">
@@ -65,23 +71,19 @@ function CategorySection({
       </div>
       <div className="border-b-2 border-orange-500 mb-5 w-28" />
 
-      {/* Featured post: image left + text right */}
       <Link
         href={`/blog/${featured.slug}`}
         className="group flex flex-col sm:flex-row gap-0 overflow-hidden rounded-xl border border-gray-200 hover:shadow-lg transition-all mb-4 bg-white"
       >
-        {/* Image — tỷ lệ chuẩn 1200×630, hiển thị toàn bộ ảnh */}
-        <div
-          className="relative w-full sm:w-[46%] flex-shrink-0 overflow-hidden bg-gray-50"
-          style={{ aspectRatio: "1200/630" }}
-        >
+        <div className="relative w-full sm:w-[46%] flex-shrink-0 overflow-hidden bg-gray-50 aspect-[1200/630]">
           {featured.cover_image ? (
             <Image
               src={featured.cover_image}
               alt={featured.title}
               fill
-              className="object-contain group-hover:scale-[1.03] transition-transform duration-500"
+              className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
               unoptimized
+              priority // Tối ưu LCP cho ảnh đầu trang đầu tiên
               sizes="(max-width: 640px) 100vw, 46vw"
             />
           ) : (
@@ -89,7 +91,6 @@ function CategorySection({
           )}
         </div>
 
-        {/* Text — desktop */}
         <div className="hidden sm:flex flex-col justify-between flex-1 p-5">
           <div>
             <span className="inline-block text-xs font-extrabold text-orange-500 uppercase tracking-wider mb-2">
@@ -108,23 +109,17 @@ function CategorySection({
         </div>
       </Link>
 
-      {/* 4-column grid */}
       {grid.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
           {grid.map((post) => (
-            <Link
-              key={post.id}
-              href={`/blog/${post.slug}`}
-              className="group block"
-            >
-              {/* Card image — tỷ lệ 1200×630 */}
-              <div className="relative rounded-lg overflow-hidden bg-gray-50 mb-2" style={{ aspectRatio: "1200/630" }}>
+            <Link key={post.id} href={`/blog/${post.slug}`} className="group block">
+              <div className="relative rounded-lg overflow-hidden bg-gray-50 mb-2 aspect-[1200/630]">
                 {post.cover_image ? (
                   <Image
                     src={post.cover_image}
                     alt={post.title}
                     fill
-                    className="object-contain group-hover:scale-[1.03] transition-transform duration-500"
+                    className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
                     unoptimized
                     sizes="(max-width: 768px) 50vw, 25vw"
                   />
@@ -133,14 +128,12 @@ function CategorySection({
                     {cat.icon}
                   </div>
                 )}
-                {/* Category badge on image */}
                 <div className="absolute bottom-2 left-2">
                   <span className="px-1.5 py-0.5 bg-orange-500 text-white text-[9px] font-extrabold uppercase rounded">
                     {cat.label}
                   </span>
                 </div>
               </div>
-              {/* Card text */}
               <p className="text-orange-500 text-[10px] font-extrabold uppercase tracking-wider mb-1">
                 {cat.label}
               </p>
@@ -151,33 +144,14 @@ function CategorySection({
           ))}
         </div>
       )}
-
-      {/* Xem thêm */}
-      {posts.length > 5 && (
-        <div className="text-center py-2">
-          <button
-            onClick={() => onViewMore(cat.value)}
-            className="px-8 py-2 border-2 border-orange-500 text-orange-500 text-sm font-bold rounded-full
-              hover:bg-orange-500 hover:text-white transition-all"
-          >
-            Xem thêm
-          </button>
-        </div>
-      )}
     </section>
   );
 }
 
 // ── Single-category posts view ───────────────────────────────────────────────
-function CategoryPosts({
-  cat, posts,
-}: {
-  cat: DbCategory;
-  posts: Post[];
-}) {
+function CategoryPosts({ cat, posts }: { cat: DbCategory; posts: Post[] }) {
   const [page, setPage] = useState(1);
   const PER_PAGE = 8;
-  const visible = posts.slice(0, page * PER_PAGE);
 
   if (posts.length === 0) {
     return (
@@ -190,27 +164,23 @@ function CategoryPosts({
 
   const featured = posts[0];
   const rest     = posts.slice(1);
+  const visibleRest = rest.slice(0, page * PER_PAGE);
 
   return (
-    <section>
-      {/* Section header */}
-      <div className="flex items-center gap-2 mb-4">
+    <section className="animate-in fade-in duration-300">
+      <div className="flex items-center gap-2 mb-3">
         <span className="text-lg">{cat.icon}</span>
         <h2 className="text-sm font-extrabold text-gray-700 uppercase tracking-widest">{cat.label}</h2>
       </div>
       <div className="border-b-2 border-orange-500 mb-6 w-28" />
 
-      {/* Featured */}
       <Link
         href={`/blog/${featured.slug}`}
         className="group flex flex-col sm:flex-row overflow-hidden rounded-xl border border-gray-200 hover:shadow-lg transition-all mb-6 bg-white"
       >
-        <div
-          className="relative w-full sm:w-[46%] flex-shrink-0 overflow-hidden bg-gray-50"
-          style={{ aspectRatio: "1200/630" }}
-        >
+        <div className="relative w-full sm:w-[46%] flex-shrink-0 overflow-hidden bg-gray-50 aspect-[1200/630]">
           {featured.cover_image ? (
-            <Image src={featured.cover_image} alt={featured.title} fill className="object-contain group-hover:scale-[1.03] transition-transform" unoptimized sizes="46vw" />
+            <Image src={featured.cover_image} alt={featured.title} fill className="object-cover group-hover:scale-[1.02] transition-transform" unoptimized sizes="46vw" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-5xl opacity-20">🖼</div>
           )}
@@ -225,13 +195,12 @@ function CategoryPosts({
         </div>
       </Link>
 
-      {/* Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {rest.slice(0, page * PER_PAGE).map(post => (
+        {visibleRest.map(post => (
           <Link key={post.id} href={`/blog/${post.slug}`} className="group block">
-            <div className="relative rounded-lg overflow-hidden bg-gray-50 mb-2" style={{ aspectRatio: "1200/630" }}>
+            <div className="relative rounded-lg overflow-hidden bg-gray-50 mb-2 aspect-[1200/630]">
               {post.cover_image ? (
-                <Image src={post.cover_image} alt={post.title} fill className="object-contain group-hover:scale-[1.03] transition-transform" unoptimized sizes="25vw" />
+                <Image src={post.cover_image} alt={post.title} fill className="object-cover group-hover:scale-[1.02] transition-transform" unoptimized sizes="25vw" />
               ) : (
                 <div className="w-full h-full bg-orange-50 flex items-center justify-center text-3xl opacity-30">{cat.icon}</div>
               )}
@@ -245,8 +214,7 @@ function CategoryPosts({
         ))}
       </div>
 
-      {/* Load more */}
-      {rest.length > (page * PER_PAGE) - 1 && (
+      {rest.length > visibleRest.length && (
         <div className="text-center mt-8">
           <button
             onClick={() => setPage(p => p + 1)}
@@ -272,7 +240,7 @@ function SearchResults({
   const getCat = (post: Post) => categories.find(c => c.value === post.category);
 
   return (
-    <div>
+    <div className="animate-in fade-in duration-300">
       <div className="flex items-center justify-between mb-6">
         <p className="text-gray-700 font-semibold">
           Kết quả cho: <span className="text-orange-500">"{query}"</span>
@@ -295,9 +263,9 @@ function SearchResults({
             const cat = getCat(post);
             return (
               <Link key={post.id} href={`/blog/${post.slug}`} className="group flex flex-col overflow-hidden rounded-xl border border-gray-200 hover:shadow-md transition-all bg-white">
-                <div className="relative overflow-hidden bg-gray-50" style={{ aspectRatio: "1200/630" }}>
+                <div className="relative overflow-hidden bg-gray-50 aspect-[1200/630]">
                   {post.cover_image ? (
-                    <Image src={post.cover_image} alt={post.title} fill className="object-contain group-hover:scale-[1.03] transition-transform" unoptimized sizes="33vw" />
+                    <Image src={post.cover_image} alt={post.title} fill className="object-cover group-hover:scale-[1.02] transition-transform" unoptimized sizes="33vw" />
                   ) : (
                     <div className="w-full h-full bg-orange-50 flex items-center justify-center text-4xl opacity-20">🖼</div>
                   )}
@@ -324,59 +292,46 @@ function SearchResults({
 
 // ── Main Page ────────────────────────────────────────────────────────────────
 function BlogPageContent() {
-  const [posts, setPosts]           = useState<Post[]>([]);
-  const [categories, setCategories] = useState<DbCategory[]>([]);
-  const [loading, setLoading]       = useState(true);
   const [activeCategory, setActiveCategory] = useState("all");
   const searchParams = useSearchParams();
   const router       = useRouter();
   const tabsRef      = useRef<HTMLDivElement>(null);
-
   const urlQuery = searchParams.get("q") || "";
 
-  const fetchData = useCallback((isInitial = false) => {
-    if (isInitial) setLoading(true);
-    Promise.all([
-      fetch("/api/posts", { cache: "no-store" }).then(r => r.json()),
-      fetch("/api/categories", { cache: "no-store" }).then(r => r.json()),
-    ]).then(([postsData, catsData]) => {
-      setPosts(Array.isArray(postsData) ? postsData : []);
-      setCategories(Array.isArray(catsData) ? catsData : []);
-      if (isInitial) setLoading(false);
-    }).catch(() => { if (isInitial) setLoading(false); });
-  }, []);
+  // ⚡ TỐI ƯU CORE: Thay thế hoàn toàn useEffect fetch bằng useSWR tích hợp cache thông minh
+  const { data: postsData, error: postsError } = useSWR("/api/posts", fetcher, {
+    revalidateOnFocus: false, // Ngăn spam request khi người dùng bấm chuyển tab trình duyệt lung tung
+    dedupingInterval: 10000,  // Gộp các request trùng trong vòng 10 giây
+  });
 
-  useEffect(() => {
-    fetchData(true);
-    const onVisible = () => { if (document.visibilityState === "visible") fetchData(); };
-    document.addEventListener("visibilitychange", onVisible);
-    return () => document.removeEventListener("visibilitychange", onVisible);
-  }, [fetchData]);
+  const { data: catsData } = useSWR("/api/categories", fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    dedupingInterval: 60000, // Dữ liệu danh mục cố định ít đổi, cache lâu hơn
+  });
 
-  // Search (qua URL ?q=... — SearchStrip lo việc mở modal)
+  const posts: Post[] = useMemo(() => Array.isArray(postsData) ? postsData : [], [postsData]);
+  const categories: DbCategory[] = useMemo(() => Array.isArray(catsData) ? catsData : [], [catsData]);
+  const loading = !postsData && !postsError;
+
+  // Tách bộ lọc tìm kiếm qua useMemo để tránh lag giao diện khi gõ chữ
+  const searchResults = useMemo(() => {
+    if (!urlQuery) return [];
+    const q = urlQuery.toLowerCase();
+    return posts.filter(p => p.title.toLowerCase().includes(q) || (p.excerpt || "").toLowerCase().includes(q));
+  }, [urlQuery, posts]);
+
   const clearSearch = () => router.push("/blog");
-
-  // Posts filtered by search
-  const searchResults = urlQuery
-    ? posts.filter(p =>
-        p.title.toLowerCase().includes(urlQuery.toLowerCase()) ||
-        (p.excerpt || "").toLowerCase().includes(urlQuery.toLowerCase())
-      )
-    : [];
-
-  // Posts for a specific category
-  const getPostsByCat = (catValue: string) =>
-    posts.filter(p => p.category === catValue);
 
   const handleViewMore = (catValue: string) => {
     setActiveCategory(catValue);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Loading skeleton
+  // Kỹ thuật Skeleton Loader (giữ nguyên cấu trúc của bạn)
   const Skeleton = () => (
     <div className="animate-pulse">
-      {[0,1].map(i => (
+      {[0, 1].map(i => (
         <div key={i} className="mb-10">
           <div className="h-4 bg-gray-200 w-32 rounded mb-4" />
           <div className="h-0.5 bg-orange-200 w-28 mb-5" />
@@ -391,7 +346,7 @@ function BlogPageContent() {
             </div>
           </div>
           <div className="grid grid-cols-4 gap-3">
-            {[0,1,2,3].map(j => (
+            {[0, 1, 2, 3].map(j => (
               <div key={j}>
                 <div className="aspect-[4/3] bg-gray-200 rounded-lg mb-2" />
                 <div className="h-3 bg-gray-200 w-16 rounded mb-1" />
@@ -409,22 +364,18 @@ function BlogPageContent() {
       <Navbar />
       <SearchStrip />
 
-      {/* ── Category tabs — sticky dưới SearchStrip
-           mobile (<md): Navbar 64 + SearchStrip ~94 = 158px
-           desktop (md+): Navbar 64 + SearchStrip 64 = 128px ── */}
+      {/* Category Tabs */}
       <div className="sticky top-[158px] md:top-[128px] z-30 bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-6xl mx-auto px-6">
           <div
             ref={tabsRef}
-            className="flex items-center gap-1.5 overflow-x-auto py-3 md:justify-center"
+            className="flex items-center gap-1.5 overflow-x-auto py-3 md:justify-center select-none"
             style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}
           >
             <button
               onClick={() => setActiveCategory("all")}
               className={`flex-shrink-0 px-5 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap
-                ${activeCategory === "all"
-                  ? "bg-orange-500 text-white shadow-sm"
-                  : "text-gray-600 hover:bg-gray-100"}`}
+                ${activeCategory === "all" ? "bg-orange-500 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}
             >
               Blog thủ thuật
             </button>
@@ -433,9 +384,7 @@ function BlogPageContent() {
                 key={cat.value}
                 onClick={() => setActiveCategory(cat.value)}
                 className={`flex-shrink-0 px-5 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap
-                  ${activeCategory === cat.value
-                    ? "bg-orange-500 text-white shadow-sm"
-                    : "text-gray-600 hover:bg-gray-100"}`}
+                  ${activeCategory === cat.value ? "bg-orange-500 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}
               >
                 {cat.label}
               </button>
@@ -444,44 +393,27 @@ function BlogPageContent() {
         </div>
       </div>
 
-      {/* ── Content ── */}
+      {/* Content */}
       <div className="max-w-6xl mx-auto px-4 py-7">
-
-        {/* Search mode */}
-        {urlQuery && (
-          <SearchResults
-            query={urlQuery}
-            posts={searchResults}
-            categories={categories}
-            onClear={clearSearch}
-          />
-        )}
-
-        {/* Normal mode */}
-        {!urlQuery && (
+        {urlQuery ? (
+          <SearchResults query={urlQuery} posts={searchResults} categories={categories} onClear={clearSearch} />
+        ) : (
           <>
             {loading ? <Skeleton /> : (
               <>
-                {/* All categories */}
                 {activeCategory === "all" && categories.map(cat => (
                   <CategorySection
                     key={cat.value}
                     cat={cat}
-                    posts={getPostsByCat(cat.value)}
+                    posts={posts.filter(p => p.category === cat.value)}
                     onViewMore={handleViewMore}
                   />
                 ))}
 
-                {/* Single category */}
                 {activeCategory !== "all" && (() => {
                   const cat = categories.find(c => c.value === activeCategory);
                   if (!cat) return null;
-                  return (
-                    <CategoryPosts
-                      cat={cat}
-                      posts={getPostsByCat(cat.value)}
-                    />
-                  );
+                  return <CategoryPosts cat={cat} posts={posts.filter(p => p.category === activeCategory)} />;
                 })()}
               </>
             )}
@@ -489,13 +421,12 @@ function BlogPageContent() {
         )}
       </div>
 
-      {/* ── CTA strip ── */}
+      {/* CTA Strip */}
       <section className="bg-orange-500 py-10 mt-4">
         <div className="max-w-2xl mx-auto px-6 text-center">
           <h2 className="text-xl font-extrabold text-white mb-2">Cần tư vấn chiến lược marketing?</h2>
           <p className="text-orange-100 text-sm mb-5">Liên hệ ngay để được tư vấn miễn phí — phản hồi trong 30 phút.</p>
-          <Link href="/contact"
-            className="inline-flex items-center gap-2 px-7 py-2.5 bg-white text-orange-500 font-extrabold rounded-full hover:shadow-lg hover:scale-105 transition-all text-sm">
+          <Link href="/contact" className="inline-flex items-center gap-2 px-7 py-2.5 bg-white text-orange-500 font-extrabold rounded-full hover:shadow-lg hover:scale-105 transition-all text-sm">
             Liên hệ ngay →
           </Link>
         </div>
