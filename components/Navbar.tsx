@@ -1,8 +1,11 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
 import { useSettings } from "@/components/SettingsContext";
+
+const SearchModal = dynamic(() => import("./SearchModal"), { ssr: false });
 
 /* ──────────────────────────────────────────────
    Types
@@ -177,6 +180,7 @@ export default function Navbar() {
 
   const [scrolled,     setScrolled]     = useState(false);
   const [menuOpen,     setMenuOpen]     = useState(false);
+  const [searchOpen,   setSearchOpen]   = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [navItems,     setNavItems]     = useState<NavItem[]>(FALLBACK_ITEMS);
 
@@ -227,6 +231,7 @@ export default function Navbar() {
     navItems.filter(i => i.parent_id === id && i.active).sort((a, b) => a.sort_order - b.sort_order);
 
   return (
+    <>
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled ? "bg-white shadow-[0_2px_20px_rgba(0,0,0,0.08)] border-b border-slate-100" : "bg-white/95 backdrop-blur-md"
@@ -331,28 +336,31 @@ export default function Navbar() {
       <div className={`md:hidden overflow-hidden transition-all duration-500 ${menuOpen ? "max-h-[900px]" : "max-h-0"}`}>
         <div className="bg-white border-t border-slate-100">
 
-          {/* Header mobile menu */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-            <Link href="/" className="flex items-center gap-2" onClick={() => setMenuOpen(false)}>
-              {logoUrl
-                ? <Image src={logoUrl} alt="Logo" width={32} height={32} className="w-8 h-8 rounded-lg object-cover" unoptimized />
-                : <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm">S</div>
-              }
-              <div>
-                <div className="font-extrabold text-sm text-slate-900 tracking-tight leading-none">
-                  {logoText.split(" ")[0]}{" "}
-                  <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
-                    {logoText.split(" ").slice(1).join(" ")}
-                  </span>
-                </div>
-                <div className="text-[10px] text-slate-400 tracking-widest uppercase mt-0.5">SEO · ADS · WEBSITE</div>
-              </div>
-            </Link>
-            <button onClick={() => setMenuOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors">
-              <svg className="w-5 h-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          {/* Header mobile menu — Search bar thay logo thứ 2 */}
+          <div className="px-4 py-3 border-b border-slate-100 bg-gradient-to-r from-blue-600 via-blue-500 to-violet-600">
+            <button
+              onClick={() => { setMenuOpen(false); setSearchOpen(true); }}
+              className="w-full flex items-center gap-3 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 rounded-2xl px-4 py-3 text-left transition-all"
+            >
+              <svg className="w-4 h-4 text-white/80 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
+              <span className="text-white/75 text-sm flex-1">Tìm kiếm dịch vụ, bài viết...</span>
+              <kbd className="inline-flex items-center px-2 py-0.5 bg-white/20 border border-white/30 rounded-md text-[10px] text-white/70 font-mono">
+                ⌘K
+              </kbd>
             </button>
+            <div className="flex items-center gap-2 mt-2 overflow-x-auto pb-0.5" style={{ scrollbarWidth: "none" }}>
+              {["SEO", "Google Ads", "Facebook Ads", "Bảng giá"].map(tag => (
+                <button
+                  key={tag}
+                  onClick={() => { setMenuOpen(false); setSearchOpen(true); }}
+                  className="flex-shrink-0 px-3 py-1 bg-white/15 hover:bg-white/25 border border-white/25 rounded-full text-white text-xs font-medium transition-all"
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Dynamic mobile nav items */}
@@ -400,5 +408,8 @@ export default function Navbar() {
         </div>
       </div>
     </nav>
+
+    <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
+    </>
   );
 }

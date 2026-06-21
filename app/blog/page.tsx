@@ -6,7 +6,6 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import SearchStrip from "@/components/SearchStrip";
 import Footer from "@/components/Footer";
-import MobileBar from "@/components/MobileBar";
 import FloatingContacts from "@/components/FloatingContacts";
 
 type Post = {
@@ -503,7 +502,6 @@ function BlogPageContent() {
       </section>
 
       <Footer />
-      <MobileBar />
       <FloatingContacts />
     </div>
   );
