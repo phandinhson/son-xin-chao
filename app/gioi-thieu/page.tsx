@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import SearchStrip from "@/components/SearchStrip";
 import { supabaseAdmin } from "@/lib/supabase";
 
 // ISR 1 giờ — /gioi-thieu thay đổi rất ít → trang gần như luôn được serve từ CDN cache
@@ -253,6 +254,7 @@ export default async function GioiThieuPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <Navbar />
+      <SearchStrip />
 
       <main className="pt-16 overflow-x-hidden bg-white text-slate-900">
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { supabaseAdmin } from "@/lib/supabase";
 import { getSiteSettings } from "@/lib/get-settings";
 import Navbar from "@/components/Navbar";
+import SearchStrip from "@/components/SearchStrip";
 import Footer from "@/components/Footer";
 import MobileBar from "@/components/MobileBar";
 import FloatingContacts from "@/components/FloatingContacts";
@@ -115,6 +116,7 @@ export default async function PricingPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <Navbar />
+      <SearchStrip />
       <PricingPageClient plans={plans} addons={addons} zalo={zalo} />
       <Footer />
       <MobileBar />

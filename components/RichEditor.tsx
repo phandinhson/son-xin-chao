@@ -404,6 +404,107 @@ function LinkPopover({
   );
 }
 
+// ── Image Popover ────────────────────────────────────────────────────────────
+function ImagePopover({
+  src, alt, top, left,
+  onSave, onDelete, onClose,
+}: {
+  src: string; alt: string; top: number; left: number;
+  onSave: (src: string, alt: string) => void;
+  onDelete: () => void;
+  onClose: () => void;
+}) {
+  const [valSrc, setValSrc] = useState(src);
+  const [valAlt, setValAlt] = useState(alt);
+  const popRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (popRef.current && !popRef.current.contains(e.target as Node)) onClose();
+    };
+    const t = setTimeout(() => document.addEventListener("mousedown", handler), 50);
+    return () => { clearTimeout(t); document.removeEventListener("mousedown", handler); };
+  }, [onClose]);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  const style: React.CSSProperties = {
+    position: "fixed",
+    top: top + 8,
+    zIndex: 9999,
+    left: Math.min(Math.max(left - 80, 8), window.innerWidth - 380),
+  };
+
+  return (
+    <div ref={popRef} style={style}
+      className="bg-white border border-gray-200 rounded-xl shadow-2xl p-3.5 w-[360px] flex flex-col gap-3">
+
+      {/* Preview nhỏ + tiêu đề */}
+      <div className="flex items-center gap-2.5">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={valSrc} alt={valAlt}
+          className="w-14 h-14 object-cover rounded-lg border border-gray-200 flex-shrink-0 bg-gray-100"
+          onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+        />
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-semibold text-gray-700 mb-0.5">🖼️ Chỉnh sửa ảnh</p>
+          <p className="text-[10px] text-gray-400 truncate">{valSrc || "Chưa có URL"}</p>
+        </div>
+      </div>
+
+      {/* Src input */}
+      <div className="flex flex-col gap-1">
+        <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">URL ảnh</label>
+        <input
+          value={valSrc}
+          onChange={e => setValSrc(e.target.value)}
+          onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); onSave(valSrc, valAlt); } if (e.key === "Escape") onClose(); }}
+          placeholder="https://..."
+          className="text-sm text-gray-800 border border-gray-200 rounded-lg px-2.5 py-2
+            focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent
+            placeholder-gray-300"
+        />
+      </div>
+
+      {/* Alt input */}
+      <div className="flex flex-col gap-1">
+        <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">
+          Alt text <span className="normal-case text-gray-400 font-normal">(mô tả ảnh — SEO)</span>
+        </label>
+        <input
+          value={valAlt}
+          onChange={e => setValAlt(e.target.value)}
+          onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); onSave(valSrc, valAlt); } if (e.key === "Escape") onClose(); }}
+          placeholder="Mô tả nội dung ảnh..."
+          className="text-sm text-gray-800 border border-gray-200 rounded-lg px-2.5 py-2
+            focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent
+            placeholder-gray-300"
+        />
+      </div>
+
+      {/* Actions */}
+      <div className="flex gap-2 pt-0.5">
+        <button
+          onMouseDown={e => { e.preventDefault(); onSave(valSrc, valAlt); }}
+          className="flex-1 px-3 py-2 text-xs text-white bg-blue-600
+            rounded-lg hover:bg-blue-700 transition-all font-semibold">
+          ✓ Cập nhật
+        </button>
+        <button
+          onMouseDown={e => { e.preventDefault(); onDelete(); }}
+          className="px-3 py-2 text-xs text-red-600 border border-red-200 bg-red-50
+            rounded-lg hover:bg-red-100 transition-all font-medium whitespace-nowrap">
+          🗑 Xoá ảnh
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function RichEditor({ value, onChange }: Props) {
   const [mode, setMode] = useState<"visual" | "code">("visual");
   const [fullscreen, setFullscreen] = useState(false);
@@ -411,6 +512,9 @@ export default function RichEditor({ value, onChange }: Props) {
   const [pasteMsg, setPasteMsg] = useState<{ type: "loading" | "ok" | "err"; text: string } | null>(null);
   const [linkPopover, setLinkPopover] = useState<{
     href: string; top: number; left: number; el: HTMLAnchorElement;
+  } | null>(null);
+  const [imagePopover, setImagePopover] = useState<{
+    src: string; alt: string; top: number; left: number; el: HTMLImageElement;
   } | null>(null);
   const editorRef   = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -612,19 +716,65 @@ export default function RichEditor({ value, onChange }: Props) {
     }
   };
 
-  // ── Link popover: click vào <a> trong visual mode ───────────────────────
+  // ── Click vào <a> hoặc <img> trong visual mode ──────────────────────────
   const handleEditorClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const anchor = (e.target as HTMLElement).closest("a") as HTMLAnchorElement | null;
+    const target = e.target as HTMLElement;
+
+    // Ảnh — ưu tiên trước (ảnh có thể nằm trong link)
+    if (target.tagName === "IMG") {
+      const img = target as HTMLImageElement;
+      const rect = img.getBoundingClientRect();
+      setLinkPopover(null);
+      setImagePopover({
+        src:  img.getAttribute("src") || "",
+        alt:  img.getAttribute("alt") || "",
+        top:  rect.bottom,
+        left: rect.left + rect.width / 2,
+        el:   img,
+      });
+      return;
+    }
+
+    // Link
+    const anchor = target.closest("a") as HTMLAnchorElement | null;
     if (anchor) {
       const rect = anchor.getBoundingClientRect();
+      setImagePopover(null);
       setLinkPopover({
-        href:  anchor.getAttribute("href") || "",
-        top:   rect.bottom,
-        left:  rect.left,
-        el:    anchor,
+        href: anchor.getAttribute("href") || "",
+        top:  rect.bottom,
+        left: rect.left,
+        el:   anchor,
       });
+      return;
     }
+
+    // Click vào chỗ khác → đóng cả hai
+    setLinkPopover(null);
+    setImagePopover(null);
   }, []);
+
+  // ── Image popover handlers ────────────────────────────────────────────────
+  const handleImageSave = useCallback((src: string, alt: string) => {
+    if (!imagePopover) return;
+    imagePopover.el.setAttribute("src", src);
+    imagePopover.el.setAttribute("alt", alt);
+    onChange(editorRef.current?.innerHTML || "");
+    setImagePopover(null);
+  }, [imagePopover, onChange]);
+
+  const handleImageDelete = useCallback(() => {
+    if (!imagePopover) return;
+    // Xoá ảnh và figure cha nếu có
+    const parent = imagePopover.el.parentElement;
+    if (parent?.tagName === "FIGURE") {
+      parent.remove();
+    } else {
+      imagePopover.el.remove();
+    }
+    onChange(editorRef.current?.innerHTML || "");
+    setImagePopover(null);
+  }, [imagePopover, onChange]);
 
   const handleLinkSave = useCallback((url: string) => {
     if (!linkPopover) return;
@@ -658,6 +808,7 @@ export default function RichEditor({ value, onChange }: Props) {
   const goCode = () => {
     if (editorRef.current) onChange(editorRef.current.innerHTML);
     setLinkPopover(null);
+    setImagePopover(null);
     setMode("code");
   };
   const goVisual = () => setMode("visual");
@@ -825,6 +976,19 @@ export default function RichEditor({ value, onChange }: Props) {
         onOpen={handleLinkOpen}
         onUnlink={handleLinkUnlink}
         onClose={() => setLinkPopover(null)}
+      />
+    )}
+
+    {/* ── Image Popover ── */}
+    {imagePopover && mode === "visual" && (
+      <ImagePopover
+        src={imagePopover.src}
+        alt={imagePopover.alt}
+        top={imagePopover.top}
+        left={imagePopover.left}
+        onSave={handleImageSave}
+        onDelete={handleImageDelete}
+        onClose={() => setImagePopover(null)}
       />
     )}
     </>

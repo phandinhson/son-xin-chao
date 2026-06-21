@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import SearchStrip from "@/components/SearchStrip";
 import Footer from "@/components/Footer";
 import FloatingContacts from "@/components/FloatingContacts";
 
@@ -432,6 +433,7 @@ export default function BlogPostClient({ initialPost }: { initialPost?: Post | n
     return (
       <div className="min-h-screen bg-white">
         <Navbar />
+        <SearchStrip />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <div className="w-10 h-10 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
@@ -446,6 +448,7 @@ export default function BlogPostClient({ initialPost }: { initialPost?: Post | n
     return (
       <div className="min-h-screen bg-white">
         <Navbar />
+        <SearchStrip />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center px-6">
             <div className="text-6xl mb-4">📄</div>
@@ -467,8 +470,9 @@ export default function BlogPostClient({ initialPost }: { initialPost?: Post | n
     <div className="min-h-screen bg-white">
       {/* blog-content styles → globals.css */}
       <Navbar />
+      <SearchStrip />
 
-      <div className="pt-16">
+      <div className="">
         {/* Breadcrumb */}
         <div className="border-b border-slate-100 bg-slate-50">
           <div className="max-w-6xl mx-auto px-6 py-3">

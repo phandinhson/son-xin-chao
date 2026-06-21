@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import SearchStrip from "@/components/SearchStrip";
 import Footer from "@/components/Footer";
 
 /* ──────────────────────────────────────────
@@ -302,6 +303,7 @@ export default function HocAiPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
+      <SearchStrip />
 
       {/* ── HERO ── */}
       <div className="pt-16 relative overflow-hidden bg-white">

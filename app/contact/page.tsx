@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
+import SearchStrip from "@/components/SearchStrip";
 import Footer from "@/components/Footer";
 import MobileBar from "@/components/MobileBar";
 import ContactPageClient from "./ContactPageClient";
@@ -84,6 +85,7 @@ export default function ContactPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <Navbar />
+      <SearchStrip />
       <main>
         <ContactPageClient />
       </main>
