@@ -171,7 +171,7 @@ function DropdownPanel({ group, children, onClose }: {
 /* ──────────────────────────────────────────────
    Main Navbar
 ────────────────────────────────────────────── */
-export default function Navbar() {
+export default function Navbar({ initialItems = [] }: { initialItems?: any[] }) {
   const s = useSettings();
   const logoUrl      = s.logo_url  || "";
   const logoText     = s.logo_text || "Sơn Xin Chào";

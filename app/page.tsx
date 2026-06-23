@@ -13,7 +13,7 @@ import Footer from "@/components/Footer";
 import MobileBar from "@/components/MobileBar";
 import FloatingContacts from "@/components/FloatingContacts";
 import SearchStrip from "@/components/SearchStrip";
-
+import { unstable_cache } from "next/cache";
 // Revalidate mỗi 5 phút — đảm bảo schema luôn sync với admin panel
 export const revalidate = 300;
 
@@ -29,11 +29,27 @@ export default async function Home() {
 
   // Fetch tất cả data homepage song song — 1 lần duy nhất từ server
   const db = supabaseAdmin();
-  const [postsRes, portfolioRes, pricingRes, addonsRes] = await Promise.all([
+  const getCachedNavItems = unstable_cache(
+  async () => {
+    try {
+      const db = supabaseAdmin();
+      const { data } = await db.from("nav_items").select("*").eq("active", true); 
+      if (data && data.length > 0) return data;
+    } catch (e) {
+      console.error("Lỗi fetch menu trang chủ:", e);
+    }
+    return []; // Trả về mảng rỗng để Navbar tự kích hoạt FALLBACK_ITEMS
+  },
+  ["navbar-menu-cache"],
+  { revalidate: 300 } // Thống nhất 5 phút (300s) giống revalidate của trang chủ bạn đang đặt
+);
+  // Thêm menuRes vào mảng nhận kết quả trả về
+  const [postsRes, portfolioRes, pricingRes, addonsRes, menuData] = await Promise.all([
     db.from("posts").select("id, title, slug, excerpt, cover_image, created_at, category").eq("status", "published").order("created_at", { ascending: false }),
     db.from("portfolio").select("*").eq("active", true).order("sort_order"),
     db.from("pricing").select("*").order("sort_order"),
     db.from("addons").select("*").eq("active", true).order("sort_order", { ascending: true }),
+    getCachedNavItems(), // <--- Thêm dòng này vào cuối
   ]);
   const initialPosts     = postsRes.data     || [];
   const initialPortfolio = portfolioRes.data || [];
@@ -42,7 +58,7 @@ export default async function Home() {
 
   // Giá trị dynamic từ admin panel, fallback về mặc định
   const phone    = s.contact_phone    || "0968806360";
-  const email    = s.contact_email    || "son@sonxinchao.com";
+  const email    = s.contact_email    || "phandinhson@sonxinchao.com";
   const facebook = s.contact_facebook || "https://fb.com/sonxinchao";
   const zalo     = s.contact_zalo     || "0968806360";
   const logoUrl  = s.logo_url         || "https://www.sonxinchao.com/og-image.jpg";
@@ -116,7 +132,7 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
       />
-      <Navbar />
+      <Navbar initialItems={menuData} />
       <SearchStrip />
       <Hero />
       <About />
