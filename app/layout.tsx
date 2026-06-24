@@ -77,7 +77,34 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     verification: {
       google: "04zijNGwbrOcNpYQq7i9C9O8QLHim59NMDBl7vdPmak",
+      // Cốc Cốc Webmaster Tools — lấy code tại webmaster.coccoc.com sau khi đăng ký
+      // other: { "coccoc-site-verification": "YOUR_CODE_HERE" },
     },
+
+    // ── Safari / iOS PWA meta tags ──────────────────────────────────────────
+    // Cho phép "Add to Home Screen" iOS hoạt động như native app
+    appleWebApp: {
+      capable: true,
+      title: s.logo_text || "Sơn Xin Chào",
+      statusBarStyle: "black-translucent", // transparent status bar → hero full-screen
+    },
+
+    // Ngăn iOS tự link số điện thoại trong nội dung thành href="tel:"
+    // (Gây layout shift khi text đột nhiên đổi màu xanh/underline trên iOS Safari)
+    formatDetection: {
+      telephone: false,
+      date: false,
+      address: false,
+      email: false,
+      url: false,
+    },
+
+    // Màu browser chrome trên mobile Safari & Chrome Android
+    // Khớp với hero background (#0f172a) → thanh địa chỉ cùng màu
+    themeColor: [
+      { media: "(prefers-color-scheme: dark)",  color: "#0f172a" },
+      { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    ],
   };
 }
 
