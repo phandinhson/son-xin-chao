@@ -5,23 +5,60 @@ import Link from "next/link";
 
 type Me = { userId: string; email: string; name: string; role: "admin" | "user"; avatar_url?: string | null };
 
-// Nav items với trường "roles" — undefined = tất cả
-const NAV_ITEMS = [
-  { href: "/admin/dashboard",    label: "Dashboard",        icon: "📊",  roles: undefined },
-  { href: "/admin/analytics",    label: "Phân tích",        icon: "📈",  roles: ["admin"] },
-  { href: "/admin/posts",        label: "Bài viết",         icon: "📝",  roles: undefined },
-  { href: "/admin/categories",   label: "Danh mục",         icon: "🏷️",  roles: undefined },
-  { href: "/admin/media",        label: "Thư viện ảnh",     icon: "🖼️",  roles: undefined },
-  { href: "/admin/gioi-thieu",   label: "Giới thiệu",       icon: "👤",  roles: ["admin"] },
-  { href: "/admin/facebook-ads", label: "Facebook Ads",     icon: "📣",  roles: undefined },
-  { href: "/admin/portfolio",    label: "Portfolio",        icon: "🗂️",  roles: ["admin"] },
-  { href: "/admin/hoc-ai",       label: "Học AI",            icon: "🎓",  roles: ["admin"] },
-  { href: "/admin/pricing",      label: "Bảng giá & Add-on",icon: "💰",  roles: ["admin"] },
-  { href: "/admin/shop",          label: "Cửa hàng",         icon: "🛒",  roles: ["admin"] },
-  { href: "/admin/navigation",   label: "Menu Navbar",      icon: "🗂️",  roles: ["admin"] },
-  { href: "/admin/speed-cache",  label: "Speed & Cache",    icon: "⚡",  roles: ["admin"] },
-  { href: "/admin/settings",     label: "Cài đặt trang",    icon: "⚙️",  roles: ["admin"] },
-  { href: "/admin/users",        label: "Tài khoản",        icon: "👥",  roles: ["admin"] },
+// ── Cấu trúc nav theo nhóm (accordion) ──
+type NavItem = { href: string; label: string; icon: string; roles?: string[] };
+type NavSection = { label: string; icon: string; roles?: string[]; items: NavItem[] };
+
+const NAV_SECTIONS: NavSection[] = [
+  {
+    label: "Tổng quan",
+    icon: "📊",
+    items: [
+      { href: "/admin/dashboard", label: "Dashboard",  icon: "📊" },
+      { href: "/admin/analytics", label: "Phân tích",  icon: "📈", roles: ["admin"] },
+    ],
+  },
+  {
+    label: "Nội dung",
+    icon: "📝",
+    items: [
+      { href: "/admin/posts",      label: "Bài viết",     icon: "📝" },
+      { href: "/admin/categories", label: "Danh mục",     icon: "🏷️" },
+      { href: "/admin/media",      label: "Thư viện ảnh", icon: "🖼️" },
+      { href: "/admin/portfolio",  label: "Portfolio",    icon: "🗂️", roles: ["admin"] },
+    ],
+  },
+  {
+    label: "Chỉnh trang",
+    icon: "✏️",
+    roles: ["admin"],
+    items: [
+      { href: "/admin/gioi-thieu",         label: "Giới thiệu",       icon: "👤", roles: ["admin"] },
+      { href: "/admin/facebook-ads",       label: "Facebook Ads",     icon: "📣" },
+      { href: "/admin/hoc-ai",             label: "Học AI",            icon: "🎓", roles: ["admin"] },
+      { href: "/admin/dich-vu/seo-onpage", label: "Trang SEO Onpage", icon: "📄", roles: ["admin"] },
+    ],
+  },
+  {
+    label: "Kinh doanh",
+    icon: "💰",
+    roles: ["admin"],
+    items: [
+      { href: "/admin/pricing", label: "Bảng giá & Add-on", icon: "💰", roles: ["admin"] },
+      { href: "/admin/shop",    label: "Cửa hàng",          icon: "🛒", roles: ["admin"] },
+    ],
+  },
+  {
+    label: "Hệ thống",
+    icon: "⚙️",
+    roles: ["admin"],
+    items: [
+      { href: "/admin/navigation",  label: "Menu Navbar",    icon: "🗺️", roles: ["admin"] },
+      { href: "/admin/speed-cache", label: "Speed & Cache",  icon: "⚡", roles: ["admin"] },
+      { href: "/admin/settings",    label: "Cài đặt trang",  icon: "⚙️", roles: ["admin"] },
+      { href: "/admin/users",       label: "Tài khoản",      icon: "👥", roles: ["admin"] },
+    ],
+  },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -32,9 +69,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [me, setMe]             = useState<Me | null>(null);
   const [meLoaded, setMeLoaded] = useState(false);
 
+  // Mỗi section có thể mở/đóng — mặc định mở section chứa trang hiện tại
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
+    const init: Record<string, boolean> = {};
+    NAV_SECTIONS.forEach(s => {
+      const hasActive = s.items.some(i => pathname.startsWith(i.href));
+      init[s.label] = hasActive || s.label === "Tổng quan"; // luôn mở Tổng quan
+    });
+    return init;
+  });
+
+  const toggleSection = (label: string) =>
+    setOpenSections(prev => ({ ...prev, [label]: !prev[label] }));
+
   useEffect(() => {
     if (isLogin) { setMeLoaded(true); return; }
-    // Dùng /api/admin/profile để lấy thêm avatar_url
     fetch("/api/admin/profile")
       .then(r => r.ok ? r.json() : null)
       .then(data => { setMe(data); setMeLoaded(true); });
@@ -48,10 +97,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (isLogin) return <>{children}</>;
 
-  // Lọc nav theo role
-  const visibleNav = meLoaded && me
-    ? NAV_ITEMS.filter(item => !item.roles || item.roles.includes(me.role))
-    : NAV_ITEMS; // hiển thị tất cả khi chưa load (tránh flash)
+  // Lọc section + items theo role
+  const visibleSections = NAV_SECTIONS
+    .filter(s => !s.roles || !meLoaded || !me || s.roles.includes(me.role))
+    .map(s => ({
+      ...s,
+      items: s.items.filter(i => !i.roles || !meLoaded || !me || i.roles.includes(me.role)),
+    }))
+    .filter(s => s.items.length > 0);
 
   const initials = me?.name
     ? me.name.split(" ").map(w => w[0]).slice(-2).join("").toUpperCase()
@@ -74,30 +127,64 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </Link>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-0.5 overflow-y-auto">
-          {visibleNav.map((item) => {
-            const active = pathname.startsWith(item.href);
+        {/* Navigation — Accordion */}
+        <nav className="flex-1 p-3 overflow-y-auto space-y-1">
+          {visibleSections.map(section => {
+            const isOpen    = openSections[section.label] ?? true;
+            const hasActive = section.items.some(i => pathname.startsWith(i.href));
+
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                  active
-                    ? "bg-blue-600/20 text-blue-400 border border-blue-500/30"
-                    : "text-gray-400 hover:text-white hover:bg-white/5"
-                }`}
-              >
-                <span className="text-base w-5 text-center">{item.icon}</span>
-                {item.label}
-              </Link>
+              <div key={section.label}>
+                {/* Section header — toggle button */}
+                <button
+                  onClick={() => toggleSection(section.label)}
+                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all group ${
+                    hasActive
+                      ? "text-blue-400 bg-blue-500/10"
+                      : "text-gray-500 hover:text-gray-300 hover:bg-white/5"
+                  }`}
+                >
+                  <span className="text-sm">{section.icon}</span>
+                  <span className="flex-1 text-left">{section.label}</span>
+                  {/* Chevron */}
+                  <svg
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${isOpen ? "rotate-180" : "rotate-0"}`}
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {/* Items — collapsible */}
+                {isOpen && (
+                  <div className="mt-0.5 ml-2 pl-3 border-l border-white/5 space-y-0.5">
+                    {section.items.map(item => {
+                      const active = pathname.startsWith(item.href);
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all ${
+                            active
+                              ? "bg-blue-600/20 text-blue-400 border border-blue-500/30"
+                              : "text-gray-400 hover:text-white hover:bg-white/5"
+                          }`}
+                        >
+                          <span className="text-base w-4 text-center">{item.icon}</span>
+                          <span className="truncate">{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             );
           })}
         </nav>
 
         {/* Bottom — User info + logout */}
         <div className="p-4 border-t border-white/5 space-y-2">
-          {/* Current user badge — click to go to profile */}
+          {/* Current user badge */}
           {me && (
             <Link
               href="/admin/profile"
