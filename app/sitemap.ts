@@ -1,8 +1,8 @@
 import { MetadataRoute } from "next";
 import { supabaseAdmin } from "@/lib/supabase";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 3600; // tái tạo mỗi 1 giờ
+// ISR: tái tạo sitemap mỗi 1 giờ — KHÔNG dùng force-dynamic (xung đột với revalidate)
+export const revalidate = 3600;
 
 const BASE_URL = "https://www.sonxinchao.com";
 
@@ -32,30 +32,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.90,
-    },
-    {
-      url: `${BASE_URL}/#services`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${BASE_URL}/#portfolio`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${BASE_URL}/pricing`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.9,
-    },
-    {
-      url: `${BASE_URL}/#contact`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.6,
     },
     {
       url: `${BASE_URL}/blog`,
@@ -126,8 +102,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const { data: posts } = await db
       .from("posts")
       .select("slug, updated_at, published_at")
-      .eq("status", "published")
-      .order("published_at", { ascending: false });
+      .eq("status", "published");
+      
 
     if (posts) {
       blogPages = posts.map((post) => ({

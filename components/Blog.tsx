@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState, useMemo, transition as useTransition } from "react";
+import React, { useEffect, useRef, useState, useMemo, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
