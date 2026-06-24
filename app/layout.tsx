@@ -57,7 +57,9 @@ export async function generateMetadata(): Promise<Metadata> {
     authors: [{ name: "Phan Đình Sơn" }],
     icons,
     openGraph: {
-      title: s.og_title || title,
+      // Dùng title (meta_title) thay vì og_title riêng biệt → title & og:title luôn nhất quán
+      // Nếu muốn og:title khác, set trực tiếp trong metadata của từng page cụ thể
+      title,
       description: s.og_description || description,
       type: "website",
       url: "https://www.sonxinchao.com",
@@ -66,7 +68,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: s.og_title || title,
+      title,
       description: s.og_description || description,
       ...(s.og_image ? { images: [s.og_image] } : {}),
     },
