@@ -77,14 +77,21 @@ export default function HeroCanvas() {
     };
     animate();
 
+    // Debounce 200ms: tránh canvas resize liên tục trong lúc kéo cửa sổ
+    // → giảm forced layout recalculations trên main thread
+    let resizeTimer: ReturnType<typeof setTimeout>;
     const handleResize = () => {
-      canvas.width  = window.innerWidth;
-      canvas.height = window.innerHeight;
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }, 200);
     };
     window.addEventListener("resize", handleResize);
 
     return () => {
       cancelAnimationFrame(animId);
+      clearTimeout(resizeTimer);
       window.removeEventListener("resize", handleResize);
     };
   }, []);

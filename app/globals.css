@@ -3,22 +3,26 @@
 @tailwind utilities;
 
 /* ============================================
-   Theme CSS Variables — Dark defaults
-   Overridden by layout.tsx server-side injection
+   Theme CSS Variables — Dark defaults (khớp với site thực tế)
+   Dùng dark làm mặc định để tránh FOUC white→dark sau hydration.
+   FOUC white→dark là nguyên nhân LCP 2620ms: browser đo LCP tại
+   lần repaint cuối khi ThemeInjector đổi màu về dark.
+   Admin custom theme override qua layout.tsx (#site-theme) hoặc
+   ThemeInjector.applyTheme() (inline style, specificity cao nhất).
    ============================================ */
 :root {
-  --th-bg:           #ffffff;
-  --th-bg-alt:       #f8fafc;
-  --th-bg-nav:       rgba(255, 255, 255, 0.95);
-  --th-text:         #0f172a;
-  --th-text-2:       #1e293b;
-  --th-text-3:       #475569;
-  --th-text-4:       #94a3b8;
-  --th-card:         rgba(255, 255, 255, 0.85);
-  --th-card-hover:   rgba(255, 255, 255, 1.0);
-  --th-border:       rgba(0, 0, 0, 0.08);
-  --th-border-sm:    rgba(0, 0, 0, 0.04);
-  --th-border-lg:    rgba(0, 0, 0, 0.15);
+  --th-bg:           #0f172a;   /* slate-900 — dark default */
+  --th-bg-alt:       #111827;   /* gray-900 */
+  --th-bg-nav:       rgba(15, 23, 42, 0.92);
+  --th-text:         #ffffff;
+  --th-text-2:       #d1d5db;   /* gray-300 */
+  --th-text-3:       #9ca3af;   /* gray-400 */
+  --th-text-4:       #6b7280;   /* gray-500 */
+  --th-card:         rgba(255, 255, 255, 0.05);
+  --th-card-hover:   rgba(255, 255, 255, 0.10);
+  --th-border:       rgba(255, 255, 255, 0.10);
+  --th-border-sm:    rgba(255, 255, 255, 0.05);
+  --th-border-lg:    rgba(255, 255, 255, 0.20);
   --th-accent:       #3b82f6;
   --th-accent-2:     #8b5cf6;
   --th-font:         var(--font-be-vietnam), 'Be Vietnam Pro', sans-serif;

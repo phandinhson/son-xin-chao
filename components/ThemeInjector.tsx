@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useSettings } from "@/components/SettingsContext";
 
 /**
@@ -78,7 +78,21 @@ export function applyTheme(settings: Record<string, string>) {
 
 export default function ThemeInjector() {
   const s = useSettings();
+  // isFirstRun: true trên mount đầu tiên, false sau đó (admin preview)
+  const isFirstRun = useRef(true);
+
   useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      // SSR đã inject <style id="site-theme"> với đúng theme → skip.
+      // Gọi 12+ setProperty() khi values không đổi kích hoạt full-document
+      // style recalculation (~236ms forced reflow [unattributed] trên Lighthouse).
+      if (document.getElementById("site-theme")) return;
+    }
+    // Lần mount đầu mà không có #site-theme (không có custom theme):
+    // globals.css dark defaults đã đúng → applyTheme() cũng return early
+    // khi !bg && !text && !font, nên không gây reflow.
+    // Lần sau (s thay đổi = admin preview): apply ngay để thấy live.
     if (s && Object.keys(s).length > 0) applyTheme(s);
   }, [s]);
   return null;
