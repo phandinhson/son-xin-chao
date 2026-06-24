@@ -32,8 +32,11 @@ export type DbCategory = {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function formatDate(iso: string) {
+  // timeZone bắt buộc: server (UTC+0) vs browser (UTC+7) render ngày khác nhau
+  // → React hydration error #425 "text content mismatch" → #422 Suspense collapse
   return new Date(iso).toLocaleDateString("vi-VN", {
     day: "2-digit", month: "2-digit", year: "numeric",
+    timeZone: "Asia/Ho_Chi_Minh",
   });
 }
 

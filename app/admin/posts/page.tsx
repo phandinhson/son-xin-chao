@@ -376,11 +376,11 @@ export default function PostsAdmin() {
                     {/* Col 4: Date */}
                     <div className="text-right">
                       <p className="text-xs text-gray-500">
-                        {new Date(post.created_at).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" })}
+                        {new Date(post.created_at).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Asia/Ho_Chi_Minh" })}
                       </p>
                       {post.updated_at && post.updated_at !== post.created_at && (
                         <p className="text-[11px] text-gray-400 mt-0.5">
-                          Sửa {new Date(post.updated_at).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" })}
+                          Sửa {new Date(post.updated_at).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", timeZone: "Asia/Ho_Chi_Minh" })}
                         </p>
                       )}
                     </div>

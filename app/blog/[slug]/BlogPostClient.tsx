@@ -153,7 +153,8 @@ function getCategoryTag(categoryValue: string | null, dbCategories: DbCategory[]
 }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
+  // timeZone bắt buộc: fix React hydration error #425 (server UTC+0 vs browser UTC+7)
+  return new Date(iso).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Asia/Ho_Chi_Minh" });
 }
 
 /* ── TOC Component ── */
