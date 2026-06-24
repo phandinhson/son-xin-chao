@@ -49,7 +49,7 @@ const VIDEOS: Video[] = [
     channel: "Sơn Xin Chào",
     duration: "12:05",
     views: "8.4K",
-    thumb: "https://img.youtube.com/vi/PLACEHOLDER2/maxresdefault.jpg",
+    thumb: "https://img.youtube.com/vi/rnIgnS7EKZE/hqdefault.jpg",
     youtubeId: "rnIgnS7EKZE",
   },
   {
@@ -58,7 +58,7 @@ const VIDEOS: Video[] = [
     channel: "Sơn Xin Chào",
     duration: "9:30",
     views: "6.1K",
-    thumb: "https://img.youtube.com/vi/PLACEHOLDER3/maxresdefault.jpg",
+    thumb: "https://img.youtube.com/vi/kgLklMwdPo4/hqdefault.jpg",
     youtubeId: "kgLklMwdPo4",
   },
   {
@@ -67,7 +67,7 @@ const VIDEOS: Video[] = [
     channel: "Sơn Xin Chào",
     duration: "7:15",
     views: "5.2K",
-    thumb: "https://img.youtube.com/vi/PLACEHOLDER4/maxresdefault.jpg",
+    thumb: "https://img.youtube.com/vi/9L6v25IKGp8/hqdefault.jpg",
     youtubeId: "9L6v25IKGp8",
   },
   {
@@ -76,7 +76,7 @@ const VIDEOS: Video[] = [
     channel: "Sơn Xin Chào",
     duration: "14:20",
     views: "4.8K",
-    thumb: "https://img.youtube.com/vi/PLACEHOLDER5/maxresdefault.jpg",
+    thumb: "https://img.youtube.com/vi/GJfSTy0FZNE/hqdefault.jpg",
     youtubeId: "GJfSTy0FZNE",
   },
   {
@@ -85,7 +85,7 @@ const VIDEOS: Video[] = [
     channel: "Sơn Xin Chào",
     duration: "11:08",
     views: "3.9K",
-    thumb: "https://img.youtube.com/vi/PLACEHOLDER6/maxresdefault.jpg",
+    thumb: "https://img.youtube.com/vi/H73nvMIKPR8/hqdefault.jpg",
     youtubeId: "H73nvMIKPR8",
   },
 ];
@@ -165,10 +165,16 @@ function VideoCard({ video, onClick, active }: { video: Video; onClick: () => vo
       {/* Thumbnail */}
       <div className="relative overflow-hidden" style={{ aspectRatio: "16/9" }}>
         <img
-          src={`https://img.youtube.com/vi/${video.youtubeId}/maxresdefault.jpg`}
+          src={`https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`}
           alt={video.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          onError={e => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`; }}
+          loading="lazy"
+          onError={e => {
+            const img = e.target as HTMLImageElement;
+            img.style.display = "none";
+            const parent = img.parentElement;
+            if (parent) parent.style.background = "linear-gradient(135deg,#667eea,#764ba2)";
+          }}
         />
         {/* Overlay */}
         <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors flex items-center justify-center">
@@ -252,8 +258,9 @@ export default function HocAiClient({ initialVideos = [], initialTools = [] }: {
   const videos = initialVideos.length > 0 ? initialVideos : VIDEOS;
   const tools  = initialTools.length > 0  ? initialTools  : TOOLS;
 
-  // 2. Các trạng thái giao diện (Đã xóa bỏ dbVideos và dbTools cũ)
+  // 2. Các trạng thái giao diện
   const [activeVideo, setActiveVideo]       = useState<Video>(videos[0] || VIDEOS[0]);
+  const [playerActive, setPlayerActive]     = useState(false); // lazy-load iframe — chỉ render khi click play
   const [activeCategory, setActiveCategory] = useState<Category>("Tất cả");
   const [search, setSearch]                 = useState("");
   const playerRef                           = useRef<HTMLDivElement>(null);
@@ -361,16 +368,46 @@ export default function HocAiClient({ initialVideos = [], initialTools = [] }: {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6" ref={playerRef}>
-          {/* Main player */}
+          {/* Main player — lazy load iframe chỉ khi click play */}
           <div className="rounded-2xl overflow-hidden shadow-2xl bg-black" style={{ aspectRatio: "16/9" }}>
-            <iframe
-              key={activeVideo.youtubeId}
-              src={`https://www.youtube.com/embed/${activeVideo.youtubeId}?autoplay=0&rel=0&modestbranding=1`}
-              title={activeVideo.title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="w-full h-full"
-            />
+            {playerActive ? (
+              <iframe
+                key={activeVideo.youtubeId}
+                src={`https://www.youtube.com/embed/${activeVideo.youtubeId}?autoplay=1&rel=0&modestbranding=1`}
+                title={activeVideo.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full"
+              />
+            ) : (
+              <button
+                onClick={() => setPlayerActive(true)}
+                className="relative w-full h-full group cursor-pointer"
+                aria-label={`Phát video: ${activeVideo.title}`}
+              >
+                <img
+                  src={`https://img.youtube.com/vi/${activeVideo.youtubeId}/hqdefault.jpg`}
+                  alt={activeVideo.title}
+                  className="w-full h-full object-cover"
+                  onError={e => {
+                    const img = e.target as HTMLImageElement;
+                    img.style.display = "none";
+                    const parent = img.parentElement;
+                    if (parent) parent.style.background = "linear-gradient(135deg,#667eea,#764ba2)";
+                  }}
+                />
+                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                  <div className="w-20 h-20 rounded-full bg-red-600 flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+                    <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
+                </div>
+                <div className="absolute bottom-4 left-4 right-4">
+                  <p className="text-white text-sm font-semibold drop-shadow-lg line-clamp-2">{activeVideo.title}</p>
+                </div>
+              </button>
+            )}
           </div>
 
           {/* Playlist */}
@@ -381,7 +418,7 @@ export default function HocAiClient({ initialVideos = [], initialTools = [] }: {
             </div>
             <div className="flex-1 overflow-y-auto divide-y divide-gray-50">
               {videos.map(v => (
-                <button key={v.id} onClick={() => { setActiveVideo(v); playerRef.current?.scrollIntoView({ behavior: "smooth" }); }}
+                <button key={v.id} onClick={() => { setActiveVideo(v); setPlayerActive(false); playerRef.current?.scrollIntoView({ behavior: "smooth" }); }}
                   className={`w-full flex items-start gap-3 p-3 text-left transition-colors hover:bg-gray-50 ${activeVideo.id === v.id ? "bg-violet-50" : ""}`}>
                   {/* Mini thumb */}
                   <div className="relative flex-shrink-0 w-24 rounded-lg overflow-hidden" style={{ aspectRatio: "16/9" }}>
@@ -389,6 +426,13 @@ export default function HocAiClient({ initialVideos = [], initialTools = [] }: {
                       src={`https://img.youtube.com/vi/${v.youtubeId}/mqdefault.jpg`}
                       alt={v.title}
                       className="w-full h-full object-cover"
+                      loading="lazy"
+                      onError={e => {
+                        const img = e.target as HTMLImageElement;
+                        img.style.display = "none";
+                        const parent = img.parentElement;
+                        if (parent) parent.style.background = "linear-gradient(135deg,#667eea,#764ba2)";
+                      }}
                     />
                     {activeVideo.id === v.id && (
                       <div className="absolute inset-0 bg-violet-600/30 flex items-center justify-center">

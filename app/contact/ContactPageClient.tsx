@@ -290,15 +290,15 @@ export default function ContactPageClient() {
                   </div>
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-semibold mb-2">Dịch vụ quan tâm</label>
-                      <select name="service" value={formData.service} onChange={handleInputChange} className={INPUT_CLS}>
+                      <label htmlFor="cp-service" className="block text-xs font-semibold mb-2">Dịch vụ quan tâm</label>
+                      <select id="cp-service" name="service" aria-label="Chọn dịch vụ quan tâm" value={formData.service} onChange={handleInputChange} className={INPUT_CLS}>
                         <option value="">Chọn dịch vụ...</option>
                         {SERVICES.map((s) => <option key={s} value={s}>{s}</option>)}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold mb-2">Ngân sách / tháng</label>
-                      <select name="budget" value={formData.budget} onChange={handleInputChange} className={INPUT_CLS}>
+                      <label htmlFor="cp-budget" className="block text-xs font-semibold mb-2">Ngân sách / tháng</label>
+                      <select id="cp-budget" name="budget" aria-label="Chọn ngân sách mỗi tháng" value={formData.budget} onChange={handleInputChange} className={INPUT_CLS}>
                         <option value="">Chưa xác định</option>
                         <option value="under3m">Dưới 3 triệu</option>
                         <option value="3-7m">3 – 7 triệu</option>

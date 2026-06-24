@@ -51,7 +51,10 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 
   return {
-    title,
+    title: {
+      default: title,
+      template: `%s | Sơn Xin Chào`,
+    },
     description,
     keywords,
     authors: [{ name: "Phan Đình Sơn" }],

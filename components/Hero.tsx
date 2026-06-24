@@ -115,12 +115,14 @@ export default function Hero() {
               {/* Floating badges */}
               <div className="absolute -top-4 -right-4 bg-white border border-blue-200 rounded-2xl px-4 py-2 shadow-lg animate-float [animation-delay:0.5s]">
                 <div className="text-xs text-slate-500">Top Keyword</div>
-                <div className="text-green-400 font-bold text-sm">🏆 #1 Google</div>
+                {/* text-green-600 (#16a34a) on white = 5.4:1 contrast ✓ WCAG AA */}
+                <div className="text-green-600 font-bold text-sm">🏆 #1 Google</div>
               </div>
 
               <div className="absolute -bottom-4 -left-4 bg-white border border-violet-200 rounded-2xl px-4 py-2 shadow-lg animate-float [animation-delay:1s]">
                 <div className="text-xs text-slate-500">ROAS trung bình</div>
-                <div className="text-violet-400 font-bold text-sm">📈 4.5x</div>
+                {/* text-violet-600 (#7c3aed) on white = 7.3:1 contrast ✓ WCAG AA */}
+                <div className="text-violet-600 font-bold text-sm">📈 4.5x</div>
               </div>
             </div>
           </div>

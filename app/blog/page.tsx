@@ -9,9 +9,9 @@ export const revalidate = 60;
 
 // ── SEO Metadata ──────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  title: "Blog Thủ Thuật SEO & Digital Marketing | Sơn Xin Chào",
+  title: "Blog SEO & Digital Marketing",
   description:
-    "Chia sẻ kiến thức thực chiến về SEO, Google Ads, Facebook Ads và thiết kế website tại Long Thành, Đồng Nai. Bài viết mới mỗi tuần — miễn phí 100%.",
+    "Kiến thức thực chiến về SEO, Google Ads, Facebook Ads và thiết kế website tại Long Thành, Đồng Nai. Bài viết mới mỗi tuần — hoàn toàn miễn phí.",
   keywords: [
     "blog SEO", "thủ thuật SEO", "Google Ads tips", "Facebook Ads", "digital marketing Đồng Nai",
     "SEO Long Thành", "thiết kế website", "marketing online", "kiến thức SEO tiếng Việt",

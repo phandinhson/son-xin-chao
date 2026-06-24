@@ -7,7 +7,8 @@ import MobileBar from "@/components/MobileBar";
 import SearchStrip from "@/components/SearchStrip";
 import { supabase } from "@/lib/supabase";
 
-export const dynamic = "force-dynamic"; // Luôn fetch fresh từ DB (dùng revalidatePath sau khi admin lưu)
+// ISR: cache trang 1 giờ trên CDN — dùng revalidatePath("/dich-vu/seo-onpage") trong admin save handler
+export const revalidate = 3600;
 
 // ─── Fetch content từ DB ───────────────────────────────────────────────────────
 async function getPageContent() {
@@ -118,8 +119,8 @@ export default async function SeoOnpagePage() {
           {/* Subtle background decoration */}
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-50/60 to-transparent" />
-            <div className="absolute -top-20 -right-20 w-96 h-96 bg-blue-100/40 rounded-full blur-3xl" />
-            <div className="absolute top-40 right-1/4 w-48 h-48 bg-violet-100/30 rounded-full blur-2xl" />
+            <div className="blob-deco -top-20 -right-20 w-96 h-96 bg-blue-100/40" />
+            <div className="blob-deco top-40 right-1/4 w-48 h-48 bg-violet-100/30" />
           </div>
 
           <div className="relative max-w-5xl mx-auto">
@@ -171,7 +172,7 @@ export default async function SeoOnpagePage() {
               <div className="hidden lg:block">
                 {hero?.hero_image ? (
                   <div className="relative rounded-2xl overflow-hidden shadow-xl shadow-slate-200 border border-slate-100 aspect-[4/3]">
-                    <Image src={hero.hero_image} alt="SEO Onpage" fill className="object-cover" unoptimized />
+                    <Image src={hero.hero_image} alt="SEO Onpage" fill className="object-cover" />
                   </div>
                 ) : (
                 <div className="bg-white rounded-2xl shadow-xl shadow-slate-200 border border-slate-100 p-6">
@@ -375,7 +376,7 @@ export default async function SeoOnpagePage() {
                   {/* Ảnh case study (nếu có) */}
                   {cs.image && (
                     <div className="relative h-40 w-full overflow-hidden">
-                      <Image src={cs.image} alt={cs.client} fill className="object-cover" unoptimized />
+                      <Image src={cs.image} alt={cs.client} fill className="object-cover" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                     </div>
                   )}

@@ -237,11 +237,14 @@ export default function Contact() {
                     </div>
 
                     <div>
-                      <label className="block text-gray-400 text-sm mb-2">Dịch vụ quan tâm</label>
+                      <label htmlFor="contact-service" className="block text-gray-400 text-sm mb-2">Dịch vụ quan tâm</label>
                       <select
+                        id="contact-service"
+                        name="service"
                         value={formData.service}
                         onChange={(e) => setFormData({ ...formData, service: e.target.value })}
                         className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-blue-400 focus:bg-white transition-all text-sm"
+                        aria-label="Chọn dịch vụ quan tâm"
                       >
                         <option value="" className="bg-gray-900">Chọn dịch vụ...</option>
                         <option value="seo" className="bg-gray-900">SEO Organic</option>

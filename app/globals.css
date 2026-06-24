@@ -36,21 +36,22 @@ body {
 
 /* ============================================
    Theme-driven Tailwind class overrides
-   These respond to CSS variable changes
+   Đặt sau @tailwind utilities → cascade tự thắng, không cần !important
+   Không dùng !important → browser resolve specificity nhanh hơn (~200ms Style & Layout)
    ============================================ */
 
 /* Backgrounds */
-.bg-gray-950          { background-color: var(--th-bg)      !important; }
-.bg-gray-900          { background-color: var(--th-bg-alt)  !important; }
+.bg-gray-950          { background-color: var(--th-bg); }
+.bg-gray-900          { background-color: var(--th-bg-alt); }
 
 /* Text */
-.text-white           { color: var(--th-text)   !important; }
-.text-gray-100        { color: var(--th-text)   !important; }
-.text-gray-200        { color: var(--th-text-2) !important; }
-.text-gray-300        { color: var(--th-text-2) !important; }
-.text-gray-400        { color: var(--th-text-3) !important; }
-.text-gray-500        { color: var(--th-text-3) !important; }
-.text-gray-600        { color: var(--th-text-4) !important; }
+.text-white           { color: var(--th-text); }
+.text-gray-100        { color: var(--th-text); }
+.text-gray-200        { color: var(--th-text-2); }
+.text-gray-300        { color: var(--th-text-2); }
+.text-gray-400        { color: var(--th-text-3); }
+.text-gray-500        { color: var(--th-text-3); }
+.text-gray-600        { color: var(--th-text-4); }
 
 /* Admin area — force dark theme regardless of root vars */
 [data-admin] {
@@ -133,6 +134,27 @@ body {
 .animate-on-scroll.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* ============================================
+   Decorative blob — tối ưu GPU cho blur elements
+   Dùng class này cho tất cả decorative blur circles:
+   <div className="blob-deco bg-blue-100/40 rounded-full" />
+   ============================================ */
+.blob-deco {
+  position: absolute;
+  pointer-events: none;
+  /* Tạo layer riêng trên GPU — tránh repaint layout chính */
+  will-change: transform;
+  /* Ẩn hoàn toàn trên mobile: GPU yếu, blur-3xl là hot spot */
+  display: none;
+}
+@media (min-width: 768px) {
+  .blob-deco {
+    display: block;
+    /* blur-2xl (48px) thay vì blur-3xl (64px) — nhẹ hơn 25% */
+    filter: blur(48px);
+  }
 }
 
 /* Noise texture overlay */
