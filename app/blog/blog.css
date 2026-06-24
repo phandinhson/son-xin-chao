@@ -4,77 +4,72 @@
    Không import trong globals.css để tránh ~30KB CSS thừa
    ============================================================ */
 
-/* ── Headings ── */
+/* ── Headings — MONA-style: clean bold, no background box ── */
 .blog-content h2 {
-  font-size: 1.45rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: #0f172a;
-  margin-top: 2.5rem;
+  margin-top: 2.75rem;
   margin-bottom: 0.9rem;
-  padding: 0.6rem 1rem 0.6rem 1rem;
-  border-left: 4px solid #2563eb;
-  background: #f0f6ff;
-  border-radius: 0 8px 8px 0;
-  line-height: 1.45;
+  padding-bottom: 0.55rem;
+  border-bottom: 2px solid #e2e8f0;
+  line-height: 1.4;
   scroll-margin-top: 90px;
 }
 .blog-content h2:first-child { margin-top: 0; }
 
 .blog-content h3 {
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 700;
-  color: #1e3a8a;
+  color: #1e293b;
   margin-top: 2rem;
-  margin-bottom: 0.6rem;
-  padding-left: 0.75rem;
-  border-left: 3px solid #60a5fa;
-  line-height: 1.5;
+  margin-bottom: 0.65rem;
+  padding-left: 0.85rem;
+  border-left: 3px solid #2563eb;
+  line-height: 1.45;
   scroll-margin-top: 90px;
 }
 
 .blog-content h4 {
   font-size: 1.05rem;
   font-weight: 700;
-  color: #1e293b;
+  color: #334155;
   margin-top: 1.5rem;
   margin-bottom: 0.5rem;
   scroll-margin-top: 90px;
 }
 
-/* ── Body text ── */
+/* ── Body text — MONA-style: left-align, 17px, generous spacing ── */
 .blog-content p {
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 400;
-  line-height: 1.9;
-  color: #1a1a2e;
-  margin-bottom: 1.25rem;
-  text-align: justify;
+  line-height: 1.95;
+  color: #1e293b;
+  margin-bottom: 1.4rem;
   word-break: break-word;
-  hyphens: auto;
 }
 
 /* ── Lists ── */
 .blog-content ul,
 .blog-content ol {
   padding-left: 1.5rem;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.4rem;
 }
 .blog-content ul { list-style: none; padding-left: 0; }
 .blog-content ul li {
   position: relative;
-  padding-left: 1.5rem;
-  margin-bottom: 0.55rem;
-  font-size: 16px;
+  padding-left: 1.6rem;
+  margin-bottom: 0.6rem;
+  font-size: 17px;
   font-weight: 400;
-  color: #1a1a2e;
+  color: #1e293b;
   line-height: 1.85;
-  text-align: justify;
 }
 .blog-content ul li::before {
   content: '';
   position: absolute;
-  left: 0;
-  top: 0.7em;
+  left: 0.3rem;
+  top: 0.72em;
   width: 7px;
   height: 7px;
   border-radius: 50%;
@@ -82,19 +77,18 @@
   flex-shrink: 0;
 }
 .blog-content ol li {
-  margin-bottom: 0.55rem;
-  font-size: 16px;
+  margin-bottom: 0.6rem;
+  font-size: 17px;
   font-weight: 400;
-  color: #1a1a2e;
+  color: #1e293b;
   line-height: 1.85;
-  text-align: justify;
 }
 
-/* ── Inline ── */
-.blog-content strong { color: #0f172a; font-weight: 700; }
+/* ── Inline — MONA-style: bold only, no highlight bg ── */
+.blog-content strong { color: #0f172a; font-weight: 800; }
 .blog-content em { font-style: italic; color: #374151; }
-.blog-content a { color: #2563eb; font-weight: 500; text-decoration: none; }
-.blog-content a:hover { text-decoration: underline; color: #1d4ed8; }
+.blog-content a { color: #2563eb; font-weight: 500; text-decoration: underline; text-decoration-color: #bfdbfe; text-underline-offset: 3px; transition: color 0.15s, text-decoration-color 0.15s; }
+.blog-content a:hover { color: #1d4ed8; text-decoration-color: #2563eb; }
 
 /* ── Images ── */
 .blog-content img {
@@ -412,12 +406,12 @@ ol.step-list li em::before { content: '💡 '; }
   .blog-content .tool-meta { flex-direction: column; gap: 0.3rem; }
   .blog-content .vs-grid { grid-template-columns: 1fr; }
 
-  /* Mobile: giảm font size và padding một chút */
-  .blog-content h2 { font-size: 1.2rem; padding: 0.5rem 0.85rem; }
-  .blog-content h3 { font-size: 1.05rem; }
+  /* Mobile: giảm font size */
+  .blog-content h2 { font-size: 1.25rem; }
+  .blog-content h3 { font-size: 1.08rem; }
   .blog-content p,
   .blog-content ul li,
-  .blog-content ol li { font-size: 15px; line-height: 1.8; }
+  .blog-content ol li { font-size: 16px; line-height: 1.85; }
 
   /* Step list mobile */
   ol.step-list li { padding: 0.9rem 1rem 0.9rem 3.5rem; font-size: 14.5px; }
