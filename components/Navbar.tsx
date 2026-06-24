@@ -173,7 +173,9 @@ function DropdownPanel({ group, children, onClose }: {
 ────────────────────────────────────────────── */
 export default function Navbar({ initialItems = [] }: { initialItems?: any[] }) {
   const s = useSettings();
-  const logoUrl      = s.logo_url  || "";
+  // Safeguard: bỏ qua base64 — tránh nhúng ~67KB string vào mọi trang
+  const rawLogoUrl   = s.logo_url  || "";
+  const logoUrl      = rawLogoUrl.startsWith("data:") ? "" : rawLogoUrl;
   const logoText     = s.logo_text || "Sơn Xin Chào";
   const phone        = (s.contact_phone || "0968806360").replace(/\s/g, "");
   const phoneDisplay = s.contact_phone || "0968 806 360";

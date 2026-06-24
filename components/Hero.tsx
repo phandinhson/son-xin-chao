@@ -1,6 +1,9 @@
 "use client";
-import { useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import { useSettings } from "@/components/SettingsContext";
+
+// Canvas tách riêng — lazy-load sau khi Hero render xong, không block LCP
+const HeroCanvas = dynamic(() => import("@/components/HeroCanvas"), { ssr: false });
 
 const defaultSettings = {
   hero_name: "Sơn",
@@ -13,93 +16,19 @@ const defaultSettings = {
 };
 
 export default function Hero() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   // Dùng SettingsContext thay vì fetch("/api/settings") — tiết kiệm 57.6 kB + 1 round-trip mạng
   const settings = useSettings();
   const s = { ...defaultSettings, ...settings };
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    // Giảm particles trên mobile để tiết kiệm GPU
-    const isMobile = window.innerWidth < 768;
-    const particleCount = isMobile ? 20 : 60;
-
-    const particles: Array<{
-      x: number; y: number; vx: number; vy: number; size: number; opacity: number;
-    }> = [];
-
-    for (let i = 0; i < particleCount; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        size: Math.random() * 2 + 0.5,
-        opacity: Math.random() * 0.5 + 0.1,
-      });
-    }
-
-    let animId: number;
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(96, 165, 250, ${p.opacity})`;
-        ctx.fill();
-      });
-      // Draw lines between close particles
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(96, 165, 250, ${0.15 * (1 - dist / 120)})`;
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
-        }
-      }
-      animId = requestAnimationFrame(animate);
-    };
-    animate();
-
-    const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
   return (
     <section className="relative min-h-screen flex flex-col justify-center overflow-hidden bg-gray-950">
-      {/* Particle canvas — ẩn trên mobile để tiết kiệm GPU */}
-      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none hidden md:block" />
+      {/* Particle canvas — lazy, ssr:false, ẩn trên mobile */}
+      <HeroCanvas />
 
-      {/* Background gradients */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="hidden md:block absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="hidden md:block absolute bottom-1/4 right-1/4 w-80 h-80 bg-violet-500/10 rounded-full blur-3xl animate-pulse [animation-delay:1s]" />
+      {/* Background gradients — giảm từ 3 animate-pulse xuống 0 (static blur) */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div className="hidden md:block absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
+        <div className="hidden md:block absolute bottom-1/4 right-1/4 w-80 h-80 bg-violet-500/10 rounded-full blur-3xl" />
         <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-pink-500/8 rounded-full blur-3xl" />
       </div>
 

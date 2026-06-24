@@ -149,6 +149,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="vi" suppressHydrationWarning className={beVietnam.variable}>
+      {/* Preconnect giảm TCP handshake time ~100–300ms cho lần fetch Supabase đầu tiên */}
+      <link rel="preconnect" href="https://kpgtiqepktofdfyxgsbw.supabase.co" />
+      <link rel="dns-prefetch" href="https://kpgtiqepktofdfyxgsbw.supabase.co" />
       <body className="antialiased" suppressHydrationWarning>
         {/* Theme CSS — Next.js quản lý <head> tự động, đặt style ở đây là đúng với App Router */}
         {themeCSS && (

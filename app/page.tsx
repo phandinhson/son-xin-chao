@@ -1,19 +1,26 @@
 import type { Metadata } from "next";
 import { getSiteSettings } from "@/lib/get-settings";
 import { supabaseAdmin } from "@/lib/supabase";
-import Navbar from "@/components/Navbar";
-import Hero from "@/components/Hero";
-import About from "@/components/About";
-import Services from "@/components/Services";
-import Portfolio from "@/components/Portfolio";
-import Pricing from "@/components/Pricing";
-import Blog from "@/components/Blog";
-import Contact from "@/components/Contact";
-import Footer from "@/components/Footer";
-import MobileBar from "@/components/MobileBar";
-import FloatingContacts from "@/components/FloatingContacts";
-import SearchStrip from "@/components/SearchStrip";
+import dynamic from "next/dynamic";
 import { unstable_cache } from "next/cache";
+
+// ─── Above fold — load ngay, không lazy ────────────────────────────────────────
+import Navbar     from "@/components/Navbar";
+import Hero       from "@/components/Hero";
+import SearchStrip from "@/components/SearchStrip";
+
+// ─── Below fold — code-split thành chunk riêng, vẫn SSR cho SEO ───────────────
+const About    = dynamic(() => import("@/components/About"));
+const Services = dynamic(() => import("@/components/Services"));
+const Portfolio = dynamic(() => import("@/components/Portfolio"));
+const Pricing  = dynamic(() => import("@/components/Pricing"));
+const Blog     = dynamic(() => import("@/components/Blog"));
+const Contact  = dynamic(() => import("@/components/Contact"));
+const Footer   = dynamic(() => import("@/components/Footer"));
+
+// ─── Purely UI — skip SSR hoàn toàn (không có nội dung SEO) ──────────────────
+const MobileBar       = dynamic(() => import("@/components/MobileBar"),       { ssr: false });
+const FloatingContacts = dynamic(() => import("@/components/FloatingContacts"), { ssr: false });
 // Revalidate mỗi 5 phút — đảm bảo schema luôn sync với admin panel
 export const revalidate = 300;
 

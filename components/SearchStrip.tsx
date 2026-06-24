@@ -70,17 +70,19 @@ export default function SearchStrip() {
 
           </div>
 
-          {/* Mobile quick tags row */}
-          <div className="flex md:hidden items-center gap-2 mt-2 overflow-x-auto scrollbar-hide max-w-3xl mx-auto pb-0.5">
-            {QUICK_TAGS.map((tag) => (
-              <button
-                key={tag}
-                onClick={() => setSearchOpen(true)}
-                className="flex-shrink-0 px-3 py-1 bg-white/15 hover:bg-white/30 border border-white/25 rounded-full text-white text-xs font-medium transition-all"
-              >
-                {tag}
-              </button>
-            ))}
+          {/* Mobile quick tags — scroll ngang, không tràn ra viewport */}
+          <div className="md:hidden -mx-4 mt-2 overflow-x-auto scrollbar-hide">
+            <div className="flex items-center gap-2 px-4 pb-1" style={{ width: "max-content" }}>
+              {QUICK_TAGS.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => setSearchOpen(true)}
+                  className="flex-shrink-0 px-3 py-1 bg-white/15 hover:bg-white/30 border border-white/25 rounded-full text-white text-xs font-medium transition-all"
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>

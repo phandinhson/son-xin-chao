@@ -5,8 +5,10 @@ import { useSettings } from "@/components/SettingsContext";
 
 export default function Footer() {
   const s = useSettings();
-  const logoUrl  = s.logo_url          || "";
-  const logoText = s.logo_text         || "Sơn Xin Chào";
+  // Safeguard: nếu logo_url là base64 (data:...) thì bỏ qua — tránh nhúng ~67KB vào HTML
+  const rawLogoUrl = s.logo_url || "";
+  const logoUrl   = rawLogoUrl.startsWith("data:") ? "" : rawLogoUrl;
+  const logoText  = s.logo_text         || "Sơn Xin Chào";
   const zalo     = s.contact_zalo      || "0968806360";
   const facebook = s.contact_facebook  || "fb.com/sonxinchao";
   const phone    = s.contact_phone     || "0968 806 360";

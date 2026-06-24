@@ -385,14 +385,14 @@ export default function BlogPostClient({ initialPost }: { initialPost?: Post | n
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       <Navbar />
       <SearchStrip />
 
       <div>
         {/* Breadcrumb */}
         <div className="border-b border-slate-100 bg-slate-50">
-          <div className="max-w-6xl mx-auto px-6 py-3">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3">
             <nav className="flex items-center gap-1.5 text-xs text-slate-500 flex-wrap">
               <Link href="/" className="hover:text-blue-600 transition-colors">Trang chủ</Link>
               <span>/</span>
@@ -405,8 +405,8 @@ export default function BlogPostClient({ initialPost }: { initialPost?: Post | n
           </div>
         </div>
 
-        <div className="max-w-6xl mx-auto px-6 py-8">
-          <div className="grid lg:grid-cols-[1fr_300px] gap-10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+          <div className="grid lg:grid-cols-[1fr_300px] gap-6 lg:gap-10">
 
             {/* ── Article ── */}
             <main>
@@ -457,7 +457,7 @@ export default function BlogPostClient({ initialPost }: { initialPost?: Post | n
               )}
 
               <article
-                className="blog-content max-w-none prose prose-slate"
+                className="blog-content max-w-none overflow-x-hidden"
                 dangerouslySetInnerHTML={{ __html: processedData.html }}
                 onClick={handleArticleClick}
               />

@@ -1,8 +1,116 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { applyTheme } from "@/components/ThemeInjector";
 
 type Settings = Record<string, string>;
+
+// ─── Media Picker Modal ────────────────────────────────────────────────────────
+type MediaFile = { name: string; url: string; sizeLabel: string; ext: string };
+
+function MediaPickerModal({
+  onSelect,
+  onClose,
+}: {
+  onSelect: (url: string) => void;
+  onClose: () => void;
+}) {
+  const [files, setFiles]         = useState<MediaFile[]>([]);
+  const [loading, setLoading]     = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError]         = useState("");
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const loadFiles = useCallback(async () => {
+    setLoading(true);
+    try {
+      const r = await fetch("/api/admin/media");
+      const data = await r.json();
+      setFiles(Array.isArray(data) ? data : []);
+    } catch { setError("Không tải được thư viện ảnh"); }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { loadFiles(); }, [loadFiles]);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const form = new FormData();
+    form.append("files", file);
+    const r = await fetch("/api/admin/media", { method: "POST", body: form });
+    const data = await r.json();
+    if (data.urls?.[0]) {
+      onSelect(data.urls[0]);   // chọn luôn ảnh vừa upload
+    } else {
+      setError(data.errors?.[0] || "Upload thất bại");
+      setUploading(false);
+      await loadFiles();
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onClick={onClose}>
+      <div className="w-full max-w-2xl max-h-[80vh] bg-gray-900 rounded-2xl border border-white/10 shadow-2xl flex flex-col" onClick={e => e.stopPropagation()}>
+        {/* Header */}
+        <div className="flex items-center justify-between p-5 border-b border-white/10">
+          <h3 className="text-white font-semibold text-base">🖼️ Thư viện ảnh — Chọn logo</h3>
+          <button onClick={onClose} className="text-gray-500 hover:text-white text-xl leading-none transition-colors">✕</button>
+        </div>
+
+        {/* Upload strip */}
+        <div className="px-5 pt-4 pb-3 border-b border-white/5">
+          <div
+            className="border-2 border-dashed border-white/20 rounded-xl p-4 text-center cursor-pointer hover:border-blue-500/60 hover:bg-blue-500/5 transition-all"
+            onClick={() => fileRef.current?.click()}
+          >
+            {uploading ? (
+              <p className="text-blue-400 text-sm">⏳ Đang tải lên Supabase Storage...</p>
+            ) : (
+              <>
+                <p className="text-gray-400 text-sm">📤 Nhấp để tải ảnh mới lên Thư viện</p>
+                <p className="text-gray-600 text-xs mt-1">PNG, JPG, WebP — tối đa 5MB</p>
+              </>
+            )}
+          </div>
+          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} />
+          {error && <p className="text-red-400 text-xs mt-2">⚠️ {error}</p>}
+        </div>
+
+        {/* Grid */}
+        <div className="flex-1 overflow-y-auto p-5">
+          {loading ? (
+            <div className="text-gray-500 text-center py-10">Đang tải...</div>
+          ) : files.length === 0 ? (
+            <div className="text-gray-600 text-center py-10 text-sm">Thư viện trống — hãy tải ảnh lên trước</div>
+          ) : (
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+              {files.map(f => (
+                <button
+                  key={f.name}
+                  onClick={() => onSelect(f.url)}
+                  className="group relative aspect-square rounded-xl overflow-hidden border-2 border-transparent hover:border-blue-500 focus:border-blue-500 focus:outline-none transition-all bg-white/5"
+                  title={f.name}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={f.url} alt={f.name} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex items-center justify-center">
+                    <span className="text-white text-xs opacity-0 group-hover:opacity-100 font-semibold bg-blue-600 px-2 py-1 rounded-lg transition-all">
+                      Chọn
+                    </span>
+                  </div>
+                  <div className="absolute bottom-1 right-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-all">
+                    {f.sizeLabel}
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const sections = [
   {
@@ -44,12 +152,12 @@ const sections = [
 ];
 
 export default function SettingsAdmin() {
-  const [settings, setSettings] = useState<Settings>({});
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [logoTab, setLogoTab] = useState<"url" | "upload">("url");
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [settings, setSettings]       = useState<Settings>({});
+  const [loading, setLoading]         = useState(true);
+  const [saving, setSaving]           = useState(false);
+  const [saved, setSaved]             = useState(false);
+  const [logoTab, setLogoTab]         = useState<"url" | "library">("url");
+  const [showPicker, setShowPicker]   = useState(false);
 
   useEffect(() => {
     fetch("/api/admin/settings")
@@ -96,10 +204,23 @@ export default function SettingsAdmin() {
             <span>🖼️</span> Logo & Thương hiệu
           </h2>
 
+          {/* Cảnh báo nếu đang lưu base64 */}
+          {settings.logo_url?.startsWith("data:") && (
+            <div className="mb-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-start gap-2">
+              <span className="text-base flex-shrink-0">⚠️</span>
+              <span>
+                Logo đang lưu dưới dạng <strong>base64</strong> (~67KB nhúng vào mỗi trang). Hãy chọn lại từ{" "}
+                <button onClick={() => setLogoTab("library")} className="underline hover:text-amber-200">Thư viện ảnh</button>{" "}
+                để lưu URL thực.
+              </span>
+            </div>
+          )}
+
           {/* Preview */}
           <div className="mb-5 flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
             <div className="flex-shrink-0">
-              {settings.logo_url ? (
+              {settings.logo_url && !settings.logo_url.startsWith("data:") ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={settings.logo_url}
                   alt="Logo"
@@ -108,7 +229,7 @@ export default function SettingsAdmin() {
                 />
               ) : (
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                  S
+                  {(settings.logo_text || "Sơn Xin Chào").charAt(0)}
                 </div>
               )}
             </div>
@@ -116,7 +237,11 @@ export default function SettingsAdmin() {
               <div className="text-white font-bold text-sm">
                 {settings.logo_text || "Sơn Xin Chào"}
               </div>
-              <div className="text-gray-500 text-xs mt-0.5">Xem trước logo trên website</div>
+              <div className="text-gray-500 text-xs mt-0.5">
+                {settings.logo_url && !settings.logo_url.startsWith("data:")
+                  ? "✅ Logo từ Supabase Storage"
+                  : "Xem trước logo trên website"}
+              </div>
             </div>
             {settings.logo_url && (
               <button
@@ -128,7 +253,7 @@ export default function SettingsAdmin() {
             )}
           </div>
 
-          {/* Tabs: URL vs Upload */}
+          {/* Tabs: URL vs Thư viện */}
           <div className="flex gap-2 mb-4">
             <button
               onClick={() => setLogoTab("url")}
@@ -141,14 +266,14 @@ export default function SettingsAdmin() {
               🔗 Nhập URL
             </button>
             <button
-              onClick={() => setLogoTab("upload")}
+              onClick={() => setLogoTab("library")}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                logoTab === "upload"
+                logoTab === "library"
                   ? "bg-blue-600 text-white"
                   : "bg-white/5 text-gray-400 hover:bg-white/10"
               }`}
             >
-              📁 Tải ảnh lên
+              🖼️ Thư viện ảnh
             </button>
           </div>
 
@@ -157,39 +282,29 @@ export default function SettingsAdmin() {
               <label className="block text-gray-400 text-sm mb-1.5">URL ảnh logo</label>
               <input
                 type="text"
-                value={settings.logo_url || ""}
+                value={settings.logo_url?.startsWith("data:") ? "" : (settings.logo_url || "")}
                 onChange={(e) => setSettings({ ...settings, logo_url: e.target.value })}
-                placeholder="https://example.com/logo.png"
+                placeholder="https://kpgtiqepktofdfyxgsbw.supabase.co/storage/v1/object/public/images/logo.png"
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50 transition-all text-sm"
               />
+              <p className="text-gray-600 text-xs mt-1.5">
+                💡 Dùng tab <strong className="text-gray-400">Thư viện ảnh</strong> để upload và lấy URL tự động
+              </p>
             </div>
           ) : (
             <div>
-              <label className="block text-gray-400 text-sm mb-1.5">Tải ảnh logo từ máy tính</label>
-              <div
-                className="border-2 border-dashed border-white/20 rounded-xl p-6 text-center cursor-pointer hover:border-blue-500/50 hover:bg-blue-500/5 transition-all"
-                onClick={() => fileInputRef.current?.click()}
+              <button
+                onClick={() => setShowPicker(true)}
+                className="w-full py-4 border-2 border-dashed border-blue-500/40 rounded-xl text-blue-400 hover:border-blue-500/70 hover:bg-blue-500/5 transition-all text-sm font-medium flex items-center justify-center gap-2"
               >
-                <div className="text-3xl mb-2">📤</div>
-                <p className="text-gray-400 text-sm">Nhấp để chọn ảnh</p>
-                <p className="text-gray-600 text-xs mt-1">PNG, JPG, SVG — khuyến nghị 64×64px hoặc lớn hơn</p>
-              </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  const reader = new FileReader();
-                  reader.onload = (ev) => {
-                    const base64 = ev.target?.result as string;
-                    setSettings({ ...settings, logo_url: base64 });
-                  };
-                  reader.readAsDataURL(file);
-                }}
-              />
+                <span className="text-xl">🖼️</span>
+                Mở Thư viện ảnh — chọn hoặc tải ảnh mới lên
+              </button>
+              {settings.logo_url && !settings.logo_url.startsWith("data:") && (
+                <p className="text-green-400 text-xs mt-2 flex items-center gap-1.5">
+                  ✅ Đang dùng: <span className="text-gray-400 truncate max-w-xs">{settings.logo_url.split("/").pop()}</span>
+                </p>
+              )}
             </div>
           )}
 
@@ -205,6 +320,18 @@ export default function SettingsAdmin() {
             />
           </div>
         </div>
+
+        {/* Media Picker Modal */}
+        {showPicker && (
+          <MediaPickerModal
+            onSelect={(url) => {
+              setSettings({ ...settings, logo_url: url });
+              setShowPicker(false);
+              setLogoTab("library");
+            }}
+            onClose={() => setShowPicker(false)}
+          />
+        )}
 
         {/* SEO Metadata */}
         <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
