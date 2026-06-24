@@ -16,9 +16,11 @@ const nextConfig = {
     parallelServerCompiles: true,
     // Tree-shake các thư viện lớn — giảm bundle size
     optimizePackageImports: ["@supabase/supabase-js", "lucide-react"],
-    // Critters: inline critical CSS + defer non-critical → fix "Reduce unused CSS" trên Lighthouse
+    // Critters: inline critical CSS + defer non-critical → fix "Render-blocking CSS" trên Lighthouse
     // Yêu cầu chạy: npm install critters --save-dev
     optimizeCss: true,
+    // Bật browserslist cho SWC compiler → đọc .browserslistrc → bỏ polyfills thừa
+    browsersListForSwc: true,
   },
   images: {
     // Cho phép next/image optimize ảnh từ Supabase Storage

@@ -213,8 +213,9 @@ export default function Contact() {
                   <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-slate-600 text-sm mb-2">Họ và tên *</label>
+                        <label htmlFor="ct-name" className="block text-slate-600 text-sm mb-2">Họ và tên *</label>
                         <input
+                          id="ct-name"
                           type="text"
                           required
                           value={formData.name}
@@ -224,8 +225,9 @@ export default function Contact() {
                         />
                       </div>
                       <div>
-                        <label className="block text-slate-600 text-sm mb-2">Số điện thoại *</label>
+                        <label htmlFor="ct-phone" className="block text-slate-600 text-sm mb-2">Số điện thoại *</label>
                         <input
+                          id="ct-phone"
                           type="tel"
                           required
                           value={formData.phone}
@@ -255,8 +257,9 @@ export default function Contact() {
                     </div>
 
                     <div>
-                      <label className="block text-gray-400 text-sm mb-2">Mô tả ngắn về dự án</label>
+                      <label htmlFor="ct-message" className="block text-gray-400 text-sm mb-2">Mô tả ngắn về dự án</label>
                       <textarea
+                        id="ct-message"
                         rows={4}
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}

@@ -276,17 +276,17 @@ export default function ContactPageClient() {
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-semibold mb-2">Họ và tên *</label>
-                      <input type="text" name="name" required value={formData.name} onChange={handleInputChange} placeholder="Nguyễn Văn A" className={INPUT_CLS} />
+                      <label htmlFor="cp-name" className="block text-xs font-semibold mb-2">Họ và tên *</label>
+                      <input id="cp-name" type="text" name="name" required value={formData.name} onChange={handleInputChange} placeholder="Nguyễn Văn A" className={INPUT_CLS} />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold mb-2">Số điện thoại *</label>
-                      <input type="tel" name="phone" required value={formData.phone} onChange={handleInputChange} placeholder="0968 xxx xxx" className={INPUT_CLS} />
+                      <label htmlFor="cp-phone" className="block text-xs font-semibold mb-2">Số điện thoại *</label>
+                      <input id="cp-phone" type="tel" name="phone" required value={formData.phone} onChange={handleInputChange} placeholder="0968 xxx xxx" className={INPUT_CLS} />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold mb-2">Email</label>
-                    <input type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="email@cong-ty.com" className={INPUT_CLS} />
+                    <label htmlFor="cp-email" className="block text-xs font-semibold mb-2">Email</label>
+                    <input id="cp-email" type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="email@cong-ty.com" className={INPUT_CLS} />
                   </div>
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
@@ -308,8 +308,8 @@ export default function ContactPageClient() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold mb-2">Mô tả ngắn</label>
-                    <textarea name="message" rows={4} value={formData.message} onChange={handleInputChange} placeholder="Mô tả dự án..." className={`${INPUT_CLS} resize-none`} />
+                    <label htmlFor="cp-message" className="block text-xs font-semibold mb-2">Mô tả ngắn</label>
+                    <textarea id="cp-message" name="message" rows={4} value={formData.message} onChange={handleInputChange} placeholder="Mô tả dự án..." className={`${INPUT_CLS} resize-none`} />
                   </div>
                   <button type="submit" disabled={sending} className="w-full py-4 bg-gradient-to-r from-blue-600 to-violet-600 text-white font-bold rounded-xl shadow-lg text-base disabled:opacity-60">
                     {sending ? "⏳ Đang gửi..." : "Gửi yêu cầu tư vấn miễn phí →"}

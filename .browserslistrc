@@ -1,0 +1,25 @@
+# ── Production: target modern browsers only ──────────────────────────────────
+# Loại bỏ polyfills không cần thiết → giảm ~12 KiB JS bundle (Lighthouse fix)
+#
+# Các polyfill đã bị loại:
+#   Array.prototype.at / flat / flatMap  → Chrome 92+, Firefox 90+, Safari 15+
+#   Object.fromEntries / hasOwn          → Chrome 93+, Firefox 92+, Safari 15.4+
+#   String.prototype.trimEnd / trimStart → Chrome 66+, Firefox 61+, Safari 12+
+#
+# "supports es6-module" → chỉ target browser hỗ trợ <script type="module">
+# = Chrome 61+, Firefox 60+, Safari 10.1+, Edge 16+ → ~98% thiết bị VN hiện tại
+[production]
+> 1% in VN
+last 2 Chrome versions
+last 2 Firefox versions
+last 2 Safari versions
+last 2 Edge versions
+not dead
+not IE 11
+not IE_Mob 11
+not op_mini all
+
+[development]
+last 1 Chrome version
+last 1 Firefox version
+last 1 Safari version
