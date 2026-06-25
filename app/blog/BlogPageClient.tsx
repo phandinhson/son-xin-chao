@@ -101,7 +101,7 @@ function CategorySection({
         </div>
         <button
           onClick={() => onViewMore(cat.value)}
-          className="text-xs text-orange-500 font-semibold hover:underline whitespace-nowrap"
+          className="text-xs text-orange-700 font-semibold hover:underline whitespace-nowrap"
         >
           Xem tất cả →
         </button>
@@ -130,10 +130,10 @@ function CategorySection({
         </div>
         <div className="hidden sm:flex flex-col justify-between flex-1 p-5">
           <div>
-            <span className="inline-block text-xs font-extrabold text-orange-500 uppercase tracking-wider mb-2">
+            <span className="inline-block text-xs font-extrabold text-orange-700 uppercase tracking-wider mb-2">
               {cat.label}
             </span>
-            <h3 className="text-xl font-extrabold text-gray-900 leading-snug line-clamp-3 mb-3 group-hover:text-orange-500 transition-colors">
+            <h3 className="text-xl font-extrabold text-gray-900 leading-snug line-clamp-3 mb-3 group-hover:text-orange-700 transition-colors">
               {featured.title}
             </h3>
             {featured.excerpt && (
@@ -172,10 +172,10 @@ function CategorySection({
                   </span>
                 </div>
               </div>
-              <p className="text-orange-500 text-[10px] font-extrabold uppercase tracking-wider mb-1">
+              <p className="text-orange-700 text-[10px] font-extrabold uppercase tracking-wider mb-1">
                 {cat.label}
               </p>
-              <h4 className="text-gray-800 text-sm font-semibold leading-snug line-clamp-2 group-hover:text-orange-500 transition-colors">
+              <h4 className="text-gray-800 text-sm font-semibold leading-snug line-clamp-2 group-hover:text-orange-700 transition-colors">
                 {post.title}
               </h4>
             </Link>
@@ -227,8 +227,8 @@ function CategoryPosts({ cat, posts }: { cat: DbCategory; posts: Post[] }) {
         </div>
         <div className="flex flex-col justify-between flex-1 p-5">
           <div>
-            <span className="inline-block text-xs font-extrabold text-orange-500 uppercase tracking-wider mb-2">{cat.label}</span>
-            <h3 className="text-xl font-extrabold text-gray-900 leading-snug line-clamp-3 mb-3 group-hover:text-orange-500 transition-colors">
+            <span className="inline-block text-xs font-extrabold text-orange-700 uppercase tracking-wider mb-2">{cat.label}</span>
+            <h3 className="text-xl font-extrabold text-gray-900 leading-snug line-clamp-3 mb-3 group-hover:text-orange-700 transition-colors">
               {featured.title}
             </h3>
             {featured.excerpt && <p className="text-gray-500 text-sm line-clamp-3">{featured.excerpt}</p>}
@@ -252,8 +252,8 @@ function CategoryPosts({ cat, posts }: { cat: DbCategory; posts: Post[] }) {
                 <span className="px-1.5 py-0.5 bg-orange-500 text-white text-[9px] font-extrabold uppercase rounded">{cat.label}</span>
               </div>
             </div>
-            <p className="text-orange-500 text-[10px] font-extrabold uppercase tracking-wider mb-1">{cat.label}</p>
-            <h4 className="text-gray-800 text-sm font-semibold leading-snug line-clamp-2 group-hover:text-orange-500 transition-colors">
+            <p className="text-orange-700 text-[10px] font-extrabold uppercase tracking-wider mb-1">{cat.label}</p>
+            <h4 className="text-gray-800 text-sm font-semibold leading-snug line-clamp-2 group-hover:text-orange-700 transition-colors">
               {post.title}
             </h4>
           </Link>
@@ -264,7 +264,7 @@ function CategoryPosts({ cat, posts }: { cat: DbCategory; posts: Post[] }) {
         <div className="text-center mt-8">
           <button
             onClick={() => setPage(p => p + 1)}
-            className="px-8 py-2.5 border-2 border-orange-500 text-orange-500 text-sm font-bold rounded-full hover:bg-orange-500 hover:text-white transition-all"
+            className="px-8 py-2.5 border-2 border-orange-600 text-orange-700 text-sm font-bold rounded-full hover:bg-orange-600 hover:text-white transition-all"
           >
             Xem thêm
           </button>
@@ -325,8 +325,8 @@ function SearchResults({
                   )}
                 </div>
                 <div className="p-4 flex-1 flex flex-col">
-                  {cat && <p className="text-orange-500 text-[10px] font-extrabold uppercase tracking-wider mb-1">{cat.label}</p>}
-                  <h3 className="text-gray-900 font-bold text-sm leading-snug line-clamp-2 mb-2 group-hover:text-orange-500 transition-colors">
+                  {cat && <p className="text-orange-700 text-[10px] font-extrabold uppercase tracking-wider mb-1">{cat.label}</p>}
+                  <h3 className="text-gray-900 font-bold text-sm leading-snug line-clamp-2 mb-2 group-hover:text-orange-700 transition-colors">
                     {post.title}
                   </h3>
                   {post.excerpt && <p className="text-gray-500 text-xs line-clamp-2 flex-1">{post.excerpt}</p>}
@@ -489,7 +489,7 @@ export default function BlogPageClient({
           <p className="text-orange-100 text-sm mb-5">Liên hệ ngay để được tư vấn miễn phí — phản hồi trong 30 phút.</p>
           <Link
             href="/contact"
-            className="inline-flex items-center gap-2 px-7 py-2.5 bg-white text-orange-500 font-extrabold rounded-full hover:shadow-lg hover:scale-105 transition-all text-sm"
+            className="inline-flex items-center gap-2 px-7 py-2.5 bg-white text-orange-700 font-extrabold rounded-full hover:shadow-lg hover:scale-105 transition-all text-sm"
           >
             Liên hệ ngay →
           </Link>

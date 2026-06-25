@@ -232,7 +232,7 @@ export default function Blog({ initialPosts }: { initialPosts?: Post[] }) {
                   {/* Text side */}
                   <div className="p-8 lg:p-10 lg:col-span-6 flex flex-col justify-center bg-white">
                     <p className="text-gray-400 text-xs font-medium mb-3">{formatDate(featured.created_at)}</p>
-                    <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-4 leading-snug group-hover:text-orange-500 transition-colors duration-200">
+                    <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-4 leading-snug group-hover:text-orange-700 transition-colors duration-200">
                       {featured.title}
                     </h3>
                     <p className="text-gray-500 leading-relaxed mb-6 line-clamp-3 text-sm">
@@ -283,7 +283,7 @@ export default function Blog({ initialPosts }: { initialPosts?: Post[] }) {
                         {/* Body */}
                         <div className="p-5 flex flex-col flex-1">
                           <p className="text-gray-400 text-xs font-medium mb-2">{formatDate(post.created_at)}</p>
-                          <h3 className="text-gray-900 font-bold text-sm md:text-[15px] leading-snug mb-2.5 group-hover:text-orange-500 transition-colors duration-200 line-clamp-2">
+                          <h3 className="text-gray-900 font-bold text-sm md:text-[15px] leading-snug mb-2.5 group-hover:text-orange-700 transition-colors duration-200 line-clamp-2">
                             {post.title}
                           </h3>
                           <p className="text-gray-500 text-xs md:text-sm leading-relaxed line-clamp-2 flex-1">
@@ -304,7 +304,7 @@ export default function Blog({ initialPosts }: { initialPosts?: Post[] }) {
               <div className="pt-4 text-center">
                 <Link
                   href="/blog"
-                  className="inline-flex items-center gap-2 px-8 py-3 border-2 border-orange-500 text-orange-500 font-bold text-sm rounded-full hover:bg-orange-500 hover:text-white transition-all duration-200"
+                  className="inline-flex items-center gap-2 px-8 py-3 border-2 border-orange-600 text-orange-700 font-bold text-sm rounded-full hover:bg-orange-600 hover:text-white transition-all duration-200"
                 >
                   Xem tất cả bài viết →
                 </Link>

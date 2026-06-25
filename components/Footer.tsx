@@ -236,11 +236,12 @@ export default function Footer() {
 
       {/* Copyright bar */}
       <div className="bg-slate-900">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+        {/* text-slate-400 on bg-slate-900 = 7.65:1 ✓ WCAG AA */}
+        <div className="max-w-6xl mx-auto px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
           <span>© 2026 Sơn Xin Chào — Phan Đình Sơn. All rights reserved.</span>
           <div className="flex items-center gap-4">
-            <a href="#" className="hover:text-slate-300 transition-colors">Chính sách bảo mật</a>
-            <a href="#" className="hover:text-slate-300 transition-colors">Điều khoản sử dụng</a>
+            <a href="#" className="text-slate-400 hover:text-slate-200 transition-colors">Chính sách bảo mật</a>
+            <a href="#" className="text-slate-400 hover:text-slate-200 transition-colors">Điều khoản sử dụng</a>
           </div>
         </div>
       </div>
