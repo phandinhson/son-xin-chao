@@ -19,8 +19,6 @@ const nextConfig = {
     // Critters: inline critical CSS + defer non-critical → fix "Render-blocking CSS" trên Lighthouse
     // Yêu cầu chạy: npm install critters --save-dev
     optimizeCss: true,
-    // Bật browserslist cho SWC compiler → đọc .browserslistrc → bỏ polyfills thừa
-    browsersListForSwc: true,
   },
   images: {
     // Cho phép next/image optimize ảnh từ Supabase Storage

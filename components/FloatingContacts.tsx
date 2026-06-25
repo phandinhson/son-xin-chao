@@ -67,7 +67,11 @@ export default function FloatingContacts() {
           target={btn.href.startsWith("tel") ? undefined : "_blank"}
           rel="noopener noreferrer"
           title={btn.label}
-          className={`group relative flex items-center justify-center w-12 h-12 rounded-full ${btn.bg} shadow-lg ${btn.shadow} hover:scale-110 active:scale-95 transition-transform duration-200`}
+          className={`group relative flex items-center justify-center
+            w-10 h-10 md:w-12 md:h-12
+            rounded-l-full md:rounded-full
+            ${btn.bg} shadow-lg ${btn.shadow}
+            hover:scale-110 active:scale-95 transition-transform duration-200`}
         >
           {/* Pulse ring for phone */}
           {btn.pulse && (
@@ -79,7 +83,7 @@ export default function FloatingContacts() {
           {btn.icon}
 
           {/* Tooltip on hover */}
-          <span style={{ color: "#ffffff", backgroundColor: "#1e293b" }} className="absolute right-14 top-1/2 -translate-y-1/2 whitespace-nowrap px-3 py-1.5 text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">
+          <span style={{ color: "#ffffff", backgroundColor: "#1e293b" }} className="absolute right-12 md:right-14 top-1/2 -translate-y-1/2 whitespace-nowrap px-3 py-1.5 text-xs font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg">
             {btn.label}
             <span className="absolute left-full top-1/2 -translate-y-1/2 border-4 border-transparent" style={{ borderLeftColor: "#1e293b" }} />
           </span>

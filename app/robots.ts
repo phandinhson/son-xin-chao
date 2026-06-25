@@ -10,9 +10,10 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin/", "/api/"],
       },
       // Cốc Cốc crawler — search engine phổ biến tại Việt Nam (~25% market share VN)
+      // User-agent chính xác: "coccocbot-web" (theo tài liệu help.coccoc.com/en/search-engine)
       // Explicit rule để Cốc Cốc ưu tiên index nhanh hơn
       {
-        userAgent: "CocCoc",
+        userAgent: "coccocbot-web",
         allow: "/",
         disallow: ["/admin/", "/api/"],
         // crawlDelay: 1,  // Uncomment nếu server bị overload

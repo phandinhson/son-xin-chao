@@ -1,7 +1,7 @@
 // Settings cache 5 phút — đủ fresh, giảm 5x số Supabase queries so với 60s
 export const revalidate = 300;
 
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Be_Vietnam_Pro } from "next/font/google";
 import "./globals.css";
 import SeoInjector from "@/components/SeoInjector";
@@ -22,6 +22,14 @@ const beVietnam = Be_Vietnam_Pro({
   display: "swap",
   preload: true,
 });
+
+// ─── Viewport (themeColor tách ra khỏi metadata theo Next.js 14+) ────────────
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)",  color: "#0f172a" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+  ],
+};
 
 // ─── Dynamic metadata ──────────────────────────────────────────────────────────
 export async function generateMetadata(): Promise<Metadata> {
@@ -99,12 +107,6 @@ export async function generateMetadata(): Promise<Metadata> {
       url: false,
     },
 
-    // Màu browser chrome trên mobile Safari & Chrome Android
-    // Khớp với hero background (#0f172a) → thanh địa chỉ cùng màu
-    themeColor: [
-      { media: "(prefers-color-scheme: dark)",  color: "#0f172a" },
-      { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    ],
   };
 }
 

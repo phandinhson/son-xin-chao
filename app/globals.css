@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Ẩn scrollbar nhưng vẫn scroll được (dùng cho sidebar TOC) ── */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* ============================================
    Theme CSS Variables — Dark defaults (khớp với site thực tế)
    Dùng dark làm mặc định để tránh FOUC white→dark sau hydration.
