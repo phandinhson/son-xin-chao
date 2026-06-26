@@ -34,6 +34,63 @@ export const metadata: Metadata = {
   },
 };
 
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Dịch Vụ SEO Onpage Chuyên Sâu",
+  "url": "https://www.sonxinchao.com/dich-vu/seo-onpage",
+  "description": "Dịch vụ tối ưu SEO Onpage chuyên sâu sử dụng AI workflow — checklist 25+ yếu tố, tối ưu tốc độ tải trang, Core Web Vitals, schema markup chuẩn Google 2026.",
+  "provider": {
+    "@type": "LocalBusiness",
+    "@id": "https://www.sonxinchao.com/#localbusiness",
+    "name": "Sơn Xin Chào",
+    "url": "https://www.sonxinchao.com",
+    "telephone": "+84968806360",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Long Thành",
+      "addressRegion": "Đồng Nai",
+      "addressCountry": "VN"
+    }
+  },
+  "areaServed": [
+    { "@type": "City", "name": "Long Thành" },
+    { "@type": "City", "name": "Nhơn Trạch" },
+    { "@type": "AdministrativeArea", "name": "Đồng Nai" },
+    { "@type": "City", "name": "TP. Hồ Chí Minh" }
+  ],
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Gói SEO Onpage",
+    "itemListElement": [
+      {
+        "@type": "Offer",
+        "name": "SEO Audit Onpage",
+        "description": "Audit toàn bộ website 50 trang, checklist 25 yếu tố, báo cáo chi tiết",
+        "priceCurrency": "VND",
+        "price": "1500000",
+        "priceSpecification": { "@type": "UnitPriceSpecification", "unitText": "lần" }
+      },
+      {
+        "@type": "Offer",
+        "name": "SEO Onpage Cơ Bản",
+        "description": "Tối ưu 10 trang/tháng, rewrite title/meta/heading chuẩn AI, schema markup",
+        "priceCurrency": "VND",
+        "price": "2500000",
+        "priceSpecification": { "@type": "UnitPriceSpecification", "unitText": "tháng" }
+      },
+      {
+        "@type": "Offer",
+        "name": "SEO Onpage Toàn Diện",
+        "description": "Tối ưu không giới hạn trang, Core Web Vitals, 4 bài blog/tháng AI-assisted",
+        "priceCurrency": "VND",
+        "price": "4500000",
+        "priceSpecification": { "@type": "UnitPriceSpecification", "unitText": "tháng" }
+      }
+    ]
+  }
+};
+
 const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -106,6 +163,7 @@ export default async function SeoOnpagePage() {
   const faqItems     = (db?.faq && db.faq.length > 0) ? db.faq : faqSchema.mainEntity.map(f => ({ q: f.name, a: f.acceptedAnswer.text }));
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
 

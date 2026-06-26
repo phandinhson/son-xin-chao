@@ -189,10 +189,10 @@ export default function Navbar({ initialItems = [] }: { initialItems?: any[] }) 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const closeTimer  = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  /* Scroll handler */
+  /* Scroll handler — passive:true ngăn browser đợi JS trước khi scroll (loại bỏ forced reflow) */
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 

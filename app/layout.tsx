@@ -1,5 +1,7 @@
-// Settings cache 5 phút — đủ fresh, giảm 5x số Supabase queries so với 60s
-export const revalidate = 300;
+// ISR cache 1 tiếng — layout chứa site settings (logo, theme, SEO meta) hiếm thay đổi.
+// revalidate=300 (5 phút) → cache expire mỗi 5 phút → TTFB tăng lên ~1,800ms mỗi cold start.
+// revalidate=3600 → cache warm hầu hết thời gian → TTFB <100ms (Vercel Edge cache hit).
+export const revalidate = 3600;
 
 import type { Metadata, Viewport } from "next";
 import { Be_Vietnam_Pro } from "next/font/google";
@@ -59,6 +61,9 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 
   return {
+    // metadataBase: bắt buộc để Next.js resolve URL đúng cho tất cả pages
+    // Nếu thiếu, Next.js 14 có thể dùng openGraph.url của layout làm fallback canonical
+    metadataBase: new URL("https://www.sonxinchao.com"),
     title: {
       default: title,
       template: `%s | Sơn Xin Chào`,
@@ -70,10 +75,11 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       // Dùng title (meta_title) thay vì og_title riêng biệt → title & og:title luôn nhất quán
       // Nếu muốn og:title khác, set trực tiếp trong metadata của từng page cụ thể
+      // NOTE: Không set url ở đây — từng page tự set openGraph.url + alternates.canonical
+      // Việc set url="https://www.sonxinchao.com" tại root sẽ ghi đè canonical của tất cả pages con
       title,
       description: s.og_description || description,
       type: "website",
-      url: "https://www.sonxinchao.com",
       siteName: s.logo_text || "Sơn Xin Chào",
       ...(s.og_image ? { images: [{ url: s.og_image, width: 1200, height: 630 }] } : {}),
     },
@@ -111,19 +117,21 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // ─── Theme CSS builder ─────────────────────────────────────────────────────────
-// FIX: Đồng bộ fallback màu với ThemeInjector.applyTheme() để tránh FOUC khi hydrate
+// FIX: Luôn inline CSS vars + body critical rules → loại bỏ render-blocking FOUC.
+// Trước đây chỉ inject khi có custom theme — browser phải đợi file 18 KiB tải xong
+// mới biết --th-bg. Bây giờ luôn trả về CSS dù có hay không có custom theme.
 function buildThemeCSS(s: Record<string, string>): string {
-  const bg      = s.theme_bg       || "";
+  // Fallback = giá trị mặc định (khớp globals.css :root) để luôn có giá trị hợp lệ
+  const bg      = s.theme_bg       || "#0f172a";   // slate-900 dark default
   const bgAlt   = s.theme_bg_alt   || "";
-  const text    = s.theme_text     || "";
+  const text    = s.theme_text     || "#ffffff";
   const text2   = s.theme_text_2   || "";
   const text3   = s.theme_text_3   || "";
-  const accent  = s.theme_accent   || "";
-  const accent2 = s.theme_accent_2 || "";
+  const accent  = s.theme_accent   || "#3b82f6";
+  const accent2 = s.theme_accent_2 || "#8b5cf6";
   const font    = s.theme_font     || "";
 
-  // Không có custom theme → dùng CSS var defaults trong globals.css
-  if (!bg && !text && !font) return "";
+  // Không early-return nữa — luôn trả về CSS để browser render đúng màu ngay lập tức
 
   const hexToRgba = (hex: string, alpha: number) => {
     if (!hex || hex.length < 7) return "";
@@ -153,11 +161,16 @@ function buildThemeCSS(s: Record<string, string>): string {
   const resolvedBorder   = lightBg ? "rgba(0,0,0,0.10)"  : "rgba(255,255,255,0.10)";
   const resolvedBorderSm = lightBg ? "rgba(0,0,0,0.05)"  : "rgba(255,255,255,0.05)";
   const resolvedBorderLg = lightBg ? "rgba(0,0,0,0.20)"  : "rgba(255,255,255,0.20)";
-  const resolvedNav      = bg ? hexToRgba(bg, 0.92) : "";
+  const resolvedNav  = hexToRgba(bg, 0.92) || "rgba(15,23,42,0.92)";
+  const fontStack    = font ? `'${font}', 'Be Vietnam Pro', 'Inter', sans-serif` : "'Be Vietnam Pro', 'Inter', sans-serif";
 
+  // Gồm 2 phần:
+  // 1. :root — CSS variables cho toàn site
+  // 2. body critical rules — inline để browser render ngay không cần đợi globals.css
   return `:root {
-  --th-bg: ${bg || "#0f172a"};
-  --th-bg-alt: ${resolvedBgAlt};${resolvedNav ? `\n  --th-bg-nav: ${resolvedNav};` : ""}
+  --th-bg: ${bg};
+  --th-bg-alt: ${resolvedBgAlt};
+  --th-bg-nav: ${resolvedNav};
   --th-text: ${resolvedText};
   --th-text-2: ${resolvedText2};
   --th-text-3: ${resolvedText3};
@@ -167,10 +180,12 @@ function buildThemeCSS(s: Record<string, string>): string {
   --th-border: ${resolvedBorder};
   --th-border-sm: ${resolvedBorderSm};
   --th-border-lg: ${resolvedBorderLg};
-  --th-accent: ${accent  || "#3b82f6"};
-  --th-accent-2: ${accent2 || "#8b5cf6"};
-  --th-font: ${font ? `'${font}', 'Be Vietnam Pro', 'Inter', sans-serif` : "'Be Vietnam Pro', 'Inter', sans-serif"};
-}`;
+  --th-accent: ${accent};
+  --th-accent-2: ${accent2};
+  --th-font: ${fontStack};
+}
+/* Critical CSS inline — eliminates render-blocking FOUC: body bg/color không cần đợi 18 KiB CSS load */
+body{background-color:${bg};color:${resolvedText}}`;
 }
 
 // ─── Root Layout ───────────────────────────────────────────────────────────────
@@ -185,10 +200,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <link rel="preconnect" href="https://kpgtiqepktofdfyxgsbw.supabase.co" />
       <link rel="dns-prefetch" href="https://kpgtiqepktofdfyxgsbw.supabase.co" />
       <body className="antialiased" suppressHydrationWarning>
-        {/* Theme CSS — Next.js quản lý <head> tự động, đặt style ở đây là đúng với App Router */}
-        {themeCSS && (
-          <style id="site-theme" dangerouslySetInnerHTML={{ __html: themeCSS }} />
-        )}
+        {/* Critical CSS inline — luôn render, kể cả khi dùng default theme.
+            Inlining CSS vars + body{background,color} → browser render đúng màu ngay
+            mà không cần đợi file globals.css (18 KiB) tải xong → loại bỏ render-blocking FOUC */}
+        <style id="site-theme" dangerouslySetInnerHTML={{ __html: themeCSS }} />
         <SettingsProvider value={s}>
           <CartProvider>
             <SeoInjector />

@@ -21,12 +21,17 @@ const Footer   = dynamic(() => import("@/components/Footer"));
 // ─── Purely UI — skip SSR hoàn toàn (không có nội dung SEO) ──────────────────
 const MobileBar       = dynamic(() => import("@/components/MobileBar"),       { ssr: false });
 const FloatingContacts = dynamic(() => import("@/components/FloatingContacts"), { ssr: false });
-// Revalidate mỗi 5 phút — đảm bảo schema luôn sync với admin panel
-export const revalidate = 300;
+// ISR cache 1 tiếng — đồng bộ với layout.tsx (revalidate=3600).
+// Pricing/blog/portfolio hiếm thay đổi trong vòng 1 giờ → TTFB từ ~1,800ms → <100ms.
+// Nếu cần flush cache ngay: dùng Vercel dashboard → Deployments → Invalidate.
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   alternates: {
     canonical: "https://www.sonxinchao.com",
+  },
+  openGraph: {
+    url: "https://www.sonxinchao.com",
   },
 };
 
@@ -48,7 +53,7 @@ export default async function Home() {
     return []; // Trả về mảng rỗng để Navbar tự kích hoạt FALLBACK_ITEMS
   },
   ["navbar-menu-cache"],
-  { revalidate: 300 } // Thống nhất 5 phút (300s) giống revalidate của trang chủ bạn đang đặt
+  { revalidate: 3600 } // Đồng bộ với page revalidate = 3600
 );
   // Thêm menuRes vào mảng nhận kết quả trả về
   const [postsRes, portfolioRes, pricingRes, addonsRes, menuData] = await Promise.all([
@@ -77,25 +82,34 @@ export default async function Home() {
   const localBusinessSchema = {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
+    // @id cho phép các schema khác tham chiếu đến entity này
+    "@id": "https://www.sonxinchao.com/#localbusiness",
     "name": "Sơn Xin Chào — SEO · Ads · Website",
     "alternateName": "sonxinchao.com",
     "url": "https://www.sonxinchao.com",
     // logo phải là PNG/JPG — Google Schema không nhận SVG
-    "logo": logoUrl,
+    "logo": {
+      "@type": "ImageObject",
+      "url": logoUrl,
+      "width": 600,
+      "height": 200
+    },
     "image": "https://www.sonxinchao.com/og-image.jpg",
     "description": "Dịch vụ SEO, Google Ads, Facebook Ads và thiết kế website WordPress chuẩn SEO tại Long Thành, Đồng Nai. Phục vụ toàn bộ khu vực TP.HCM và Đông Nam Bộ.",
     "telephone": phoneE164,
     "email": email,
+    // founder tham chiếu tới Person entity bằng @id
     "founder": {
       "@type": "Person",
-      "name": "Phan Đình Sơn",
-      "jobTitle": "Digital Marketing Specialist"
+      "@id": "https://www.sonxinchao.com/#phandinhson",
+      "name": "Phan Đình Sơn"
     },
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Long Thành",
       "addressLocality": "Long Thành",
       "addressRegion": "Đồng Nai",
+      "postalCode": "810000",
       "addressCountry": "VN"
     },
     "geo": {
@@ -116,21 +130,77 @@ export default async function Home() {
       "@type": "OfferCatalog",
       "name": "Dịch vụ Digital Marketing",
       "itemListElement": [
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "SEO Organic" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Google Ads" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Facebook Ads" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Thiết kế Website WordPress" } },
-        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "SEO Local" } }
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "SEO Organic", "url": "https://www.sonxinchao.com/dich-vu/seo" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Google Ads", "url": "https://www.sonxinchao.com/dich-vu/google-ads" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Facebook Ads", "url": "https://www.sonxinchao.com/dich-vu/facebook-ads" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Thiết kế Website WordPress", "url": "https://www.sonxinchao.com/dich-vu/thiet-ke-website" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "SEO Local Google Maps", "url": "https://www.sonxinchao.com/dich-vu/seo-local" } },
+        { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "TikTok Ads", "url": "https://www.sonxinchao.com/dich-vu/tiktok-ads" } }
       ]
     },
-    "sameAs": [facebookUrl, zaloUrl],
-    "openingHoursSpecification": {
-      "@type": "OpeningHoursSpecification",
-      "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
-      "opens": "08:00",
-      "closes": "21:00"
-    },
+    "sameAs": [facebookUrl, zaloUrl, "https://www.youtube.com/@hoccungson116"],
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+        "opens": "08:00",
+        "closes": "21:00"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Saturday","Sunday"],
+        "opens": "09:00",
+        "closes": "18:00"
+      }
+    ],
+    "currenciesAccepted": "VND",
+    "paymentAccepted": "Chuyển khoản, Tiền mặt, MoMo, ZaloPay",
     "priceRange": "₫₫"
+  };
+
+  // ─── Person schema — Phan Đình Sơn ───────────────────────────────────────────
+  const personSchema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "@id": "https://www.sonxinchao.com/#phandinhson",
+    "name": "Phan Đình Sơn",
+    "alternateName": "Son Phan",
+    "url": "https://www.sonxinchao.com/gioi-thieu",
+    "image": {
+      "@type": "ImageObject",
+      "url": "https://www.sonxinchao.com/og-image.jpg",
+      "width": 1200,
+      "height": 630
+    },
+    "jobTitle": "Digital Marketing Specialist",
+    "description": "Chuyên gia SEO, Google Ads, Facebook Ads và thiết kế website WordPress tại Long Thành, Đồng Nai. 3+ năm kinh nghiệm thực chiến, 50+ dự án thành công.",
+    "telephone": phoneE164,
+    "email": email,
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Long Thành",
+      "addressRegion": "Đồng Nai",
+      "addressCountry": "VN"
+    },
+    "knowsAbout": [
+      "SEO", "SEO Onpage", "SEO Local", "Google Ads", "Facebook Ads",
+      "TikTok Ads", "WordPress", "WooCommerce", "Digital Marketing",
+      "Content Marketing", "Web Analytics", "Google Search Console"
+    ],
+    "hasCredential": [
+      { "@type": "EducationalOccupationalCredential", "credentialCategory": "certificate", "name": "Google Ads Certification" },
+      { "@type": "EducationalOccupationalCredential", "credentialCategory": "certificate", "name": "Meta Blueprint Certification" }
+    ],
+    "worksFor": {
+      "@type": "Organization",
+      "@id": "https://www.sonxinchao.com/#localbusiness",
+      "name": "Sơn Xin Chào"
+    },
+    "sameAs": [
+      facebookUrl,
+      "https://www.youtube.com/@hoccungson116",
+      "https://www.sonxinchao.com"
+    ]
   };
 
   return (
@@ -138,6 +208,10 @@ export default async function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
       />
       <Navbar initialItems={menuData} />
       <SearchStrip />

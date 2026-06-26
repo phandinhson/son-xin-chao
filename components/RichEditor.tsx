@@ -3,6 +3,20 @@ import { useRef, useState, useEffect, useCallback } from "react";
 
 type LibImg = { name: string; url: string; sizeLabel: string };
 
+/**
+ * Xóa tiền tố origin bị ghép lỗi khi browser resolve URL trong contenteditable.
+ * VD: "https://www.sonxinchao.comhttps://kpgtiqepktofdfyxgsbw.supabase.co/..."
+ *   → "https://kpgtiqepktofdfyxgsbw.supabase.co/..."
+ */
+function sanitizeImgSrc(raw: string): string {
+  if (!raw) return raw;
+  // Nếu chuỗi chứa 2 URL liên tiếp (http xuất hiện lần 2 sau vị trí 4),
+  // giữ lại URL thứ hai (URL thực sự được paste vào).
+  const second = raw.indexOf("http", 4);
+  if (second > 0) return raw.slice(second);
+  return raw;
+}
+
 // ── Image Modal — upload lưu vào /public/images/, chọn từ thư viện ──────────
 function ImageModal({ onInsert, onClose }: {
   onInsert: (src: string, alt: string) => void;
@@ -177,7 +191,7 @@ function ImageModal({ onInsert, onClose }: {
             <div>
               <label className="text-gray-600 text-sm mb-1.5 block font-medium">URL ảnh</label>
               <input type="url" value={url}
-                onChange={e => { setUrl(e.target.value); setPreview(e.target.value); }}
+                onChange={e => { const v = sanitizeImgSrc(e.target.value); setUrl(v); setPreview(v); }}
                 placeholder="https://example.com/image.jpg"
                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               />
@@ -414,7 +428,7 @@ function ImagePopover({
   onDelete: () => void;
   onClose: () => void;
 }) {
-  const [valSrc, setValSrc] = useState(src);
+  const [valSrc, setValSrc] = useState(() => sanitizeImgSrc(src));
   const [valAlt, setValAlt] = useState(alt);
   const popRef = useRef<HTMLDivElement>(null);
 
@@ -461,7 +475,7 @@ function ImagePopover({
         <label className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">URL ảnh</label>
         <input
           value={valSrc}
-          onChange={e => setValSrc(e.target.value)}
+          onChange={e => setValSrc(sanitizeImgSrc(e.target.value))}
           onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); onSave(valSrc, valAlt); } if (e.key === "Escape") onClose(); }}
           placeholder="https://..."
           className="text-sm text-gray-800 border border-gray-200 rounded-lg px-2.5 py-2
@@ -726,7 +740,7 @@ export default function RichEditor({ value, onChange }: Props) {
       const rect = img.getBoundingClientRect();
       setLinkPopover(null);
       setImagePopover({
-        src:  img.getAttribute("src") || "",
+        src:  sanitizeImgSrc(img.getAttribute("src") || ""),
         alt:  img.getAttribute("alt") || "",
         top:  rect.bottom,
         left: rect.left + rect.width / 2,
@@ -903,6 +917,36 @@ export default function RichEditor({ value, onChange }: Props) {
 
       {/* ── Editor area ── */}
       <div className={`flex-1 ${fullscreen ? "overflow-auto" : ""}`}>
+
+        {/* H2 / H3 visual styles — chỉ load trong admin editor, không ảnh hưởng front-end */}
+        <style>{`
+          .prose-editor h2 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #1e3a8a;
+            margin-top: 1.75rem;
+            margin-bottom: 0.6rem;
+            padding: 0.5rem 0.85rem 0.5rem 1rem;
+            border-left: 4px solid #2563eb;
+            border-bottom: 2px solid #bfdbfe;
+            background: linear-gradient(to right, #eff6ff, #f8fafc);
+            border-radius: 0 8px 8px 0;
+            line-height: 1.35;
+          }
+          .prose-editor h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #4c1d95;
+            margin-top: 1.25rem;
+            margin-bottom: 0.4rem;
+            padding: 0.3rem 0.75rem;
+            border-left: 3px solid #7c3aed;
+            background: linear-gradient(to right, #f5f3ff, transparent);
+            border-radius: 0 6px 6px 0;
+            line-height: 1.4;
+          }
+        `}</style>
+
         {/* Visual mode */}
         {pasteMsg && (
           <div className={`mx-3 mt-2 px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 ${

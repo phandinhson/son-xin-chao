@@ -16,9 +16,8 @@ const nextConfig = {
     parallelServerCompiles: true,
     // Tree-shake các thư viện lớn — giảm bundle size
     optimizePackageImports: ["@supabase/supabase-js", "lucide-react"],
-    // Critters: inline critical CSS + defer non-critical → fix "Render-blocking CSS" trên Lighthouse
-    // Yêu cầu chạy: npm install critters --save-dev
-    optimizeCss: true,
+    // NOTE: optimizeCss (Critters) đã bị XÓA — không hoạt động với App Router (streaming RSC).
+    // Critical CSS được inline thủ công trong app/layout.tsx (buildThemeCSS luôn trả về CSS).
   },
   images: {
     // Cho phép next/image optimize ảnh từ Supabase Storage
