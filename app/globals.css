@@ -100,15 +100,6 @@ body {
   background-clip: text;
 }
 
-/* Glow effect */
-.glow-blue {
-  box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
-}
-
-.glow-purple {
-  box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
-}
-
 /* Card hover */
 .card-hover {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -116,21 +107,6 @@ body {
 .card-hover:hover {
   transform: translateY(-6px);
   box-shadow: 0 20px 40px rgba(59, 130, 246, 0.2);
-}
-
-/* Animated border */
-.border-gradient {
-  border: 1px solid transparent;
-  background-clip: padding-box;
-  position: relative;
-}
-.border-gradient::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
-  z-index: -1;
 }
 
 /* Section fade animations */
@@ -163,11 +139,6 @@ body {
     /* blur-2xl (48px) thay vì blur-3xl (64px) — nhẹ hơn 25% */
     filter: blur(48px);
   }
-}
-
-/* Noise texture overlay */
-.noise-overlay {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
 }
 
 /* Blog styles đã chuyển sang app/blog/blog.css

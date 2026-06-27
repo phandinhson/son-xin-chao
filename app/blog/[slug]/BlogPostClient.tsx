@@ -747,7 +747,7 @@ export default function BlogPostClient({ initialPost }: { initialPost?: Post | n
                 </div>
                 <Link href="/contact"
                   className="flex-shrink-0 px-4 py-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white font-semibold rounded-xl hover:opacity-90 transition-all text-sm shadow whitespace-nowrap hidden sm:block">
-                  💬 Tư vấn miễn phí
+                  Tư vấn miễn phí
                 </Link>
               </div>
 

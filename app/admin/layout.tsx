@@ -36,7 +36,8 @@ const NAV_SECTIONS: NavSection[] = [
       { href: "/admin/gioi-thieu",         label: "Giới thiệu",       icon: "👤", roles: ["admin"] },
       { href: "/admin/facebook-ads",       label: "Facebook Ads",     icon: "📣" },
       { href: "/admin/hoc-ai",             label: "Học AI",            icon: "🎓", roles: ["admin"] },
-      { href: "/admin/dich-vu/seo-onpage", label: "Trang SEO Onpage", icon: "📄", roles: ["admin"] },
+      { href: "/admin/dich-vu/seo-onpage",    label: "Trang SEO Onpage", icon: "📄", roles: ["admin"] },
+      { href: "/admin/dich-vu/audit-tu-van", label: "Trang Audit SEO",  icon: "🔍", roles: ["admin"] },
     ],
   },
   {

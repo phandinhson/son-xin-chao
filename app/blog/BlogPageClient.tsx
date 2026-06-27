@@ -393,10 +393,10 @@ function BlogPageContent({
     <>
       {/* Category Tabs */}
       <div className="sticky top-[158px] md:top-[128px] z-30 bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-6xl mx-auto px-6">
+        <div className="max-w-6xl mx-auto px-6 py-4">
           <div
             ref={tabsRef}
-            className="flex items-center gap-1.5 overflow-x-auto py-3 md:justify-center select-none"
+            className="flex items-center gap-2 overflow-x-auto md:justify-center select-none"
             style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
           >
             <button
@@ -421,7 +421,7 @@ function BlogPageContent({
       </div>
 
       {/* Content */}
-      <div className="max-w-6xl mx-auto px-4 py-7">
+      <div className="max-w-6xl mx-auto px-4 py-16">
         {urlQuery ? (
           <SearchResults
             query={urlQuery}

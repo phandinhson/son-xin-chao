@@ -176,22 +176,22 @@ export default function ContactPageClient() {
     {
       icon: <Image src="/logo-zalo-vector.svg" alt="Zalo" width={28} height={28} className="h-7 w-auto brightness-0 invert" unoptimized />,
       name: "Zalo", desc: "Phản hồi nhanh nhất", value: cfg.contact_zalo, href: contactLinks.zaloHref, badge: "Nhanh nhất",
-      color: "from-blue-500 to-cyan-400", bg: "bg-blue-50 dark:bg-blue-950/30", border: "border-blue-200 dark:border-blue-800",
+      color: "from-blue-500 to-cyan-400", bg: "bg-blue-50", border: "border-blue-200",
     },
     {
       icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-green-600"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>,
       name: "Điện thoại", desc: "Gọi trực tiếp", value: cfg.contact_phone, href: contactLinks.phoneHref, badge: null,
-      color: "from-green-500 to-emerald-400", bg: "bg-green-50 dark:bg-green-950/30", border: "border-green-200 dark:border-green-800",
+      color: "from-green-500 to-emerald-400", bg: "bg-green-50", border: "border-green-200",
     },
     {
       icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-blue-700"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>,
       name: "Facebook", desc: "Nhắn tin Messenger", value: "sonxinchao", href: contactLinks.fbHref, badge: null,
-      color: "from-blue-600 to-indigo-500", bg: "bg-blue-50 dark:bg-blue-950/30", border: "border-blue-200 dark:border-blue-800",
+      color: "from-blue-600 to-indigo-500", bg: "bg-blue-50", border: "border-blue-200",
     },
     {
       icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-rose-500"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>,
       name: "Email", desc: "Yêu cầu chi tiết", value: cfg.contact_email, href: `mailto:${cfg.contact_email}`, badge: null,
-      color: "from-rose-500 to-pink-500", bg: "bg-rose-50 dark:bg-rose-950/30", border: "border-rose-200 dark:border-rose-800",
+      color: "from-rose-500 to-pink-500", bg: "bg-rose-50", border: "border-rose-200",
     },
   ], [cfg, contactLinks]);
 

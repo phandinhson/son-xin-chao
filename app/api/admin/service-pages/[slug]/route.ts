@@ -8,7 +8,8 @@ type Params = { params: { slug: string } };
 
 // Mapping slug → public path để revalidate ISR cache
 const SLUG_TO_PATH: Record<string, string> = {
-  "seo-onpage": "/dich-vu/seo-onpage",
+  "seo-onpage":   "/dich-vu/seo-onpage",
+  "audit-tu-van": "/dich-vu/audit-tu-van",
 };
 
 // GET — lấy nội dung trang

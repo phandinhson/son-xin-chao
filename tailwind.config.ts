@@ -6,7 +6,10 @@ const config: Config = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  darkMode: "class",
+  // darkMode: "class" đã xóa — site dùng CSS variables (--th-bg, --th-text) để theme,
+  // không dùng Tailwind dark: prefix thực sự (html không có class "dark").
+  // Giữ "media" để browser tự xử lý prefers-color-scheme nếu cần sau này.
+  darkMode: "media",
   theme: {
     extend: {
       fontFamily: {
