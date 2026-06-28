@@ -32,6 +32,8 @@ export type DbCategory = {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function formatDate(iso: string) {
+  // timeZone bắt buộc: server (UTC+0) vs browser (UTC+7) render ngày khác nhau
+  // → React hydration error #425 "text content mismatch" → #422 Suspense collapse
   return new Date(iso).toLocaleDateString("vi-VN", {
     day: "2-digit", month: "2-digit", year: "numeric",
     timeZone: "Asia/Ho_Chi_Minh",
@@ -43,19 +45,35 @@ const fetcher = (url: string) => fetch(url).then(r => {
   return r.json();
 });
 
-// ── Skeleton ──────────────────────────────────────────────────────────────────
+// ── Skeleton — định nghĩa NGOÀI render function để tránh re-mount mỗi render ─
 function Skeleton() {
   return (
-    <div className="animate-pulse space-y-8">
-      <div className="h-4 bg-gray-200 w-32 rounded mb-4" />
-      <div className="flex gap-4 rounded-xl border border-gray-100 p-4">
-        <div className="w-[46%] h-48 bg-gray-200 rounded-lg flex-shrink-0" />
-        <div className="flex-1 space-y-3">
-          <div className="h-4 bg-gray-200 w-1/3 rounded" />
-          <div className="h-6 bg-gray-200 rounded" />
-          <div className="h-4 bg-gray-100 rounded w-5/6" />
+    <div className="animate-pulse">
+      {[0, 1].map(i => (
+        <div key={i} className="mb-10">
+          <div className="h-4 bg-gray-200 w-32 rounded mb-4" />
+          <div className="h-0.5 bg-orange-200 w-28 mb-5" />
+          <div className="flex gap-0 rounded-xl overflow-hidden border border-gray-100 mb-4">
+            <div className="w-[46%] min-h-[210px] bg-gray-200 flex-shrink-0" />
+            <div className="flex-1 p-5 space-y-3">
+              <div className="h-3 bg-gray-200 w-20 rounded" />
+              <div className="h-5 bg-gray-200 rounded" />
+              <div className="h-5 bg-gray-200 w-3/4 rounded" />
+              <div className="h-3 bg-gray-100 rounded" />
+              <div className="h-3 bg-gray-100 w-2/3 rounded" />
+            </div>
+          </div>
+          <div className="grid grid-cols-4 gap-3">
+            {[0, 1, 2, 3].map(j => (
+              <div key={j}>
+                <div className="aspect-[4/3] bg-gray-200 rounded-lg mb-2" />
+                <div className="h-3 bg-gray-200 w-16 rounded mb-1" />
+                <div className="h-3 bg-gray-100 rounded" />
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      ))}
     </div>
   );
 }
@@ -68,12 +86,12 @@ function CategorySection({
   posts: Post[];
   onViewMore: (catValue: string) => void;
 }) {
-  if (!posts || posts.length === 0) return null;
+  if (posts.length === 0) return null;
   const featured = posts[0];
   const grid     = posts.slice(1, 5);
 
   return (
-    <section className="mb-14 animate-in fade-in duration-300">
+    <section className="mb-10 animate-in fade-in duration-300">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className="text-lg">{cat.icon}</span>
@@ -101,8 +119,9 @@ function CategorySection({
               src={featured.cover_image}
               alt={featured.title}
               fill
-              className="object-cover group-hover:scale-[1.01] transition-transform duration-300"
-              // TỐI ƯU: Bỏ hoàn toàn unoptimized để Next.js tự động tối ưu dung lượng ảnh
+              className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
+              unoptimized
+              priority
               sizes="(max-width: 640px) 100vw, 46vw"
             />
           ) : (
@@ -138,7 +157,8 @@ function CategorySection({
                     src={post.cover_image}
                     alt={post.title}
                     fill
-                    className="object-cover group-hover:scale-[1.01] transition-transform duration-300"
+                    className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
+                    unoptimized
                     sizes="(max-width: 768px) 50vw, 25vw"
                   />
                 ) : (
@@ -146,7 +166,15 @@ function CategorySection({
                     {cat.icon}
                   </div>
                 )}
+                <div className="absolute bottom-2 left-2">
+                  <span className="px-1.5 py-0.5 bg-orange-500 text-white text-[9px] font-extrabold uppercase rounded">
+                    {cat.label}
+                  </span>
+                </div>
               </div>
+              <p className="text-orange-700 text-[10px] font-extrabold uppercase tracking-wider mb-1">
+                {cat.label}
+              </p>
               <h4 className="text-gray-800 text-sm font-semibold leading-snug line-clamp-2 group-hover:text-orange-700 transition-colors">
                 {post.title}
               </h4>
@@ -159,14 +187,10 @@ function CategorySection({
 }
 
 // ── Single-category posts view ────────────────────────────────────────────────
-function CategoryPosts({ cat, categoryValue }: { cat: DbCategory; categoryValue: string }) {
-  const [visibleCount, setVisibleCount] = useState(9);
+function CategoryPosts({ cat, posts }: { cat: DbCategory; posts: Post[] }) {
+  const [page, setPage] = useState(1);
+  const PER_PAGE = 8;
 
-  // TỐI ƯU: Chỉ fetch bài viết thuộc đúng category đang chọn trực tiếp từ API tủ, giảm tải cho client
-  const { data: posts, error } = useSWR(`/api/posts?category=${categoryValue}&limit=40`, fetcher);
-
-  if (error) return <div className="text-center py-10 text-red-500">Có lỗi xảy ra khi tải bài viết.</div>;
-  if (!posts) return <Skeleton />;
   if (posts.length === 0) {
     return (
       <div className="text-center py-20 text-gray-400">
@@ -176,9 +200,9 @@ function CategoryPosts({ cat, categoryValue }: { cat: DbCategory; categoryValue:
     );
   }
 
-  const featured = posts[0];
-  const rest     = posts.slice(1);
-  const visibleRest = rest.slice(0, visibleCount);
+  const featured    = posts[0];
+  const rest        = posts.slice(1);
+  const visibleRest = rest.slice(0, page * PER_PAGE);
 
   return (
     <section className="animate-in fade-in duration-300">
@@ -188,16 +212,17 @@ function CategoryPosts({ cat, categoryValue }: { cat: DbCategory; categoryValue:
       </div>
       <div className="border-b-2 border-orange-500 mb-6 w-28" />
 
-      {/* Featured */}
       <Link
         href={`/blog/${featured.slug}`}
         className="group flex flex-col sm:flex-row overflow-hidden rounded-xl border border-gray-200 hover:shadow-lg transition-all mb-6 bg-white"
       >
         <div className="relative w-full sm:w-[46%] flex-shrink-0 overflow-hidden bg-gray-50 aspect-[1200/630]">
-          {featured.cover_image && (
+          {featured.cover_image ? (
             <Image src={featured.cover_image} alt={featured.title} fill
-              className="object-cover group-hover:scale-[1.01] transition-transform"
-              sizes="46vw" />
+              className="object-cover group-hover:scale-[1.02] transition-transform"
+              unoptimized sizes="46vw" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-5xl opacity-20">🖼</div>
           )}
         </div>
         <div className="flex flex-col justify-between flex-1 p-5">
@@ -212,17 +237,22 @@ function CategoryPosts({ cat, categoryValue }: { cat: DbCategory; categoryValue:
         </div>
       </Link>
 
-      {/* Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {visibleRest.map((post: Post) => (
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {visibleRest.map(post => (
           <Link key={post.id} href={`/blog/${post.slug}`} className="group block">
             <div className="relative rounded-lg overflow-hidden bg-gray-50 mb-2 aspect-[1200/630]">
-              {post.cover_image && (
+              {post.cover_image ? (
                 <Image src={post.cover_image} alt={post.title} fill
-                  className="object-cover group-hover:scale-[1.01] transition-transform"
-                  sizes="(max-width: 768px) 50vw, 33vw" />
+                  className="object-cover group-hover:scale-[1.02] transition-transform"
+                  unoptimized sizes="25vw" />
+              ) : (
+                <div className="w-full h-full bg-orange-50 flex items-center justify-center text-3xl opacity-30">{cat.icon}</div>
               )}
+              <div className="absolute bottom-2 left-2">
+                <span className="px-1.5 py-0.5 bg-orange-500 text-white text-[9px] font-extrabold uppercase rounded">{cat.label}</span>
+              </div>
             </div>
+            <p className="text-orange-700 text-[10px] font-extrabold uppercase tracking-wider mb-1">{cat.label}</p>
             <h4 className="text-gray-800 text-sm font-semibold leading-snug line-clamp-2 group-hover:text-orange-700 transition-colors">
               {post.title}
             </h4>
@@ -233,7 +263,7 @@ function CategoryPosts({ cat, categoryValue }: { cat: DbCategory; categoryValue:
       {rest.length > visibleRest.length && (
         <div className="text-center mt-8">
           <button
-            onClick={() => setVisibleCount(c => c + 9)}
+            onClick={() => setPage(p => p + 1)}
             className="px-8 py-2.5 border-2 border-orange-600 text-orange-700 text-sm font-bold rounded-full hover:bg-orange-600 hover:text-white transition-all"
           >
             Xem thêm
@@ -246,26 +276,13 @@ function CategoryPosts({ cat, categoryValue }: { cat: DbCategory; categoryValue:
 
 // ── Search Results ────────────────────────────────────────────────────────────
 function SearchResults({
-  query, categories, onClear,
+  query, posts, categories, onClear,
 }: {
   query: string;
+  posts: Post[];
   categories: DbCategory[];
   onClear: () => void;
 }) {
-  // TỐI ƯU: Client tìm kiếm trực tiếp qua API client-side thay vì xử lý JS nặng nề trên mảng tĩnh
-  const { data: posts, error } = useSWR(`/api/posts?limit=50`, fetcher); 
-  
-  const searchResults = useMemo(() => {
-    if (!posts || !query) return [];
-    const q = query.toLowerCase();
-    return posts.filter((p: Post) =>
-      p.title.toLowerCase().includes(q) || (p.excerpt || "").toLowerCase().includes(q)
-    );
-  }, [query, posts]);
-
-  if (error) return <div className="text-center py-10 text-red-500">Lỗi tìm kiếm.</div>;
-  if (!posts) return <Skeleton />;
-
   const getCat = (post: Post) => categories.find(c => c.value === post.category);
 
   return (
@@ -273,30 +290,38 @@ function SearchResults({
       <div className="flex items-center justify-between mb-6">
         <p className="text-gray-700 font-semibold">
           Kết quả cho: <span className="text-orange-500">"{query}"</span>
-          <span className="text-gray-400 font-normal ml-2">({searchResults.length} bài)</span>
+          <span className="text-gray-400 font-normal ml-2">({posts.length} bài)</span>
         </p>
         <button onClick={onClear} className="text-sm text-gray-400 hover:text-gray-700 flex items-center gap-1">
           ✕ Xoá tìm kiếm
         </button>
       </div>
 
-      {searchResults.length === 0 ? (
+      {posts.length === 0 ? (
         <div className="text-center py-20 text-gray-400">
           <div className="text-5xl mb-3">🔍</div>
           <p className="font-medium">Không tìm thấy kết quả</p>
+          <p className="text-sm mt-1">Thử từ khoá khác nhé</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {searchResults.map((post: Post) => {
+          {posts.map(post => {
             const cat = getCat(post);
             return (
               <Link key={post.id} href={`/blog/${post.slug}`}
                 className="group flex flex-col overflow-hidden rounded-xl border border-gray-200 hover:shadow-md transition-all bg-white">
                 <div className="relative overflow-hidden bg-gray-50 aspect-[1200/630]">
-                  {post.cover_image && (
+                  {post.cover_image ? (
                     <Image src={post.cover_image} alt={post.title} fill
-                      className="object-cover group-hover:scale-[1.01] transition-transform"
-                      sizes="(max-width: 1024px) 50vw, 33vw" />
+                      className="object-cover group-hover:scale-[1.02] transition-transform"
+                      unoptimized sizes="33vw" />
+                  ) : (
+                    <div className="w-full h-full bg-orange-50 flex items-center justify-center text-4xl opacity-20">🖼</div>
+                  )}
+                  {cat && (
+                    <div className="absolute bottom-2 left-2">
+                      <span className="px-1.5 py-0.5 bg-orange-500 text-white text-[9px] font-extrabold uppercase rounded">{cat.label}</span>
+                    </div>
                   )}
                 </div>
                 <div className="p-4 flex-1 flex flex-col">
@@ -304,7 +329,8 @@ function SearchResults({
                   <h3 className="text-gray-900 font-bold text-sm leading-snug line-clamp-2 mb-2 group-hover:text-orange-700 transition-colors">
                     {post.title}
                   </h3>
-                  <p className="text-gray-400 text-xs mt-auto">{formatDate(post.created_at)}</p>
+                  {post.excerpt && <p className="text-gray-500 text-xs line-clamp-2 flex-1">{post.excerpt}</p>}
+                  <p className="text-gray-400 text-xs mt-2">{formatDate(post.created_at)}</p>
                 </div>
               </Link>
             );
@@ -315,7 +341,7 @@ function SearchResults({
   );
 }
 
-// ── Inner Content ─────────────────────────────────────────────────────────────
+// ── Inner content — cần Suspense vì dùng useSearchParams ─────────────────────
 function BlogPageContent({
   initialPosts,
   initialCategories,
@@ -329,15 +355,40 @@ function BlogPageContent({
   const tabsRef      = useRef<HTMLDivElement>(null);
   const urlQuery     = searchParams.get("q") || "";
 
-  const clearSearch = () => router.push("/blog");
+  // SWR với fallbackData = data đã fetch ở Server → không có loading state lần đầu
+  const { data: postsData, error: postsError } = useSWR("/api/posts", fetcher, {
+    fallbackData: initialPosts,
+    revalidateOnFocus: false,
+    dedupingInterval: 10000,
+  });
+
+  const { data: catsData } = useSWR("/api/categories", fetcher, {
+    fallbackData: initialCategories,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    dedupingInterval: 60000,
+  });
+
+  const posts: Post[]           = useMemo(() => Array.isArray(postsData) ? postsData : initialPosts, [postsData, initialPosts]);
+  const categories: DbCategory[] = useMemo(() => Array.isArray(catsData) ? catsData : initialCategories, [catsData, initialCategories]);
+
+  // Với fallbackData, không bao giờ có loading state thật sự nữa
+  const loading = !postsData && !postsError && initialPosts.length === 0;
+
+  const searchResults = useMemo(() => {
+    if (!urlQuery) return [];
+    const q = urlQuery.toLowerCase();
+    return posts.filter(p =>
+      p.title.toLowerCase().includes(q) || (p.excerpt || "").toLowerCase().includes(q)
+    );
+  }, [urlQuery, posts]);
+
+  const clearSearch    = () => router.push("/blog");
   const handleViewMore = (catValue: string) => {
     setActiveCategory(catValue);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-// 👇 CHÈN THÊM 2 DÒNG NÀY NGAY PHÍA TRÊN DÒNG RETURN:
-  console.log("=== DEBUG DATAS ===");
-  console.log("1. Posts từ Server:", initialPosts);
-  console.log("2. Categories từ Server:", initialCategories);
+
   return (
     <>
       {/* Category Tabs */}
@@ -355,7 +406,7 @@ function BlogPageContent({
             >
               Blog thủ thuật
             </button>
-            {initialCategories.map(cat => (
+            {categories.map(cat => (
               <button
                 key={cat.value}
                 onClick={() => setActiveCategory(cat.value)}
@@ -374,27 +425,35 @@ function BlogPageContent({
         {urlQuery ? (
           <SearchResults
             query={urlQuery}
-            categories={initialCategories}
+            posts={searchResults}
+            categories={categories}
             onClear={clearSearch}
           />
         ) : (
           <>
-            {/* TỐI ƯU: Nếu activeCategory là 'all', xài trực tiếp dữ liệu tĩnh từ Server Component render, triệt tiêu 100% request API thừa */}
-            {activeCategory === "all" && initialCategories.map(cat => (
-              <CategorySection
-                key={cat.value}
-                cat={cat}
-               posts={initialPosts.filter(p => p.category === cat.value || p.category === cat.id)}
-                onViewMore={handleViewMore}
-              />
-            ))}
+            {loading ? <Skeleton /> : (
+              <>
+                {activeCategory === "all" && categories.map(cat => (
+                  <CategorySection
+                    key={cat.value}
+                    cat={cat}
+                    posts={posts.filter(p => p.category === cat.value)}
+                    onViewMore={handleViewMore}
+                  />
+                ))}
 
-            {/* Nếu chọn danh mục cụ thể, component con mới tự động gọi API on-demand */}
-            {activeCategory !== "all" && (() => {
-              const cat = initialCategories.find(c => c.value === activeCategory);
-              if (!cat) return null;
-              return <CategoryPosts cat={cat} categoryValue={activeCategory} />;
-            })()}
+                {activeCategory !== "all" && (() => {
+                  const cat = categories.find(c => c.value === activeCategory);
+                  if (!cat) return null;
+                  return (
+                    <CategoryPosts
+                      cat={cat}
+                      posts={posts.filter(p => p.category === activeCategory)}
+                    />
+                  );
+                })()}
+              </>
+            )}
           </>
         )}
       </div>
@@ -402,7 +461,7 @@ function BlogPageContent({
   );
 }
 
-// ── Main Component ────────────────────────────────────────────────────────────
+// ── Main Client Component (nhận data từ Server Component) ─────────────────────
 export default function BlogPageClient({
   initialPosts,
   initialCategories,
@@ -415,6 +474,7 @@ export default function BlogPageClient({
       <Navbar />
       <SearchStrip />
 
+      {/* useSearchParams() cần Suspense boundary */}
       <Suspense fallback={<div className="min-h-[60vh]" />}>
         <BlogPageContent
           initialPosts={initialPosts}
@@ -422,6 +482,7 @@ export default function BlogPageClient({
         />
       </Suspense>
 
+      {/* CTA Strip */}
       <section className="bg-orange-500 py-10 mt-4">
         <div className="max-w-2xl mx-auto px-6 text-center">
           <h2 className="text-xl font-extrabold text-white mb-2">Cần tư vấn chiến lược marketing?</h2>
