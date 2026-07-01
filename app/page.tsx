@@ -21,9 +21,7 @@ const Footer   = dynamic(() => import("@/components/Footer"));
 // ─── Purely UI — skip SSR hoàn toàn (không có nội dung SEO) ──────────────────
 const MobileBar       = dynamic(() => import("@/components/MobileBar"),       { ssr: false });
 const FloatingContacts = dynamic(() => import("@/components/FloatingContacts"), { ssr: false });
-// ISR cache 1 tiếng — đồng bộ với layout.tsx (revalidate=3600).
-// Pricing/blog/portfolio hiếm thay đổi trong vòng 1 giờ → TTFB từ ~1,800ms → <100ms.
-// Nếu cần flush cache ngay: dùng Vercel dashboard → Deployments → Invalidate.
+
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
@@ -36,39 +34,28 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  // getSiteSettings() dùng React.cache() → share với layout.tsx, không query DB lần 2
   const s = await getSiteSettings();
 
-  // Fetch tất cả data homepage song song — 1 lần duy nhất từ server
-  const db = supabaseAdmin();
   const getCachedNavItems = unstable_cache(
-  async () => {
-    try {
-      const db = supabaseAdmin();
-      const { data } = await db.from("nav_items").select("*").eq("active", true); 
-      if (data && data.length > 0) return data;
-    } catch (e) {
-      console.error("Lỗi fetch menu trang chủ:", e);
-    }
-    return []; // Trả về mảng rỗng để Navbar tự kích hoạt FALLBACK_ITEMS
-  },
-  ["navbar-menu-cache"],
-  { revalidate: 3600 } // Đồng bộ với page revalidate = 3600
-);
-  // Thêm menuRes vào mảng nhận kết quả trả về
-  const [postsRes, portfolioRes, pricingRes, addonsRes, menuData] = await Promise.all([
-    db.from("posts").select("id, title, slug, excerpt, cover_image, created_at, category").eq("status", "published").order("created_at", { ascending: false }),
-    db.from("portfolio").select("*").eq("active", true).order("sort_order"),
-    db.from("pricing").select("*").order("sort_order"),
-    db.from("addons").select("*").eq("active", true).order("sort_order", { ascending: true }),
-    getCachedNavItems(), // <--- Thêm dòng này vào cuối
-  ]);
-  const initialPosts     = postsRes.data     || [];
-  const initialPortfolio = portfolioRes.data || [];
-  const initialPricing   = pricingRes.data   || [];
-  const initialAddons    = addonsRes.data    || [];
+    async () => {
+      try {
+        const db = supabaseAdmin();
+        const { data } = await db.from("nav_items").select("*").eq("active", true);
+        if (data && data.length > 0) return data;
+      } catch (e) {
+        console.error("Lỗi fetch menu trang chủ:", e);
+      }
+      return [];
+    },
+    ["navbar-menu-cache"],
+    { revalidate: 3600 }
+  );
 
-  // Giá trị dynamic từ admin panel, fallback về mặc định
+  // Chỉ fetch nav + settings ở SSR — blog/portfolio/pricing fetch client-side khi scroll đến.
+  // Lợi ích: HTML giảm ~15-18 KiB (bỏ JSON data embedded), TTFB giảm ~200-400ms.
+  // Blog, Portfolio, Pricing đều có fallback fetch("/api/...") + default data sẵn.
+  const menuData = await getCachedNavItems();
+
   const phone    = s.contact_phone    || "0968806360";
   const email    = s.contact_email    || "phandinhson@sonxinchao.com";
   const facebook = s.contact_facebook || "https://fb.com/sonxinchao";
@@ -82,12 +69,10 @@ export default async function Home() {
   const localBusinessSchema = {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
-    // @id cho phép các schema khác tham chiếu đến entity này
     "@id": "https://www.sonxinchao.com/#localbusiness",
     "name": "Sơn Xin Chào — SEO · Ads · Website",
     "alternateName": "sonxinchao.com",
     "url": "https://www.sonxinchao.com",
-    // logo phải là PNG/JPG — Google Schema không nhận SVG
     "logo": {
       "@type": "ImageObject",
       "url": logoUrl,
@@ -98,7 +83,6 @@ export default async function Home() {
     "description": "Dịch vụ SEO, Google Ads, Facebook Ads và thiết kế website WordPress chuẩn SEO tại Long Thành, Đồng Nai. Phục vụ toàn bộ khu vực TP.HCM và Đông Nam Bộ.",
     "telephone": phoneE164,
     "email": email,
-    // founder tham chiếu tới Person entity bằng @id
     "founder": {
       "@type": "Person",
       "@id": "https://www.sonxinchao.com/#phandinhson",
@@ -114,8 +98,8 @@ export default async function Home() {
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": "10.8009",
-      "longitude": "107.0391"
+      "latitude": 10.715759874873848,
+      "longitude": 106.98491866208249
     },
     "areaServed": [
       { "@type": "City", "name": "Long Thành" },
@@ -158,7 +142,6 @@ export default async function Home() {
     "priceRange": "₫₫"
   };
 
-  // ─── Person schema — Phan Đình Sơn ───────────────────────────────────────────
   const personSchema = {
     "@context": "https://schema.org",
     "@type": "Person",
@@ -203,8 +186,21 @@ export default async function Home() {
     ]
   };
 
+  // Schema định danh tên hiển thị có dấu trên Google
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Sơn Xin Chào",
+    "alternateName": ["Son Xin Chao", "Sơn Xin Chào SEO"],
+    "url": "https://www.sonxinchao.com"
+  };
+
   return (
     <main className="min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
@@ -213,15 +209,33 @@ export default async function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
       />
+      
       <Navbar initialItems={menuData} />
       <SearchStrip />
       <Hero />
       <About />
       <Services />
-      <Portfolio initialItems={initialPortfolio} />
-      <Pricing initialPlans={initialPricing} initialAddons={initialAddons} />
-      <Blog initialPosts={initialPosts} />
+      <Portfolio />
+      <Pricing />
+      <Blog />
       <Contact />
+
+      {/* Bản đồ định vị Google Maps chuẩn tọa độ của bạn */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-12">
+        <div className="w-full overflow-hidden rounded-2xl border border-slate-200 shadow-md">
+          <iframe 
+            src="https://maps.google.com/maps?q=10.715759874873848,106.98491866208249&z=16&output=embed" 
+            width="100%" 
+            height="450" 
+            style={{ border: 0 }} 
+            allowFullScreen={true} 
+            loading="lazy" 
+            referrerPolicy="strict-origin-when-cross-origin"
+            title="Sơn Xin Chào Google Maps định vị"
+          />
+        </div>
+      </section>
+
       <Footer />
       <MobileBar />
       <FloatingContacts />

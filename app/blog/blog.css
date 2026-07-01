@@ -1080,64 +1080,9 @@ ol.step-list li em::before {
   max-width: 100%;
   height: auto;
 }
-/* ============================================================
-   TỐI ƯU MỤC LỤC TRÊN MÁY TÍNH (DESKTOP SIDEBAR TOC)
-   Giúp chữ to rõ, đậm đà, hiện đại và thu hút hơn
-   ============================================================ */
 
-/* 1. Khung bọc tiêu đề "Nội dung" chính */
-.lg\:grid-cols-\[240px_1fr\] aside button div span {
-  font-size: 15px !important; /* Tăng cỡ chữ tiêu đề "Nội dung" */
-  font-weight: 800 !important; /* Làm tiêu đề chính đậm hẳn lên */
-  letter-spacing: 0.03em;
-  text-transform: uppercase; /* Biến thành chữ in hoa sang trọng */
-  background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
 
-/* 2. Style cho các mục lớn cấp 1 (Thẻ H2 trong mục lục) */
-.lg\:grid-cols-\[240px_1fr\] aside nav button {
-  padding-top: 10px !important;
-  padding-bottom: 10px !important;
-  font-size: 14.5px !important; /* Tăng size chữ từ 13px lên 14.5px cho to rõ */
-  font-weight: 500 !important; /* Chuyển chữ thường thành Medium */
-  color: #475569 !important; /* Màu xám Slate dễ nhìn */
-}
 
-/* Số thứ tự (1., 2., 3.) của mục cấp 1 */
-.lg\:grid-cols-\[240px_1fr\] aside nav button span.tabular-nums {
-  font-size: 13.5px !important;
-  font-weight: 700 !important; /* Làm số thứ tự đậm lên */
-  color: #94a3b8 !important;
-}
-
-/* 3. TRẠNG THÁI ACTIVE: Khi cuộn màn hình đến mục nào, mục đó nổi bật lên */
-.lg\:grid-cols-\[240px_1fr\] aside nav button.border-blue-500 {
-  font-weight: 800 !important; /* Chữ to đậm đặc biệt khi đang đọc */
-  color: #1d4ed8 !important; /* Màu xanh Royal đậm đà chuyên nghiệp */
-  background-color: #eff6ff !important; /* Nền xanh nhẹ dịu mắt */
-}
-
-.lg\:grid-cols-\[240px_1fr\] aside nav button.border-blue-500 span.tabular-nums {
-  color: #2563eb !important; /* Số thứ tự đổi màu theo trạng thái active */
-}
-
-/* 4. Style cho các mục nhỏ cấp 2 (Thẻ H3 thụt lề bên trong) */
-.lg\:grid-cols-\[240px_1fr\] aside nav div div button {
-  font-size: 13px !important; /* Tăng size chữ H3 từ 11.5px lên 13px */
-  font-weight: 500 !important;
-  padding-top: 7px !important;
-  padding-bottom: 7px !important;
-  color: #64748b !important;
-}
-
-/* Mục H3 khi đang được active */
-.lg\:grid-cols-\[240px_1fr\] aside nav div div button.text-blue-600 {
-  font-weight: 700 !important; /* Đậm chữ */
-  color: #2563eb !important; /* Xanh đậm */
-  background-color: #f0fdf4 !important; /* Đổi sang nền xanh lá mạ cực nhẹ để tạo điểm nhấn khác biệt với H2 */
-}
 /* ── Responsive ── */
 @media (max-width: 640px) {
   .blog-content .tool-card {
